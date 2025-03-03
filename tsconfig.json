@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "pretty": true,
+    "target": "es2019",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "dom", "WebWorker"],
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noImplicitThis": true,
+    "noUnusedParameters": true,
+    "importHelpers": true,
+    "noEmitHelpers": true,
+    "noFallthroughCasesInSwitch": true,
+    "inlineSources": true,
+    "allowSyntheticDefaultImports": true,
+    /**  开启装饰器 **/
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "noEmitOnError": true,
+    "typeRoots": ["./node_modules/@types", "./src"],
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types":["./src/*.d.ts"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/**/*"]
+}
