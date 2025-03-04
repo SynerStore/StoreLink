@@ -1,3 +1,5 @@
+@import '@/renderer/styles/index.css';
+
 .container {
   display: flex;
   flex-direction: column;
@@ -8,11 +10,13 @@
   max-width: unset;
 }
 
-.header {
-  box-shadow: 0 0 0 1px rgba(16, 22, 26, 0.2), 0 0 0 rgba(16, 22, 26, 0), 0 1px 1px rgba(16, 22, 26, 0.4);
+
+.main{
+  height: calc(100vh - var(--header-height));
+  display: flex;
 }
 
-.commands {
+/* .commands {
   display: flex;
   justify-content: space-between;
   height: 50px;
@@ -22,4 +26,4 @@
 
 .commands.is-mac {
   padding: 10px calc(100vw - (env(titlebar-area-x, 0) + env(titlebar-area-width, 0))) 10px env(titlebar-area-x, 0);
-}
+} */

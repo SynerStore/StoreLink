@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
+import { Splitter } from 'antd';
 
-import { events } from '../../utils';
-import "./index.css"
+import Header from '@/renderer/components/Header';
+import Sider from '@/renderer/components/Sider';
+import StoreSider from '@/renderer/components/StoreSider';
+import FileViewTabs from '@/renderer/components/FileViewTabs';
+import './index.css';
 
 const App = () => {
   useEffect(() => {
@@ -9,11 +13,19 @@ const App = () => {
   });
 
   return (
-    <div className='container'>
-      <header className='header'>
-        <div className='commands'> 标题 </div>
-      </header>
-      <img src="./logo.png" alt="logo" width="100" height={100} />
+    <div className="container">
+      <Header />
+      <main className="main">
+        <Sider />
+        <Splitter style={{ height: '100%' }}>
+          <Splitter.Panel defaultSize={240} min={240} max={320}>
+            <StoreSider />
+          </Splitter.Panel>
+          <Splitter.Panel>
+            <FileViewTabs />
+          </Splitter.Panel>
+        </Splitter>
+      </main>
     </div>
   );
 };

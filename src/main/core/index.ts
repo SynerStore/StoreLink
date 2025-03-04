@@ -30,16 +30,19 @@ export default class Core {
       }
     });
 
-    app.on('activate', () => {
-      this.windows?.hiddenLaunchWindow();
-      this.windows?.showMainWindow();
-    });
+  
   }
 
   private async afterAppReady() {
     this.windows = new Windows(this);
     this.resistry();
     this.installExtension();
+
+    app.on('activate', () => {
+      debugger
+      this.windows?.hiddenLaunchWindow();
+      this.windows?.showMainWindow();
+    });
   }
 
   private resistry() {}

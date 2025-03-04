@@ -23,7 +23,7 @@ const rspackConfig: Configuration = {
   resolve: {
     extensions: ['...', '.ts', '.tsx', '.jsx'],
     alias: {
-      '@': path.resolve(ROOT, 'src', 'renderer/src'),
+      '@': path.resolve(ROOT, 'src'),
     },
   },
   devServer: {

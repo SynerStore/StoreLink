@@ -14,6 +14,7 @@ const config: Configuration = {
   output: {
     clean: true,
     path: path.resolve(ROOT, 'build'),
+    filename: '[name].js',
     library: {
       type: 'commonjs',
     },

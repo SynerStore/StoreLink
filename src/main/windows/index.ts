@@ -13,7 +13,7 @@ import Core from '../core';
 export default class Windows {
   logger = logger.scope('Windows');
   windowsPools = new Map<EPages, BaseWindow>();
-  private RegisterWindows = [MainWindow, LaunchWindow];
+  private RegisterWindows = [MainWindow];
   private core: Core;
   constructor(core: Core) {
     this.core = core;

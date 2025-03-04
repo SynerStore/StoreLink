@@ -6,8 +6,14 @@ export function getMainWindowOptions(): BrowserWindowConstructorOptions {
   return {
     width: EWindowSize.width,
     height: EWindowSize.height,
-    titleBarStyle: 'hidden',
-    resizable: false,
+    minHeight: EWindowSize.minHeight,
+    minWidth: EWindowSize.minWidth,
+    titleBarStyle: 'hiddenInset',
+    trafficLightPosition: {
+      y: 12,
+      x: 10,
+    },
+    resizable: true,
   };
 }
 

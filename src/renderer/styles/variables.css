@@ -1,1 +1,4 @@
 /* css 变量  */
+:root{
+    --header-height: 42px;
+}

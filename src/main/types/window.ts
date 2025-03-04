@@ -1,10 +1,11 @@
 export enum EWindowSize {
-    width = 1400,
-    height = 900,
-  }
-  
-  export enum EPages {
-    Main = 'main',
-    Launch = 'launch',
-  }
-  
+  width = 1620,
+  height = 960,
+  minWidth = 1080,
+  minHeight = 640,
+}
+
+export enum EPages {
+  Main = 'main',
+  Launch = 'launch',
+}
