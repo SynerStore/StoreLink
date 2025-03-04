@@ -1,7 +1,7 @@
 {
-  "name": "rspack-react-electron-starter",
+  "name": "syner-store-client",
   "version": "0.0.1",
-  "description": "electron react starter with rspack build ",
+  "description": "store  client",
   "main": "main.js",
   "keywords": [
     "electron",
@@ -19,6 +19,7 @@
     "build:main": "cross-env NODE_ENV=production rspack build -c ./scripts/rspack.main.config.ts",
     "build": "npm run build:renderer && npm run build:main",
     "clean:build": "rimraf ./build/*",
+    "install:rclone": "./scripts/update-rclone-binaries.sh ",
     "package": ""
   },
   "devDependencies": {

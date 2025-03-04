@@ -29,3 +29,20 @@ export const getPageUrl = (page: EPages) => {
 export const ensureFirstBackSlash = (str: string) => {
   return str.length > 0 && str.charAt(0) !== '/' ? '/' + str : str;
 };
+
+
+export const getRcloneConfigPath = () => {
+  if (process.platform === 'win32') {
+    return path.join(app.getPath('home'), '.config', 'rclone', 'rclone.conf');
+  } else {
+    return path.join(app.getPath('home'), '.config', 'rclone', 'rclone.conf');
+  }
+};
+
+export const getRcloneCMDPath = () => {
+  if (process.platform === 'win32') {
+   return path.join('../../../bin',  'rclone', 'rclone.conf');
+  } else {
+    return path.join(app.getPath('home'), '.config', 'rclone', 'rclone.conf');
+  }
+};
