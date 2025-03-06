@@ -9,6 +9,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const ROOT = path.resolve(__dirname, '..');
 
 const rspackConfig: Configuration = {
+  name: 'renderer',
   mode: isDev ? 'development' : 'production',
   entry: {
     main: path.resolve(ROOT, './src/renderer/pages/main/index.tsx'),

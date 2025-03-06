@@ -1,13 +1,7 @@
-import { Radio, Tabs } from 'antd';
+import ObjectStoreViewer from './ObjectStoreViewer';
 
-const FileViwer =()=>{
-    return (
-        <div>
-            FileViwer
-        </div>
-    )
+const FileViewer = (props: any) => {
+  return <ObjectStoreViewer {...props} />;
+};
 
-}
-
-
-export default FileViwer;
+export default FileViewer;

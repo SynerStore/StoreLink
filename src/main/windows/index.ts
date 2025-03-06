@@ -3,9 +3,8 @@
 
 import { BrowserWindow, ipcMain } from 'electron';
 
-import { EPages, EChannels } from '../types';
+import { EPages, EChannels } from '../../types';
 import { BaseWindow } from './base';
-import { LaunchWindow } from './launch';
 import { MainWindow } from './main';
 import { logger } from '../utils';
 import Core from '../core';

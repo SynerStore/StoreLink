@@ -1,7 +1,7 @@
 import { BrowserWindow, shell } from 'electron';
 import { merge } from 'lodash';
 
-import { EPages } from '../types';
+import { EPages } from '../../types';
 import { getPageUrl, isDev } from '../utils';
 
 export const DefaultConfig = {

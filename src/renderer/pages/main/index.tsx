@@ -15,7 +15,12 @@ if (rootEl) {
         theme={{
           token: { colorPrimary: '#3c62cd', borderRadius: 2 },
           components: {
-            Tabs: {},
+            Tabs: {
+          
+            },
+            Menu: {
+              itemHeight: 36,
+            },
           },
         }}
       >

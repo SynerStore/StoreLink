@@ -1,6 +1,7 @@
 import { BrowserWindowConstructorOptions } from 'electron';
-
-import { EWindowSize, EPages } from '../types';
+import path from 'path';
+import { isDev } from "../utils"
+import { EWindowSize, EPages } from '../../types';
 import { BaseWindow } from './base';
 export function getMainWindowOptions(): BrowserWindowConstructorOptions {
   return {
@@ -14,6 +15,12 @@ export function getMainWindowOptions(): BrowserWindowConstructorOptions {
       x: 10,
     },
     resizable: true,
+    webPreferences: {
+      devTools: isDev,
+      nodeIntegration: true,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
   };
 }
 

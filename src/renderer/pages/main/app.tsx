@@ -17,14 +17,16 @@ const App = () => {
       <Header />
       <main className="main">
         <Sider />
-        <Splitter style={{ height: '100%' }}>
-          <Splitter.Panel defaultSize={240} min={240} max={320}>
-            <StoreSider />
-          </Splitter.Panel>
-          <Splitter.Panel>
-            <FileViewTabs />
-          </Splitter.Panel>
-        </Splitter>
+        <div className="main-content">
+          <Splitter style={{ height: '100%' }}>
+            <Splitter.Panel defaultSize={240} min={240} max={320}>
+              <StoreSider />
+            </Splitter.Panel>
+            <Splitter.Panel>
+              <FileViewTabs />
+            </Splitter.Panel>
+          </Splitter>
+        </div>
       </main>
     </div>
   );

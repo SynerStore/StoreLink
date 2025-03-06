@@ -1,0 +1,16 @@
+.store-sider-tip {
+  height: 36px;
+  line-height: 36px;
+  box-sizing: border-box;
+  padding-left: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  border-bottom: 1px solid #ebebeb;
+  margin-bottom: 6px;
+}
+
+.store-sider-search{
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-bottom: 6px;
+}

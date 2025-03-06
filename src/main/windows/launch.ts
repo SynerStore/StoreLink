@@ -1,6 +1,6 @@
 import { BrowserWindowConstructorOptions } from 'electron';
 
-import { EWindowSize, EPages } from '../types';
+import { EWindowSize, EPages } from '../../types';
 import { BaseWindow } from './base';
 export function getLaunchWindowOptions(): BrowserWindowConstructorOptions {
   return {

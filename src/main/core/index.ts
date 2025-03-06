@@ -2,7 +2,7 @@ import { app, ipcMain } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
 import Windows from '../windows';
-
+import { storeRequestRegistry } from '../stores';
 import { logger, isDev } from '../utils';
 
 export default class Core {
@@ -29,23 +29,22 @@ export default class Core {
         app.quit();
       }
     });
-
-  
   }
 
   private async afterAppReady() {
     this.windows = new Windows(this);
     this.resistry();
-    this.installExtension();
+    // this.installExtension();
 
     app.on('activate', () => {
-      debugger
       this.windows?.hiddenLaunchWindow();
       this.windows?.showMainWindow();
     });
   }
 
-  private resistry() {}
+  private resistry() {
+    storeRequestRegistry();
+  }
 
   private async installExtension() {
     if (isDev) {

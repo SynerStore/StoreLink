@@ -6,6 +6,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const ROOT = path.resolve(__dirname, '..');
 
 const config: Configuration = {
+  name: 'main',
   target: 'electron-main',
   entry: {
     main: path.resolve(ROOT, './src/main/index.ts'),
