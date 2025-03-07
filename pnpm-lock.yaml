@@ -29,9 +29,15 @@ importers:
       electron-log:
         specifier: ^5.3.1
         version: 5.3.1
+      file-type:
+        specifier: ^20.4.0
+        version: 20.4.0
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      mime-types:
+        specifier: ^2.1.35
+        version: 2.1.35
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -72,6 +78,9 @@ importers:
       '@types/lodash':
         specifier: ^4.17.16
         version: 4.17.16
+      '@types/mime-types':
+        specifier: ^2.1.4
+        version: 2.1.4
       '@types/node':
         specifier: ^22.13.5
         version: 22.13.9
@@ -435,6 +444,13 @@ packages:
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
     engines: {node: '>=10'}
 
+  '@tokenizer/inflate@0.2.7':
+    resolution: {integrity: sha512-MADQgmZT1eKjp06jpI2yozxaU9uVs4GzzgSL+uEq7bVcJ9V1ZXQkeGNql1fsSI0gMy1vhvNTNbUqrx+pZfJVmg==}
+    engines: {node: '>=18'}
+
+  '@tokenizer/token@0.3.0':
+    resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
+
   '@tootallnate/once@2.0.0':
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
     engines: {node: '>= 10'}
@@ -508,6 +524,9 @@ packages:
 
   '@types/lodash@4.17.16':
     resolution: {integrity: sha512-HX7Em5NYQAXKW+1T+FiuG27NGwzJfCX3s1GjOa7ujxZa52kjJLOr4FUxT+giF6Tgxv1e+/czV/iTtBw27WTU9g==}
+
+  '@types/mime-types@2.1.4':
+    resolution: {integrity: sha512-lfU4b34HOri+kAY5UheuFMWPDOI+OPceBSHZKp69gEyTL/mmJ4cnU6Y/rlme3UL3GyOn6Y42hyIEw0/q8sWx5w==}
 
   '@types/mime@1.3.5':
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
@@ -1384,6 +1403,13 @@ packages:
 
   fd-slicer@1.1.0:
     resolution: {integrity: sha512-cE1qsB/VwyQozZ+q1dGxR8LBYNZeofhEdUNGSMbQD3Gw2lAzX9Zb3uIU6Ebc/Fmyjo9AWWfnn0AUCHqtevs/8g==}
+
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
+
+  file-type@20.4.0:
+    resolution: {integrity: sha512-+NZeExsi4G6EWaMbSmvBeCoqsj9EqNvOj1o/0uPVPW4O51FSCmxFlNEp/PitsqBMCbax4cGoaYmnUK5FLTuG4g==}
+    engines: {node: '>=18'}
 
   filelist@1.0.4:
     resolution: {integrity: sha512-w1cEuf3S+DrLCQL7ET6kz+gmlJdbq9J7yXCSjK/OZCPA+qEN1WyF4ZAf0YYJa4/shHJra2t/d/r8SV4Ji+x+8Q==}
@@ -2344,6 +2370,10 @@ packages:
     resolution: {integrity: sha512-eRWB5LBz7PpDu4PUlwT0PhnQfTQJlDDdPa35urV4Osrm0t0AqQFGn+UIkU3klZvwJ8KPO3VbBFsXquA6p6kqZw==}
     engines: {node: '>=12', npm: '>=6'}
 
+  peek-readable@6.1.1:
+    resolution: {integrity: sha512-7QmvgRKhxM0E2PGV4ocfROItVode+ELI27n4q+lpufZ+tRKBu/pBP8WOmw9HXn2ui/AUizqtvaVQhcJrOkRqYg==}
+    engines: {node: '>=18'}
+
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
 
@@ -3004,6 +3034,10 @@ packages:
   strnum@1.1.2:
     resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}
 
+  strtok3@10.2.1:
+    resolution: {integrity: sha512-Q2dTnW3UXokAvXmXvrvMoUj/me3LyJI76HNHeuGMh2o0As/vzd7eHV3ncLOyvu928vQIDbE7Vf9ldEnC7cwy1w==}
+    engines: {node: '>=18'}
+
   stylis@4.3.6:
     resolution: {integrity: sha512-yQ3rwFWRfwNUY7H5vpU0wfdkNSnvnJinhF9830Swlaxl03zsOjCfmX0ugac+3LtK0lYSgwL/KXc8oYL3mG4YFQ==}
 
@@ -3078,6 +3112,10 @@ packages:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
 
+  token-types@6.0.0:
+    resolution: {integrity: sha512-lbDrTLVsHhOMljPscd0yitpozq7Ga2M5Cvez5AjGg8GASBjtt6iERCAJ93yommPmz62fb45oFIXHEZ3u9bfJEA==}
+    engines: {node: '>=14.16'}
+
   totalist@1.1.0:
     resolution: {integrity: sha512-gduQwd1rOdDMGxFG1gEvhV88Oirdo2p+KjoYFU7k2g+i7n6AFFbDQ5kMPUsW0pNbfQsB/cwXvT1i4Bue0s9g5g==}
     engines: {node: '>=6'}
@@ -3134,6 +3172,10 @@ packages:
     resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  uint8array-extras@1.4.0:
+    resolution: {integrity: sha512-ZPtzy0hu4cZjv3z5NW9gfKnNLjoz4y6uv4HlelAjDK7sY/xOkKZv9xK/WQpcsBB3jEybChz9DPC2U/+cusjJVQ==}
+    engines: {node: '>=18'}
 
   undici-types@6.19.8:
     resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
@@ -3778,6 +3820,16 @@ snapshots:
     dependencies:
       defer-to-connect: 2.0.1
 
+  '@tokenizer/inflate@0.2.7':
+    dependencies:
+      debug: 4.4.0
+      fflate: 0.8.2
+      token-types: 6.0.0
+    transitivePeerDependencies:
+      - supports-color
+
+  '@tokenizer/token@0.3.0': {}
+
   '@tootallnate/once@2.0.0': {}
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
@@ -3867,6 +3919,8 @@ snapshots:
       '@types/node': 22.13.9
 
   '@types/lodash@4.17.16': {}
+
+  '@types/mime-types@2.1.4': {}
 
   '@types/mime@1.3.5': {}
 
@@ -4967,6 +5021,17 @@ snapshots:
     dependencies:
       pend: 1.2.0
 
+  fflate@0.8.2: {}
+
+  file-type@20.4.0:
+    dependencies:
+      '@tokenizer/inflate': 0.2.7
+      strtok3: 10.2.1
+      token-types: 6.0.0
+      uint8array-extras: 1.4.0
+    transitivePeerDependencies:
+      - supports-color
+
   filelist@1.0.4:
     dependencies:
       minimatch: 5.1.6
@@ -5947,6 +6012,8 @@ snapshots:
 
   pe-library@0.4.1: {}
 
+  peek-readable@6.1.1: {}
+
   pend@1.2.0: {}
 
   performance-now@2.1.0: {}
@@ -6768,6 +6835,11 @@ snapshots:
 
   strnum@1.1.2: {}
 
+  strtok3@10.2.1:
+    dependencies:
+      '@tokenizer/token': 0.3.0
+      peek-readable: 6.1.1
+
   stylis@4.3.6: {}
 
   sumchecker@3.0.1:
@@ -6842,6 +6914,11 @@ snapshots:
 
   toidentifier@1.0.1: {}
 
+  token-types@6.0.0:
+    dependencies:
+      '@tokenizer/token': 0.3.0
+      ieee754: 1.2.1
+
   totalist@1.1.0: {}
 
   tough-cookie@2.5.0:
@@ -6894,6 +6971,8 @@ snapshots:
       mime-types: 2.1.35
 
   typescript@5.8.2: {}
+
+  uint8array-extras@1.4.0: {}
 
   undici-types@6.19.8: {}
 

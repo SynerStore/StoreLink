@@ -15,8 +15,9 @@ if (rootEl) {
         theme={{
           token: { colorPrimary: '#3c62cd', borderRadius: 2 },
           components: {
-            Tabs: {
-          
+            Tabs: {},
+            Table: {
+              stickyScrollBarBg: 'rgba(0,0,0,0.15)',
             },
             Menu: {
               itemHeight: 36,

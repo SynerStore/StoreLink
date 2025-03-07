@@ -17,7 +17,7 @@ const config: Configuration = {
     path: path.resolve(ROOT, 'build'),
     filename: '[name].js',
     library: {
-      type: 'commonjs',
+      type: 'commonjs2',
     },
   },
   resolve: {
@@ -30,23 +30,30 @@ const config: Configuration = {
   module: {
     rules: [
       {
-        test: /\.(js?|ts?)$/,
-        use: [
-          {
-            loader: 'builtin:swc-loader',
-            options: {
-              jsc: {
-                parser: {
-                  syntax: 'typescript',
-                },
-              },
+        test: /\.ts$/,
+        exclude: [/node_modules/],
+        loader: 'builtin:swc-loader',
+        options: {
+          transpileOnly: true,
+          jsc: {
+            parser: {
+              syntax: 'typescript',
             },
           },
-        ],
+        },
+        type: 'javascript/auto',
       },
     ],
   },
   plugins: [new rspack.ProgressPlugin({})].filter(Boolean),
+  optimization: {
+    minimize: !isDev,
+    mangleExports: !isDev,
+    concatenateModules: !isDev, // 禁止模块合并
+  },
+  ignoreWarnings: [
+    /Critical dependency/, // ali-oss 导致的问题 https://github.com/ali-sdk/ali-oss/issues/1287
+  ],
 };
 
-export default  config;
+export default config;

@@ -1,5 +1,6 @@
 /* css 变量  */
 :root{
+    --primary-color: #3c62cd;
     --header-height: 42px;
     --border-color:#e6e8eb;
 }

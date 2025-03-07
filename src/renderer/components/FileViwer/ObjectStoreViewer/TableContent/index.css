@@ -1,0 +1,26 @@
+@import  "../../../../styles/index.css";
+
+.table-content {
+  padding: 8px 0;
+
+  .file-item {
+    cursor: pointer;
+    display: flex;
+    width: 100%;
+    align-items: center;
+
+    img {
+      margin-right: 6px;
+    }
+
+    span {
+      color: #000000;
+    }
+  }
+
+  .file-item:hover {
+    span {
+      color: var(--primary-color);
+    }
+  }
+}

@@ -1,39 +1,66 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, Flex, Input, Dropdown, Segmented } from 'antd';
 import { LeftOutlined, RightOutlined, MenuOutlined, ProductOutlined } from '@ant-design/icons';
 
 import TableContent from './TableContent';
+import CardContent from './CardContent';
 import { useConfigStore } from '@/renderer/store';
 import { EChannels } from '@/types';
+import { PathHistory } from '../../../utils';
 import './index.css';
 
 export type ObjectStoreViewerProps = {
   id: string;
 };
 const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
-  /**
-   * 1、发送信号到后台获取文档列表等
-   * 2、后台到连接池拿到客户端，假如没有客户端则点击新建
-   * 3、拿到客户端实例后根据所传参数调用实例接口
-   * 4、返回数据并渲染
-   * */
+  const [dataList, setDataList] = useState([]);
+  const [display, setDisplay] = useState<'table' | 'card'>('table');
   const connections = useConfigStore((state: any) => state.connections);
-
+  const [prefixs, setPrefixs] = useState<string[]>([]);
+  const [curPrefix, setCurPrefix] = useState<string>('');
+  const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const connection = useMemo(() => {
     const data = connections.find((item: any) => item.id === props.id);
     return data;
   }, [props.id]);
 
+  const [canBack,canForward] = useMemo(()=>{
+    return [pathHistory?.canBack(),pathHistory?.canForward()] 
+  },[pathHistory,curPrefix])
+
+
+
+  const handlePathBack = () => {
+    const prefix = pathHistory?.back() as string;
+    setCurPrefix(prefix);
+  };
+
+  const handlePathForward = () => {
+    const prefix = pathHistory?.forward() as string;
+    setCurPrefix(prefix);
+  };
+
   const handleGetObjects = async () => {
     if (window?.['electronBridge']) {
-      const data = await window.electronBridge.dispatch(EChannels.storeRequest, {
+      const res = await window.electronBridge.dispatch(EChannels.storeRequest, {
         method: 'list',
         id: connection.id,
-        params: { prefix: '/' },
+        params: { prefix: curPrefix },
       });
-
-      console.log(data);
+      if (res.success) {
+        setDataList(res.data);
+        console.log(res.data);
+      }
     }
+  };
+
+  const handlePrefixChange = (value: string) => {
+    const prefix = pathHistory?.go(value) as string;
+    setCurPrefix(prefix);
+  };
+
+  const handleFileView = (data: any) => {
+    console.log('查看文件：', data.name);
   };
 
   useEffect(() => {
@@ -41,14 +68,19 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
       // 发起请求了
       handleGetObjects();
     }
-  }, [connection]);
+  }, [connection, curPrefix]);
+
+  useEffect(() => {
+    const instance = new PathHistory({ path: curPrefix });
+    setPathHistory(instance);
+  }, []);
 
   return (
     <div className="viewer">
       <div className="viewer-path">
         <Flex gap={2}>
-          <Button disabled icon={<LeftOutlined />} />
-          <Button icon={<RightOutlined />} />
+          <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
+          <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
         </Flex>
         <div className="viewer-path-input">
           <Flex gap={4}>
@@ -85,7 +117,10 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
         </Flex>
       </div>
       <div className="viewer-content">
-        <TableContent />
+        {display === 'table' ? (
+          <TableContent data={dataList} onPrefixChange={handlePrefixChange} onFileView={handleFileView} />
+        ) : null}
+        {display === 'card' ? <CardContent /> : null}
       </div>
       <div className="viewer-footer">
         <span>已选 0 项，已拉取 200 项 </span>

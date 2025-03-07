@@ -51,6 +51,10 @@ export class BaseWindow {
       });
     }
 
+    if (options?.webPreferences?.devTools) {
+      this.browserWindow.webContents.openDevTools();
+    }
+
     return this.browserWindow;
   }
 

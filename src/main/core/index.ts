@@ -1,4 +1,4 @@
-import { app, ipcMain } from 'electron';
+import { app } from 'electron';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
 import Windows from '../windows';

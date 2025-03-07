@@ -12,7 +12,7 @@ export type Connection = {
 };
 
 // 账号连接的更新
-export const useConfigStore = create((set,get) => ({
+export const useConfigStore = create((set) => ({
   connections: [
     {
       id: 'xxxxxx-xxxx-000',
@@ -50,7 +50,7 @@ export const useConfigStore = create((set,get) => ({
       config: {
         accessKeyId: 'LTAI5tNo1REGXhswci9MwnQv',
         accessKeySecret: 'q7YbuV77iHZE89C6u7eQtFaqJUjnAY',
-        // region: 'oss-cn-hangzhou',
+        region: 'oss-cn-hangzhou',
         bucket: 'ape-resume-hz-prod',
       },
       createDate: '2023-05-05',
@@ -118,5 +118,5 @@ export const useConfigStore = create((set,get) => ({
         c.id === connection.id ? { ...connection, updateDate: new Date().toLocaleString() } : c,
       ),
     }));
-  }
+  },
 }));

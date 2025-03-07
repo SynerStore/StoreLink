@@ -29,7 +29,7 @@ export const getStoreInstance = (id: string) => {
       secretKey: config.accessKeySecret,
       bucket: config.bucket,
     });
-    storePool.set(id, store);
+    storePool.set(store.id, store);
     return store;
   }
 };

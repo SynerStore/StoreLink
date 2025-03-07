@@ -1,7 +1,10 @@
 import OSS from 'ali-oss';
+import mime from 'mime-types';
+import path from 'node:path';
 
 import { BaseStore } from '../baseStore';
-
+import { sucessResponse, errorResponse } from '../../utils';
+import { StoreObjectData } from '@/types';
 class OssStore extends BaseStore {
   public client: any;
   constructor(config: any) {
@@ -10,8 +13,8 @@ class OssStore extends BaseStore {
   }
 
   init(config: any) {
-    const { secretId, secretKey, bucket, id } = config;
-    this.id = id;
+    const { secretId, secretKey, bucket } = config;
+    this.id = `${secretId}-${secretKey}-${bucket}`;
     this.client = new OSS({
       accessKeyId: secretId, // 推荐使用环境变量获取；用户的 SecretId，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参考https://cloud.tencent.com/document/product/598/37140
       accessKeySecret: secretKey,
@@ -43,13 +46,40 @@ class OssStore extends BaseStore {
     }
   }
 
-  async list() {
+  async list({ prefix }: { prefix: string }) {
     try {
-      const result = await this.client.listV2({ 'max-keys': 1000 });
-      return result?.objects || [];
+      const result = await this.client.listV2({ 'max-keys': 1000, delimiter: '/', prefix });
+      if (result.res.status === 200) {
+        const { prefixes, objects } = result;
+        console.log('result:', result);
+        const dirs: StoreObjectData[] = (prefixes || []).map((prefix: string) => {
+          const basename = path.basename(prefix);
+          // console.log('basename', basename);
+          return {
+            name: basename,
+            path: prefix,
+            encodePath: encodeURIComponent(prefix),
+            isDir: true,
+          };
+        });
+        const files: StoreObjectData[] = (objects || []).map((object: any) => {
+          const basename = path.basename(object.name);
+          return {
+            ...object,
+            name: basename,
+            path: object.name,
+            encodePath: encodeURIComponent(object.name),
+            isDir: false,
+            mime: mime.lookup(object.name),
+          };
+        });
+        const data = [...dirs, ...files];
+        return sucessResponse(data);
+      }
+      return errorResponse(result?.res?.statusMessage);
     } catch (err: any) {
       console.log(err);
-      return [];
+      return errorResponse(err.message);
     }
   }
 }

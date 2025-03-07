@@ -10,6 +10,7 @@ export class BaseStore {
 
   // 初始化
   init(config: any) {
+    console.log(config);
     this.client = {};
   }
 
@@ -20,7 +21,9 @@ export class BaseStore {
   getStoreInfo() {}
 
   // 列表
-  list() {}
+  list(props: any) {
+    console.log('props', props);
+  }
 
   // 删除
   delete() {}
