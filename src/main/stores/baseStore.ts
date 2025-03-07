@@ -26,11 +26,17 @@ export class BaseStore {
   }
 
   // 删除
-  delete() {}
+  async delete(params: any) {
+    console.log('params', params);
+  }
 
   // 上传
-  put() {}
+  async put(params: any) {
+    console.log('params', params);
+  }
 
   // 下载
-  get() {}
+  async get(params: any) {
+    console.log('params', params);
+  }
 }

@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Flex, Input, Dropdown, Segmented } from 'antd';
+import { Button, Flex, Input, Dropdown, Segmented, Upload } from 'antd';
 import { LeftOutlined, RightOutlined, MenuOutlined, ProductOutlined } from '@ant-design/icons';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
 import { useConfigStore } from '@/renderer/store';
-import { EChannels } from '@/types';
-import { PathHistory } from '../../../utils';
+import { PathHistory, events, storeRequest } from '@/renderer/utils';
 import './index.css';
 
 export type ObjectStoreViewerProps = {
@@ -24,11 +23,9 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
     return data;
   }, [props.id]);
 
-  const [canBack,canForward] = useMemo(()=>{
-    return [pathHistory?.canBack(),pathHistory?.canForward()] 
-  },[pathHistory,curPrefix])
-
-
+  const [canBack, canForward] = useMemo(() => {
+    return [pathHistory?.canBack(), pathHistory?.canForward()];
+  }, [pathHistory, curPrefix]);
 
   const handlePathBack = () => {
     const prefix = pathHistory?.back() as string;
@@ -41,16 +38,14 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
   };
 
   const handleGetObjects = async () => {
-    if (window?.['electronBridge']) {
-      const res = await window.electronBridge.dispatch(EChannels.storeRequest, {
-        method: 'list',
-        id: connection.id,
-        params: { prefix: curPrefix },
-      });
-      if (res.success) {
-        setDataList(res.data);
-        console.log(res.data);
-      }
+    const res = await storeRequest({
+      method: 'list',
+      id: connection.id,
+      params: { prefix: curPrefix },
+    });
+    if (res.success) {
+      setDataList(res.data);
+      console.log(res.data);
     }
   };
 
@@ -61,6 +56,19 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
 
   const handleFileView = (data: any) => {
     console.log('查看文件：', data.name);
+  };
+
+  const handleDownload = async (record: any) => {
+    console.log(record);
+    const targetPath = await events.getSingleDirPath({});
+    console.log(targetPath);
+    if (targetPath) {
+      const res = storeRequest({
+        method: 'get',
+        id: connection.id,
+        params: { filePath: record.path, targetPath },
+      });
+    }
   };
 
   useEffect(() => {
@@ -92,7 +100,10 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
       </div>
       <div className="viewer-actions">
         <Flex gap={4}>
-          <Button type="primary"> 上传 </Button>
+          <Upload>
+            {' '}
+            <Button type="primary"> 上传 </Button>
+          </Upload>
           <Button> 新建目录 </Button>
           <Button> 下载 </Button>
           <Dropdown.Button
@@ -118,7 +129,12 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
       </div>
       <div className="viewer-content">
         {display === 'table' ? (
-          <TableContent data={dataList} onPrefixChange={handlePrefixChange} onFileView={handleFileView} />
+          <TableContent
+            data={dataList}
+            onPrefixChange={handlePrefixChange}
+            onFileView={handleFileView}
+            onDownload={handleDownload}
+          />
         ) : null}
         {display === 'card' ? <CardContent /> : null}
       </div>

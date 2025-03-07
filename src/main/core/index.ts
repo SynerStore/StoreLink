@@ -3,6 +3,7 @@ import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electro
 
 import Windows from '../windows';
 import { storeRequestRegistry } from '../stores';
+import eventsRegistry from '../events/registry';
 import { logger, isDev } from '../utils';
 
 export default class Core {
@@ -34,7 +35,7 @@ export default class Core {
   private async afterAppReady() {
     this.windows = new Windows(this);
     this.resistry();
-    // this.installExtension();
+    this.installExtension();
 
     app.on('activate', () => {
       this.windows?.hiddenLaunchWindow();
@@ -44,6 +45,7 @@ export default class Core {
 
   private resistry() {
     storeRequestRegistry();
+    eventsRegistry();
   }
 
   private async installExtension() {

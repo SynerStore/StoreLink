@@ -1,6 +1,7 @@
 import OSS from 'ali-oss';
 import mime from 'mime-types';
 import path from 'node:path';
+import fs from 'node:fs';
 
 import { BaseStore } from '../baseStore';
 import { sucessResponse, errorResponse } from '../../utils';
@@ -81,6 +82,15 @@ class OssStore extends BaseStore {
       console.log(err);
       return errorResponse(err.message);
     }
+  }
+
+  async get(params: any) {
+    const { filePath, targetPath } = params;
+    const targetFilePath = path.join(targetPath, path.basename(filePath));
+    const result = await this.client.getStream(filePath, {
+      timeout: 1000 * 60 * 60 * 24,
+    });
+    result.stream.pipe(fs.createWriteStream(targetFilePath));
   }
 }
 

@@ -1,5 +1,4 @@
-// @ts-ignore
-import type { Events } from './interface';
+import type { Events } from '../../types';
 
 const dispatch = window?.electronBridge?.dispatch;
 

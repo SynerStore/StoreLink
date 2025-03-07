@@ -1,8 +1,9 @@
 import { useLayoutEffect, useState } from 'react';
-import { Table } from 'antd';
+import { Table, Space, Button } from 'antd';
 
-import { EWindowSize } from '@/types';
+import { EWindowSize, EChannels } from '@/types';
 import FileIcon from '@/renderer/components/FileIcon';
+
 import './index.css';
 
 export type DataItem = {
@@ -20,11 +21,12 @@ export type TableContentProps = {
   data: any[];
   onPrefixChange: (prefix: string) => void;
   onFileView: (data: any) => void;
+  onDownload: (data: any) => void;
 };
 
 const TableContent = (props: TableContentProps) => {
   const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 196 - 55);
-  const { data, onPrefixChange, onFileView } = props;
+  const { data, onPrefixChange, onFileView, onDownload } = props;
 
   const columns = [
     {
@@ -63,6 +65,20 @@ const TableContent = (props: TableContentProps) => {
         return val || '--';
       },
     },
+    {
+      title: '操作',
+      key: 'actions',
+      width: 180,
+      render: (_val: string, record: any) => {
+        return (
+          <Space>
+            <Button type="link" size="small" onClick={() => onDownload(record)}>
+              下载
+            </Button>
+          </Space>
+        );
+      },
+    },
   ];
 
   const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: DataItem[]) => {
@@ -78,7 +94,7 @@ const TableContent = (props: TableContentProps) => {
       <Table
         rowKey={'name'}
         size="small"
-        rowSelection={{ type: 'checkbox' ,columnWidth:40, onChange: handleSelectChange }}
+        rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
         virtual={true}
         scroll={{ y: tableScrollHight }}
         dataSource={data}

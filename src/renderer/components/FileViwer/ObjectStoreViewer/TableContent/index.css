@@ -15,6 +15,9 @@
 
     span {
       color: #000000;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 
