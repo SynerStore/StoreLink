@@ -4,7 +4,7 @@ import { LeftOutlined, RightOutlined, MenuOutlined, ProductOutlined, DownOutline
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import CreateFolderButton from '../../CreateFolderButton';
+import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
 import { useConfigStore } from '@/renderer/store';
 import { PathHistory, events, storeRequest } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
@@ -93,9 +93,25 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
     });
   };
 
+  const handleDelete = async (files: any) => {
+    const deletFiles = Array.isArray(files) ? files : [files];
+    storeRequest({
+      method: 'delete',
+      id: connection.id,
+      params: { deletFiles },
+    });
+  };
+
+  const handleRename = async (fileInfo: any, newName: string) => {
+    storeRequest({
+      method: 'rename',
+      id: connection.id,
+      params: { fileInfo, newName },
+    });
+  };
+
   useEffect(() => {
     if (connection) {
-      // 发起请求了
       handleGetObjects();
     }
   }, [connection, curPrefix]);
@@ -125,7 +141,9 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
           <Button type="primary" onClick={handleUpload}>
             上传
           </Button>
-          <CreateFolderButton onCreateFolder={handlePutFolder} />
+          <FolderCreateWrap onCreateFolder={handlePutFolder}>
+            <Button> 新建目录 </Button>
+          </FolderCreateWrap>
           <Button> 下载 </Button>
           <Dropdown
             menu={{
@@ -158,6 +176,8 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
             onPrefixChange={handlePrefixChange}
             onFileView={handleFileView}
             onDownload={handleDownload}
+            onDelete={handleDelete}
+            onRename={handleRename}
           />
         ) : null}
         {display === 'card' ? <CardContent /> : null}

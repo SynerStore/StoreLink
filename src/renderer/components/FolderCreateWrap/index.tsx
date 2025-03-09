@@ -1,11 +1,12 @@
 import { Fragment, useState } from 'react';
-import { Modal, Button, Form, Input } from 'antd';
+import { Modal, Form, Input } from 'antd';
 
-export type CreateFolderButtonProps = {
+export type FolderCreateWrapProps = {
   onCreateFolder: (val: string) => void;
+  children?: React.ReactNode;
 };
-const CreateFolderButton = (props: CreateFolderButtonProps) => {
-  const { onCreateFolder } = props;
+const FileRenameWrap = (props: FolderCreateWrapProps) => {
+  const { onCreateFolder, children } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const handleOk = async () => {
@@ -27,9 +28,9 @@ const CreateFolderButton = (props: CreateFolderButtonProps) => {
           </Form.Item>
         </Form>
       </Modal>
-      <Button onClick={() => setIsModalOpen(true)}>新建目录</Button>
+      <span onClick={() => setIsModalOpen(true)}>{children}</span>
     </Fragment>
   );
 };
 
-export default CreateFolderButton;
+export default FileRenameWrap;

@@ -54,10 +54,8 @@ class OssStore extends BaseStore {
       const result = await this.client.listV2({ 'max-keys': 1000, delimiter: '/', prefix });
       if (result.res.status === 200) {
         const { prefixes, objects } = result;
-        // console.log('result:', result);
         const dirs: StoreObjectData[] = (prefixes || []).map((prefix: string) => {
           const basename = path.basename(prefix);
-          // console.log('basename', basename);
           return {
             name: basename,
             path: prefix,
@@ -186,6 +184,79 @@ class OssStore extends BaseStore {
     const remotePath = path.join(targetPath, folderName, '/'); // 拼接远程路径
     const result = await this.client.put(remotePath, Buffer.from(''));
     console.log('上传结果', result.name);
+  }
+
+  private async listAll(prefix: string) {
+    let isTruncated = true;
+    let continuationToken = undefined;
+    const files = [];
+    while (isTruncated) {
+      const options: Record<string, any> = {
+        prefix,
+        maxKeys: 1000,
+      };
+      if (continuationToken) {
+        options.continuationToken = continuationToken;
+      }
+      const result = await this.client.listV2(options);
+      // 处理实际文件
+      if (result.objects && result.objects.length) {
+        for (const obj of result.objects) {
+          files.push(obj.name);
+        }
+      }
+      isTruncated = result.isTruncated;
+      continuationToken = result.nextContinuationToken;
+    }
+
+    return files;
+  }
+
+  async delete(params: any) {
+    const { deletFiles } = params;
+    const fileNames = [];
+    for (const file of deletFiles) {
+      if (file.isDir) {
+        const names = await this.listAll(file.path);
+        fileNames.push(...names);
+      } else {
+        fileNames.push(file.name);
+      }
+    }
+    return await this.deleteMulti(fileNames);
+  }
+
+  private async deleteMulti(fileNames: string[]) {
+    const promiseStack = [];
+    for (let i = 0; i < fileNames.length; i += 1000) {
+      const chunk = fileNames.slice(i, i + 1000);
+      promiseStack.push(this.client.deleteMulti(chunk));
+    }
+    await Promise.all(promiseStack);
+  }
+
+  async rename(params: any) {
+    const { fileInfo, newName } = params;
+    // oss 对象本身不支持重命名，仅支持 copy + delete
+    if (fileInfo.isDir) {
+      await this.renameFolder(fileInfo, newName);
+    } else {
+      const parentPath = path.dirname(fileInfo.path);
+      const rennamePath = path.join(parentPath, newName);
+      await this.client.copy(rennamePath, fileInfo.path);
+      await this.client.delete(fileInfo.path);
+    }
+  }
+
+  private async renameFolder(fileInfo: any, newName: string) {
+    const parentPath = path.dirname(fileInfo.path);
+    const rennamePath = path.join(parentPath, newName, '/');
+    const files = await this.listAll(fileInfo.path);
+    for (const file of files) {
+      const newFilePath = file.replace(fileInfo.path, rennamePath);
+      await this.client.copy(newFilePath, file);
+      await this.client.delete(file);
+    }
   }
 }
 

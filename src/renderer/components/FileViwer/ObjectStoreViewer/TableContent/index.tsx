@@ -2,8 +2,10 @@ import { useLayoutEffect, useState } from 'react';
 import { Table, Space, Button } from 'antd';
 import dayjs from 'dayjs';
 
-import { EWindowSize } from '@/types';
+import { EWindowSize, OssStorageClassMap, EOssStorageClass } from '@/types';
 import FileIcon from '@/renderer/components/FileIcon';
+import FileRenameWrap from '@/renderer/components/FileRenameWrap';
+import FileDeteleWrap from '@/renderer/components/FileDeteleWrap';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
@@ -23,12 +25,14 @@ export type TableContentProps = {
   loading: boolean;
   onPrefixChange: (prefix: string) => void;
   onFileView: (data: any) => void;
-  onDownload: (data: any) => void;
+  onDownload: (data: any) => Promise<void>;
+  onDelete: (data: any) => Promise<void>;
+  onRename: (data: any, newName: string) => Promise<void>;
 };
 
 const TableContent = (props: TableContentProps) => {
   const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 196 - 55);
-  const { data, onPrefixChange, onFileView, onDownload, loading } = props;
+  const { data, onPrefixChange, onFileView, onDownload, loading, onRename, onDelete } = props;
 
   const columns = [
     {
@@ -60,6 +64,14 @@ const TableContent = (props: TableContentProps) => {
       },
     },
     {
+      title: '存储类型',
+      dataIndex: 'storageClass',
+      key: 'storageClass',
+      render: (val: undefined | EOssStorageClass) => {
+        return val ? OssStorageClassMap[val] : '--';
+      },
+    },
+    {
       title: '修改时间',
       dataIndex: 'lastModified',
       key: 'lastModified',
@@ -70,13 +82,26 @@ const TableContent = (props: TableContentProps) => {
     {
       title: '操作',
       key: 'actions',
-      width: 180,
+      // width: 180,
       render: (_val: string, record: any) => {
         return (
           <Space>
-            <Button type="link" size="small" onClick={() => onDownload(record)}>
+            <Button color="default" variant="text" size="small">
+              详情
+            </Button>
+            <Button color="default" variant="text" size="small" onClick={() => onDownload(record)}>
               下载
             </Button>
+            <FileRenameWrap name={record.name} onRename={(newName: string) => onRename(record, newName)}>
+              <Button color="default" variant="text" size="small">
+                重命名
+              </Button>
+            </FileRenameWrap>
+            <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
+              <Button color="danger" variant="text" size="small">
+                删除
+              </Button>
+            </FileDeteleWrap>
           </Space>
         );
       },
