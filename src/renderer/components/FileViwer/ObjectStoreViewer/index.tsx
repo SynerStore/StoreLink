@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Flex, Input, Dropdown, Segmented, Upload } from 'antd';
-import { LeftOutlined, RightOutlined, MenuOutlined, ProductOutlined } from '@ant-design/icons';
+import { Button, Flex, Input, Dropdown, Segmented } from 'antd';
+import { LeftOutlined, RightOutlined, MenuOutlined, ProductOutlined, DownOutlined } from '@ant-design/icons';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
+import CreateFolderButton from '../../CreateFolderButton';
 import { useConfigStore } from '@/renderer/store';
 import { PathHistory, events, storeRequest } from '@/renderer/utils';
+import { useLoading } from '@/renderer/hooks';
 import './index.css';
 
 export type ObjectStoreViewerProps = {
@@ -13,9 +15,9 @@ export type ObjectStoreViewerProps = {
 };
 const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
   const [dataList, setDataList] = useState([]);
+  const { loading, setLoading } = useLoading(false);
   const [display, setDisplay] = useState<'table' | 'card'>('table');
   const connections = useConfigStore((state: any) => state.connections);
-  const [prefixs, setPrefixs] = useState<string[]>([]);
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const connection = useMemo(() => {
@@ -38,11 +40,13 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
   };
 
   const handleGetObjects = async () => {
+    setLoading(true);
     const res = await storeRequest({
       method: 'list',
       id: connection.id,
       params: { prefix: curPrefix },
     });
+    setLoading(false);
     if (res.success) {
       setDataList(res.data);
       console.log(res.data);
@@ -59,16 +63,34 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
   };
 
   const handleDownload = async (record: any) => {
-    console.log(record);
     const targetPath = await events.getSingleDirPath({});
-    console.log(targetPath);
     if (targetPath) {
-      const res = storeRequest({
+      storeRequest({
         method: 'get',
         id: connection.id,
-        params: { filePath: record.path, targetPath },
+        params: { fileInfo: record, targetPath },
       });
     }
+  };
+
+  const handleUpload = async () => {
+    // 选择文件夹
+    const localPaths = await events.getMultDirAndFilePath({});
+    if (localPaths && localPaths.length) {
+      storeRequest({
+        method: 'put',
+        id: connection.id,
+        params: { localPaths, targetPath: curPrefix },
+      });
+    }
+  };
+
+  const handlePutFolder = async (folderName: string) => {
+    storeRequest({
+      method: 'putFolder',
+      id: connection.id,
+      params: { folderName, targetPath: curPrefix },
+    });
   };
 
   useEffect(() => {
@@ -94,19 +116,18 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
           <Flex gap={4}>
             <Input style={{ width: '100%' }} />
             <Input.Search style={{ width: '240px' }} />
-            <Button> 刷新 </Button>
+            <Button onClick={handleGetObjects}> 刷新 </Button>
           </Flex>
         </div>
       </div>
       <div className="viewer-actions">
         <Flex gap={4}>
-          <Upload>
-            {' '}
-            <Button type="primary"> 上传 </Button>
-          </Upload>
-          <Button> 新建目录 </Button>
+          <Button type="primary" onClick={handleUpload}>
+            上传
+          </Button>
+          <CreateFolderButton onCreateFolder={handlePutFolder} />
           <Button> 下载 </Button>
-          <Dropdown.Button
+          <Dropdown
             menu={{
               items: [
                 { key: 'copy', label: '复制到' },
@@ -115,8 +136,10 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
               ],
             }}
           >
-            更多
-          </Dropdown.Button>
+            <Button icon={<DownOutlined />} iconPosition="end">
+              更多
+            </Button>
+          </Dropdown>
         </Flex>
         <Flex gap={4}>
           <Segmented
@@ -130,6 +153,7 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
       <div className="viewer-content">
         {display === 'table' ? (
           <TableContent
+            loading={loading}
             data={dataList}
             onPrefixChange={handlePrefixChange}
             onFileView={handleFileView}

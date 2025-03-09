@@ -1,4 +1,4 @@
-import type { Events } from '../../types';
+import { EChannels, Events } from '../../types';
 
 const dispatch = window?.electronBridge?.dispatch;
 
@@ -7,7 +7,7 @@ export const events: Events = new Proxy(
   {
     get(_target, key: keyof Events) {
       return (params: any): Promise<any> =>
-        dispatch('x_event', {
+        dispatch(EChannels.eventsX, {
           eventName: key,
           data: params,
         });

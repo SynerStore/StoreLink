@@ -23,7 +23,7 @@ const config: Configuration = {
   resolve: {
     extensions: ['...', '.ts', '.js'],
     alias: {
-      '@': path.resolve(ROOT, 'src', 'main'),
+      '@': path.resolve(ROOT, 'src'),
     },
   },
   devtool: isDev ? 'source-map' : false,

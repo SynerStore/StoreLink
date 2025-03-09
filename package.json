@@ -61,6 +61,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-refresh": "^0.16.0",
+    "readdirp": "^4.1.2",
     "uuid": "^11.1.0",
     "zustand": "^5.0.3"
   }

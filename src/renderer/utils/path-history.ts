@@ -29,6 +29,7 @@ export class PathHistory {
   go(path: string): string {
     this.curPath = path;
     this.history.push(path);
+    console.log('this.curPath', this.curPath);
     return this.curPath;
   }
 

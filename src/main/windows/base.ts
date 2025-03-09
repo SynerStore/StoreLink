@@ -9,9 +9,7 @@ export const DefaultConfig = {
   show: false,
   webPreferences: {
     devTools: isDev,
-    nodeIntegration: true,
-    enableRemoteModule: true,
-    contextIsolation: false,
+    contextIsolation: true,
   },
 };
 

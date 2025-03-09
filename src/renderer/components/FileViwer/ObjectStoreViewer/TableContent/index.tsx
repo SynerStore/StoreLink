@@ -1,9 +1,10 @@
 import { useLayoutEffect, useState } from 'react';
 import { Table, Space, Button } from 'antd';
+import dayjs from 'dayjs';
 
-import { EWindowSize, EChannels } from '@/types';
+import { EWindowSize } from '@/types';
 import FileIcon from '@/renderer/components/FileIcon';
-
+import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
 export type DataItem = {
@@ -19,6 +20,7 @@ export type DataItem = {
 };
 export type TableContentProps = {
   data: any[];
+  loading: boolean;
   onPrefixChange: (prefix: string) => void;
   onFileView: (data: any) => void;
   onDownload: (data: any) => void;
@@ -26,7 +28,7 @@ export type TableContentProps = {
 
 const TableContent = (props: TableContentProps) => {
   const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 196 - 55);
-  const { data, onPrefixChange, onFileView, onDownload } = props;
+  const { data, onPrefixChange, onFileView, onDownload, loading } = props;
 
   const columns = [
     {
@@ -54,7 +56,7 @@ const TableContent = (props: TableContentProps) => {
       dataIndex: 'size',
       key: 'size',
       render: (val: number) => {
-        return val || '--';
+        return val ? calculateSize(val) : '--';
       },
     },
     {
@@ -62,7 +64,7 @@ const TableContent = (props: TableContentProps) => {
       dataIndex: 'lastModified',
       key: 'lastModified',
       render: (val: string) => {
-        return val || '--';
+        return val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : '--';
       },
     },
     {
@@ -94,6 +96,7 @@ const TableContent = (props: TableContentProps) => {
       <Table
         rowKey={'name'}
         size="small"
+        loading={loading}
         rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
         virtual={true}
         scroll={{ y: tableScrollHight }}

@@ -17,7 +17,7 @@ export const getSingleFilePath = async (options: OpenDialogOptions = {}) => {
   const result = await dialog.showOpenDialog({
     defaultPath: downloadPath,
     ...options,
-    properties: ['openFile'],
+    properties: ['openFile', 'showHiddenFiles'],
   });
 
   if (result.canceled) {
@@ -38,4 +38,17 @@ export const getSingleDirPath = async (options: OpenDialogOptions = {}) => {
     return null;
   }
   return result.filePaths[0];
+};
+
+export const getMultDirAndFilePath = async (options: OpenDialogOptions = {}) => {
+  const downloadPath = getDownloadsPath();
+  const result = await dialog.showOpenDialog({
+    defaultPath: downloadPath,
+    ...options,
+    properties: ['openFile', 'openDirectory', 'multiSelections', 'showHiddenFiles'],
+  });
+  if (result.canceled) {
+    return null;
+  }
+  return result.filePaths;
 };
