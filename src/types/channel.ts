@@ -9,8 +9,10 @@ export enum EChannels {
   // store
   storeRequest = 'storeRequest',
 
+
   // events
   eventsX = "eventsX"
+  
 }
 
 export type ChannelData = {

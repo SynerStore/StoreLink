@@ -4,20 +4,17 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { Buffer } from 'node:buffer';
 
-import { BaseStore } from '../baseStore';
 import { sucessResponse, errorResponse, readDirectoryRecursive, isDirectory } from '@/main/utils';
 import { StoreObjectData } from '@/types';
 
-class OssStore extends BaseStore {
+class OssStore {
   public client: any;
   constructor(config: any) {
-    super(config);
     this.init(config);
   }
 
   init(config: any) {
     const { secretId, secretKey, bucket } = config;
-    this.id = `${secretId}-${secretKey}-${bucket}`;
     this.client = new OSS({
       accessKeyId: secretId, // 推荐使用环境变量获取；用户的 SecretId，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参考https://cloud.tencent.com/document/product/598/37140
       accessKeySecret: secretKey,

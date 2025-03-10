@@ -3,10 +3,19 @@ import { create } from 'zustand';
 export type Tab = {
   id: string;
   name: string;
+  connectionId: string;
+};
+
+type DataType = {
+  activeTab: string;
+  tabs: Tab[];
+  addTab: (v: Tab) => void;
+  selectTab: (v: string) => void;
+  removeTab: (v: Tab) => void;
 };
 
 // 账号连接的更新
-export const useTabsStore = create((set) => ({
+export const useTabsStore = create<DataType>((set) => ({
   activeTab: 'home',
   tabs: [], // 连接
   addTab: (tab: Tab) => {

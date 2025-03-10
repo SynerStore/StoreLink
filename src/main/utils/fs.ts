@@ -1,6 +1,7 @@
-import fs from 'node:fs/promises';
+import fs from 'fs-extra';
 import path from 'node:path';
 import { readdirpPromise } from 'readdirp';
+import crypto from 'node:crypto';
 export const isFile = async (path: string) => {
   try {
     const stat = await fs.stat(path);
@@ -17,6 +18,10 @@ export const isDirectory = async (path: string) => {
   } catch (error) {
     return false;
   }
+};
+
+export const isObjectFolder = (key: string) => {
+  return key.endsWith('/');
 };
 
 /**
@@ -55,4 +60,17 @@ export const readDirectoryRecursive = async (roots: string | string[], basename:
   }
 
   return paths;
+};
+
+export const createFileSHA256 = async (filePath: string) => {
+  const hash = crypto.createHash('sha256');
+  const fileStream = fs.createReadStream(filePath);
+  fileStream.on('data', (chunk) => {
+    hash.update(chunk);
+  });
+  await new Promise((resolve, reject) => {
+    fileStream.on('end', () => resolve(null));
+    fileStream.on('error', reject);
+  });
+  return hash.digest('hex');
 };

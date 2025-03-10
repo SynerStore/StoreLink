@@ -13,7 +13,7 @@ import './index.css';
 export type ObjectStoreViewerProps = {
   id: string;
 };
-const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
+const OssViewer = (props: ObjectStoreViewerProps) => {
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
   const [display, setDisplay] = useState<'table' | 'card'>('table');
@@ -189,4 +189,4 @@ const ObjectStoreViewer = (props: ObjectStoreViewerProps) => {
   );
 };
 
-export default ObjectStoreViewer;
+export default OssViewer;

@@ -4,13 +4,21 @@ import { Splitter } from 'antd';
 import Header from '@/renderer/components/Header';
 import Sider from '@/renderer/components/Sider';
 import StoreSider from '@/renderer/components/StoreSider';
-import FileViewTabs from '@/renderer/components/FileViewTabs';
+import StoreViewerTabs from '@/renderer/components/StoreViewerTabs';
+import { useConfigStore } from '@/renderer/store';
 import './index.css';
 
 const App = () => {
+  const configStore = useConfigStore();
+
+  const handleOnready = () => {
+    configStore.initializeData();
+  };
+
   useEffect(() => {
     // setTimeout(() => events.windowRenderReady(), 1000);
-  });
+    handleOnready();
+  }, []);
 
   return (
     <div className="container">
@@ -23,7 +31,7 @@ const App = () => {
               <StoreSider />
             </Splitter.Panel>
             <Splitter.Panel>
-              <FileViewTabs />
+              <StoreViewerTabs />
             </Splitter.Panel>
           </Splitter>
         </div>

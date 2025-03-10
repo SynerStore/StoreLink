@@ -7,20 +7,29 @@ import './index.css';
 const Search = Input.Search;
 const StoreSider = () => {
   const connections = useConfigStore((state: any) => state.connections);
-  const { tabs, activeTab, addTab } = useTabsStore();
+  const { activeTab, addTab } = useTabsStore();
 
   const items = useMemo(() => {
-    return connections.map((item: any) => {
+    return connections.map((connection: any) => {
       return {
-        key: item.id,
-        label: item.name,
+        key: connection.id,
+        label: connection.name,
+        children: connection.buckets.map((bucket: any) => {
+          return {
+            key: bucket,
+            label: bucket,
+          };
+        }),
       };
     });
   }, [connections]);
-  const handleClick = ({ key }: any) => {
+
+  const handleClick = ({ keyPath }: any) => {
+    const [name, connectionId] = keyPath; // 解构层级
     addTab({
-      id: key,
-      name: key,
+      id: `${connectionId}-${name}`,
+      name: name,
+      connectionId: connectionId,
     });
   };
 

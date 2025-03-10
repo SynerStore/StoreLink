@@ -3,9 +3,9 @@ import { Tabs } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 
 import { useTabsStore } from '@/renderer/store';
-import FileViewer from '../FileViwer';
+import StoreViewer from '../StoreViewer';
 import HomeTab from './HomeTab';
-const FileViweTabs = () => {
+const StoreViewerTabs = () => {
   const { tabs, activeTab, removeTab, selectTab }: any = useTabsStore();
 
   const items = useMemo(() => {
@@ -13,7 +13,7 @@ const FileViweTabs = () => {
       return {
         label: tab.name,
         key: tab.id,
-        children: <FileViewer id={tab.id} />,
+        children: <StoreViewer data={tab} />,
       };
     });
 
@@ -52,4 +52,4 @@ const FileViweTabs = () => {
   );
 };
 
-export default FileViweTabs;
+export default StoreViewerTabs;

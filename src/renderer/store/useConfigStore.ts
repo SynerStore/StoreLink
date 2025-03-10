@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 
+import { events } from '@/renderer/utils';
+
 export type Connection = {
   id: string;
   type: string;
@@ -11,96 +13,27 @@ export type Connection = {
   subStores?: any[];
 };
 
+type DataState = {
+  connections: Connection[];
+  loading: boolean;
+  initializeData: () => Promise<void>;
+  removeConnection: (v: Connection) => void;
+  updateConnection: (v: Connection) => void;
+  addConnection: (v: Connection) => void;
+};
+
 // 账号连接的更新
-export const useConfigStore = create((set) => ({
-  connections: [
-    {
-      id: 'xxxxxx-xxxx-000',
-      type: 'oss',
-      brand: 'aliyun',
-      name: 'ape-resume-hz-dev',
-      config: {
-        accessKeyId: 'LTAI5tNo1REGXhswci9MwnQv',
-        accessKeySecret: 'q7YbuV77iHZE89C6u7eQtFaqJUjnAY',
-        region: 'oss-cn-hangzhou',
-        bucket: 'ape-resume-hz-dev',
-      },
-      createDate: '2023-05-05',
-      updateDate: '2023-05-05',
-    },
-    {
-      id: 'xxxxxx-xxxx-111',
-      type: 'oss',
-      brand: 'aliyun',
-      name: 'chrissong-web-bucket',
-      config: {
-        accessKeyId: 'LTAI5tNo1REGXhswci9MwnQv',
-        accessKeySecret: 'q7YbuV77iHZE89C6u7eQtFaqJUjnAY',
-        region: 'oss-cn-hangzhou',
-        bucket: 'chrissong-web-bucket',
-      },
-      createDate: '2023-05-05',
-      updateDate: '2023-05-05',
-    },
-    {
-      id: 'xxxxxx-xxxx-222',
-      type: 'oss',
-      brand: 'aliyun',
-      name: 'ape-resume-hz-prod',
-      config: {
-        accessKeyId: 'LTAI5tNo1REGXhswci9MwnQv',
-        accessKeySecret: 'q7YbuV77iHZE89C6u7eQtFaqJUjnAY',
-        region: 'oss-cn-hangzhou',
-        bucket: 'ape-resume-hz-prod',
-      },
-      createDate: '2023-05-05',
-      updateDate: '2023-05-05',
-    },
-    {
-      id: 'xxxxxx-xxxx-333',
-      type: 'cos',
-      brand: 'tengxunyun',
-      name: '91ape-1309020861',
-      config: {
-        accessKeyId: 'LTAI5tNo1REGXhswci9MwnQv',
-        accessKeySecret: 'q7YbuV77iHZE89C6u7eQtFaqJUjnAY',
-        // region: 'oss-cn-hangzhou',
-        bucket: '91ape-1309020861',
-      },
-
-      createDate: '2023-05-05',
-      updateDate: '2023-05-05',
-    },
-    {
-      id: 'xxxxxx-xxxx-444',
-      type: 'cos',
-      brand: 'tengxunyun',
-      name: '91ape-assets-1309020861',
-      config: {
-        accessKeyId: 'AKIDmPmtkLgla9TXMv73i7G9m9F3bstd6JFu',
-        accessKeySecret: 'hFYcQxOgjV4OSVTE3iBPN8dsrb6LK2BA',
-        // region: 'oss-cn-hangzhou',
-        bucket: '91ape-assets-1309020861',
-      },
-
-      createDate: '2023-05-05',
-      updateDate: '2023-05-05',
-    },
-    {
-      id: 'xxxxxx-xxxx-555',
-      type: 'cos',
-      brand: 'tengxunyun',
-      name: '91ape-dev-1309020861',
-      config: {
-        accessKeyId: 'AKIDmPmtkLgla9TXMv73i7G9m9F3bstd6JFu',
-        accessKeySecret: 'hFYcQxOgjV4OSVTE3iBPN8dsrb6LK2BA',
-        // region: 'oss-cn-hangzhou',
-        bucket: '91ape-dev-1309020861',
-      },
-      createDate: '2023-05-05',
-      updateDate: '2023-05-05',
-    },
-  ], // 连接
+export const useConfigStore = create<DataState>((set) => ({
+  connections: [], // 连接
+  loading: false,
+  initializeData: async () => {
+    set(() => ({ loading: true }));
+    const res = await events.getConfData();
+    set(() => ({ loading: true }));
+    if (res) {
+      return set(() => ({ connections: res.connections }));
+    }
+  },
   addConnection: (connection: Connection) => {
     return set((state: any) => ({
       connections: [

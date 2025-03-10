@@ -15,3 +15,14 @@ export type StoreObjectData = {
   url?: String;
   mini: String;
 };
+
+export interface TS3Object {
+  key: string | undefined;
+  name: string | undefined;
+  lastModified: Date | undefined;
+  size: number | undefined;
+  etag: string | undefined;
+  storageClass: string | undefined;
+  isDirectory?: boolean;
+  mime?: string | false;
+}
