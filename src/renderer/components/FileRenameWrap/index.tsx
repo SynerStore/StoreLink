@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input } from '@arco-design/web-react';
 
 export type FileRenameWrapProps = {
   onRename: (val: string) => void;
@@ -13,7 +13,8 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
   const handleOk = async () => {
     // 空值校验、重复名称校验等
     try {
-      const values = await form.validateFields();
+      const values = await form.validate();
+      debugger
       onRename(values.newName);
       setIsModalOpen(false);
     } catch (err) {
@@ -23,12 +24,12 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
 
   return (
     <Fragment>
-      <Modal title="重命名" open={isModalOpen} onOk={handleOk} onCancel={() => setIsModalOpen(false)}>
+      <Modal title="重命名" visible={isModalOpen} onOk={handleOk} onCancel={() => setIsModalOpen(false)}>
         <Form initialValues={{ newName: name }} form={form}>
           <Form.Item label="原名称">
             <span> {name} </span>
           </Form.Item>
-          <Form.Item label="重命名" name="newName" rules={[{ required: true, message: '请输入重命名!' }]}>
+          <Form.Item label="重命名" field="newName" rules={[{ required: true, message: '请输入重命名!' }]}>
             <Input placeholder="请输入重命名" />
           </Form.Item>
         </Form>

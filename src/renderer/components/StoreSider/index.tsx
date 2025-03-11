@@ -1,10 +1,13 @@
 import { useMemo } from 'react';
-import { Menu, Input } from 'antd';
+import { Menu, Input } from '@arco-design/web-react';
 
 import { useConfigStore, useTabsStore } from '@/renderer/store';
 import './index.css';
 
+const MenuItem = Menu.Item;
+const SubMenu = Menu.SubMenu;
 const Search = Input.Search;
+
 const StoreSider = () => {
   const connections = useConfigStore((state: any) => state.connections);
   const { activeTab, addTab } = useTabsStore();
@@ -24,7 +27,7 @@ const StoreSider = () => {
     });
   }, [connections]);
 
-  const handleClick = ({ keyPath }: any) => {
+  const handleClick = (_key: string, _event: any, keyPath: any) => {
     const [name, connectionId] = keyPath; // 解构层级
     addTab({
       id: `${connectionId}-${name}`,
@@ -41,14 +44,17 @@ const StoreSider = () => {
       </div>
 
       <div className="store-sider-content">
-        <Menu
-          onClick={handleClick}
-          inlineIndent={16}
-          style={{ width: '100%' }}
-          selectedKeys={[activeTab]}
-          mode="inline"
-          items={items}
-        />
+        <Menu onClickMenuItem={handleClick} style={{ width: '100%' }} selectedKeys={[activeTab]}>
+          {items.map((item: any) => {
+            return (
+              <SubMenu key={item.key} title={item.label}>
+                {item.children.map((child: any) => {
+                  return <MenuItem key={child.key}> {child.label}</MenuItem>;
+                })}
+              </SubMenu>
+            );
+          })}
+        </Menu>
       </div>
     </div>
   );

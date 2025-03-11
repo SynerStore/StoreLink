@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react';
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input } from '@arco-design/web-react';
 
 export type FolderCreateWrapProps = {
   onCreateFolder: (val: string) => void;
@@ -11,7 +11,8 @@ const FileRenameWrap = (props: FolderCreateWrapProps) => {
   const [form] = Form.useForm();
   const handleOk = async () => {
     try {
-      const values = await form.validateFields();
+      const values = await form.validate();
+      debugger
       onCreateFolder(values.folderName);
       setIsModalOpen(false);
     } catch (err) {
@@ -21,9 +22,9 @@ const FileRenameWrap = (props: FolderCreateWrapProps) => {
 
   return (
     <Fragment>
-      <Modal title="新建目录" open={isModalOpen} onOk={handleOk} onCancel={() => setIsModalOpen(false)}>
+      <Modal title="新建目录" visible={isModalOpen} onOk={handleOk} onCancel={() => setIsModalOpen(false)}>
         <Form initialValues={{ folderName: '' }} form={form}>
-          <Form.Item label="目录名称" name="folderName" rules={[{ required: true, message: '请输入目录名称!' }]}>
+          <Form.Item label="目录名称" field="folderName" rules={[{ required: true, message: '请输入目录名称!' }]}>
             <Input placeholder="请输入目录名称" />
           </Form.Item>
         </Form>

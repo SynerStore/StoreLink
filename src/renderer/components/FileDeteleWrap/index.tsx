@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Modal } from 'antd';
+import { Modal } from '@arco-design/web-react';
 
 export type FileRenameWrapProps = {
   fileInfo: any;
@@ -8,11 +8,10 @@ export type FileRenameWrapProps = {
 };
 const FileDeteleWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProps) => {
   const { fileInfo, children, onDelete } = props;
-  const [modal, contextHolder] = Modal.useModal(); // hooks 方法有利于使用国际化等动态变量
+
   const handleConfirm = () => {
-    modal.confirm({
+    Modal.confirm({
       title: '删除',
-      width: 600,
       content: (
         <div>
           <h4> 删除操作不能恢复，确定删除选中的文件或文件夹吗？</h4>
@@ -29,7 +28,6 @@ const FileDeteleWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
 
   return (
     <Fragment>
-      {contextHolder}
       <span onClick={handleConfirm}>{children}</span>
     </Fragment>
   );

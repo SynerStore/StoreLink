@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
-import { Table, Space, Button } from 'antd';
+import { Table, Space, Button } from '@arco-design/web-react';
 import dayjs from 'dayjs';
 
 import { EWindowSize, OssStorageClassMap, EOssStorageClass } from '@/types';
@@ -86,19 +86,19 @@ const TableContent = (props: TableContentProps) => {
       render: (_val: string, record: any) => {
         return (
           <Space>
-            <Button color="default" variant="text" size="small">
+            <Button color="default" size="small">
               详情
             </Button>
-            <Button color="default" variant="text" size="small" onClick={() => onDownload(record)}>
+            <Button color="default" size="small" onClick={() => onDownload(record)}>
               下载
             </Button>
             <FileRenameWrap name={record.name} onRename={(newName: string) => onRename(record, newName)}>
-              <Button color="default" variant="text" size="small">
+              <Button color="default" size="small">
                 重命名
               </Button>
             </FileRenameWrap>
             <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
-              <Button color="danger" variant="text" size="small">
+              <Button color="danger" size="small">
                 删除
               </Button>
             </FileDeteleWrap>
@@ -123,9 +123,8 @@ const TableContent = (props: TableContentProps) => {
         size="small"
         loading={loading}
         rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
-        virtual={true}
         scroll={{ y: tableScrollHight }}
-        dataSource={data}
+        data={data}
         pagination={false}
         columns={columns}
       />

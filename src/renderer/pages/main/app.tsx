@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { Splitter } from 'antd';
 
 import Header from '@/renderer/components/Header';
 import Sider from '@/renderer/components/Sider';
@@ -26,14 +25,11 @@ const App = () => {
       <main className="main">
         <Sider />
         <div className="main-content">
-          <Splitter style={{ height: '100%' }}>
-            <Splitter.Panel defaultSize={240} min={240} max={320}>
-              <StoreSider />
-            </Splitter.Panel>
-            <Splitter.Panel>
-              <StoreViewerTabs />
-            </Splitter.Panel>
-          </Splitter>
+          <div style={{ width: 200 }}>
+            <StoreSider />
+          </div>
+
+          <StoreViewerTabs />
         </div>
       </main>
     </div>

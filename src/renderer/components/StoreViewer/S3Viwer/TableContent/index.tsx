@@ -1,14 +1,13 @@
 import { useLayoutEffect, useState } from 'react';
-import { Table, Space, Button } from 'antd';
+import { Table, Space, Button } from '@arco-design/web-react';
 import dayjs from 'dayjs';
 
-import { EWindowSize, OssStorageClassMap, EOssStorageClass ,TS3Object} from '@/types';
+import { EWindowSize, OssStorageClassMap, EOssStorageClass, TS3Object } from '@/types';
 import FileIcon from '@/renderer/components/FileIcon';
 import FileRenameWrap from '@/renderer/components/FileRenameWrap';
 import FileDeteleWrap from '@/renderer/components/FileDeteleWrap';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
-
 
 export type TableContentProps = {
   data: TS3Object[];
@@ -49,6 +48,7 @@ const TableContent = (props: TableContentProps) => {
       title: '大小',
       dataIndex: 'size',
       key: 'size',
+      width: 120,
       render: (val: number) => {
         return val ? calculateSize(val) : '--';
       },
@@ -57,6 +57,7 @@ const TableContent = (props: TableContentProps) => {
       title: '存储类型',
       dataIndex: 'storageClass',
       key: 'storageClass',
+      width: 180,
       render: (val: undefined | EOssStorageClass) => {
         return val ? OssStorageClassMap[val] : '--';
       },
@@ -65,6 +66,7 @@ const TableContent = (props: TableContentProps) => {
       title: '修改时间',
       dataIndex: 'lastModified',
       key: 'lastModified',
+      width: 200,
       render: (val: string) => {
         return val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : '--';
       },
@@ -72,23 +74,23 @@ const TableContent = (props: TableContentProps) => {
     {
       title: '操作',
       key: 'actions',
-      // width: 180,
+      width: 350,
       render: (_val: string, record: TS3Object) => {
         return (
           <Space>
-            <Button color="default" variant="text" size="small">
+            <Button color="default" size="small">
               详情
             </Button>
-            <Button color="default" variant="text" size="small" onClick={() => onDownload(record)}>
+            <Button color="default" size="small" onClick={() => onDownload(record)}>
               下载
             </Button>
             <FileRenameWrap name={record.name as string} onRename={(newName: string) => onRename(record, newName)}>
-              <Button color="default" variant="text" size="small">
+              <Button color="default" size="small">
                 重命名
               </Button>
             </FileRenameWrap>
             <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
-              <Button color="danger" variant="text" size="small">
+              <Button color="danger" size="small">
                 删除
               </Button>
             </FileDeteleWrap>
@@ -113,9 +115,9 @@ const TableContent = (props: TableContentProps) => {
         size="small"
         loading={loading}
         rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
-        virtual={true}
+        
         scroll={{ y: tableScrollHight }}
-        dataSource={data}
+        data={data}
         pagination={false}
         columns={columns}
       />

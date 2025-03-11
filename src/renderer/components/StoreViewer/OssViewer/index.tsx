@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Flex, Input, Dropdown, Segmented } from 'antd';
-import { LeftOutlined, RightOutlined, MenuOutlined, ProductOutlined, DownOutlined } from '@ant-design/icons';
+import { Button, Input, Dropdown, Space, Menu } from '@arco-design/web-react';
+import { LeftOutlined, RightOutlined,  DownOutlined } from '@ant-design/icons';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
@@ -124,20 +124,20 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
   return (
     <div className="viewer">
       <div className="viewer-path">
-        <Flex gap={2}>
+        <Space size={2}>
           <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
           <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
-        </Flex>
+        </Space>
         <div className="viewer-path-input">
-          <Flex gap={4}>
+          <Space size={4}>
             <Input style={{ width: '100%' }} />
             <Input.Search style={{ width: '240px' }} />
             <Button onClick={handleGetObjects}> 刷新 </Button>
-          </Flex>
+          </Space>
         </div>
       </div>
       <div className="viewer-actions">
-        <Flex gap={4}>
+        <Space size={4}>
           <Button type="primary" onClick={handleUpload}>
             上传
           </Button>
@@ -146,27 +146,25 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
           </FolderCreateWrap>
           <Button> 下载 </Button>
           <Dropdown
-            menu={{
-              items: [
-                { key: 'copy', label: '复制到' },
-                { key: 'move', label: '移动到' },
-                { key: 'remove', label: '删除' },
-              ],
-            }}
+            droplist={
+              <Menu>
+                <Menu.Item key="copy">复制到</Menu.Item>
+                <Menu.Item key="move">移动到</Menu.Item>
+                <Menu.Item key="remove">删除</Menu.Item>
+              </Menu>
+            }
           >
-            <Button icon={<DownOutlined />} iconPosition="end">
-              更多
-            </Button>
+            <Button icon={<DownOutlined />}>更多</Button>
           </Dropdown>
-        </Flex>
-        <Flex gap={4}>
-          <Segmented
+        </Space>
+        <Space size={4}>
+          {/* <Segmented
             options={[
               { value: 'List', icon: <MenuOutlined /> },
               { value: 'Kanban', icon: <ProductOutlined /> },
             ]}
-          />
-        </Flex>
+          /> */}
+        </Space>
       </div>
       <div className="viewer-content">
         {display === 'table' ? (
