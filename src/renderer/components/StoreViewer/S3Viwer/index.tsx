@@ -113,11 +113,11 @@ const S3Viwer = (props: S3ViwerProps) => {
     });
   };
 
-  const handleRename = async (fileInfo: any, newName: string) => {
+  const handleRename = async (record: any, newName: string) => {
     storeRequest({
       method: 'rename',
       id: connectionId,
-      params: { fileInfo, newName },
+      params: { bucketName, prefix: curPrefix, oldKey: record.key, newKey: newName },
     });
   };
 

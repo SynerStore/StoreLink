@@ -46,14 +46,15 @@ class S3Store {
         secretAccessKey: secretAccessKey,
       },
     });
-    // this.client.middlewareStack.add(
-    //   (next: any) => (args: any) => {
-    //     // 添加中间件
-    //     // console.log('Request Headers:', args.request.headers);
-    //     return next(args);
-    //   },
-    //   { step: 'build' },
-    // );
+    // 中间件
+    this.client.middlewareStack.add(
+      (next: any) => (args: any) => {
+        // 添加中间件
+        // console.log('Request Headers:', args.request.headers);
+        return next(args);
+      },
+      { step: 'build' },
+    );
   }
 
   async test() {
@@ -160,6 +161,7 @@ class S3Store {
       }
       return sucessResponse(result);
     } catch (err: any) {
+      console.error(err);
       return errorResponse(err.message);
     }
   }

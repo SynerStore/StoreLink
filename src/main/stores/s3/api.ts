@@ -264,7 +264,7 @@ export async function putMultiObjects(s3Client: S3.S3Client, params: PutMultiObj
   for (const localPath of allLocalPaths) {
     const filePath = localPath.fullPath;
     const remotePath = path.join(prefix, localPath.path);
-    debugger;
+
     await putObject(s3Client, {
       bucketName,
       key: remotePath,
@@ -282,18 +282,14 @@ export type DeleteFolderParams = {
 export async function deleteFolder(s3Client: S3.S3Client, params: DeleteFolderParams) {
   const { bucketName, key: prefix } = params; // key as prefix
   const { keys } = await listAllObjects(s3Client, { bucketName, prefix });
-  debugger;
   const deleteParams: S3.DeleteObjectsCommandInput = {
     Bucket: bucketName,
     Delete: {
-      Objects: keys.map((key) => ({ Key: key })),
-      Quiet: false,
+      Objects: [...keys.map((key) => ({ Key: key }))],
+      Quiet: true,
     },
   };
-  debugger;
-  console.log('deleteParams', JSON.stringify(deleteParams,null, 2) );
   const result = await s3Client.send(new S3.DeleteObjectsCommand(deleteParams));
-  debugger;
   return result;
 }
 
@@ -332,13 +328,14 @@ export type RenameObjectParams = {
   bucketName: string;
   oldKey: string;
   newKey: string;
+  prefix?: string;
 };
 export async function renameObject(s3Client: S3.S3Client, params: RenameObjectParams) {
-  const { bucketName, oldKey, newKey } = params;
+  const { bucketName, oldKey, newKey, prefix = '' } = params;
   const command = new S3.CopyObjectCommand({
     Bucket: bucketName,
-    CopySource: `${bucketName}/${oldKey}`,
-    Key: newKey,
+    CopySource: `/${bucketName}/${oldKey}`,
+    Key: `${prefix}${newKey}`,
   });
   await s3Client.send(command);
   await deleteObject(s3Client, { bucketName, key: oldKey });
@@ -352,9 +349,11 @@ export type RenameFolderParams = {
 };
 export async function renameFolder(s3Client: S3.S3Client, params: RenameFolderParams) {
   const { bucketName, oldKey, newKey } = params;
+  const newKeyPrefix = path.join(path.dirname(oldKey), newKey, '/'); // 计算新 prefix
+
   const { keys } = await listAllObjects(s3Client, { bucketName, prefix: oldKey });
   for (const key of keys) {
-    const objectNewKey = key.replace(oldKey, newKey);
+    const objectNewKey = key.replace(oldKey, newKeyPrefix);
     await renameObject(s3Client, { bucketName, oldKey: key, newKey: objectNewKey });
   }
 }

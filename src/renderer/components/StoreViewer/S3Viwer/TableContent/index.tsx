@@ -109,7 +109,7 @@ const TableContent = (props: TableContentProps) => {
   return (
     <div className="table-content">
       <Table
-        rowKey={'name'}
+        rowKey={'key'}
         size="small"
         loading={loading}
         rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
