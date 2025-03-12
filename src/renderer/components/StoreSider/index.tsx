@@ -19,7 +19,7 @@ const StoreSider = () => {
         label: connection.name,
         children: connection.buckets.map((bucket: any) => {
           return {
-            key: bucket,
+            key: `${connection.id}/${bucket}`,
             label: bucket,
           };
         }),
@@ -27,10 +27,10 @@ const StoreSider = () => {
     });
   }, [connections]);
 
-  const handleClick = (_key: string, _event: any, keyPath: any) => {
-    const [name, connectionId] = keyPath; // 解构层级
+  const handleClick = (key: string) => {
+    const [connectionId, name] = key.split('/'); // 解构层级
     addTab({
-      id: `${connectionId}-${name}`,
+      id: key,
       name: name,
       connectionId: connectionId,
     });
@@ -44,7 +44,14 @@ const StoreSider = () => {
       </div>
 
       <div className="store-sider-content">
-        <Menu onClickMenuItem={handleClick} style={{ width: '100%' }} selectedKeys={[activeTab]}>
+        <Menu
+          autoOpen
+          autoScrollIntoView
+          selectable
+          onClickMenuItem={handleClick}
+          style={{ width: '100%' }}
+          selectedKeys={[activeTab]}
+        >
           {items.map((item: any) => {
             return (
               <SubMenu key={item.key} title={item.label}>

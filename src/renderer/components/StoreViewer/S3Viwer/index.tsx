@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Space, Input, Dropdown, Menu } from '@arco-design/web-react';
-import { LeftOutlined, RightOutlined, DownOutlined } from '@ant-design/icons';
+import { Button, Space, Input, Dropdown, Menu, Radio } from '@arco-design/web-react';
+import { IconLeft, IconRight, IconDown, IconList, IconApps } from '@arco-design/web-react/icon';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
@@ -8,6 +8,8 @@ import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
 import { PathHistory, events, storeRequest } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import './index.css';
+
+const RadioGroup = Radio.Group;
 
 export type S3ViwerProps = {
   connectionId: string;
@@ -17,7 +19,7 @@ const S3Viwer = (props: S3ViwerProps) => {
   const { connectionId, bucketName } = props;
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
-  const [display, setDisplay] = useState<'table' | 'card'>('table');
+  const [display, setDisplay] = useState<'list' | 'card'>('list');
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
 
@@ -135,8 +137,8 @@ const S3Viwer = (props: S3ViwerProps) => {
     <div className="viewer">
       <div className="viewer-path">
         <Space size={2}>
-          <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
-          <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
+          <Button disabled={!canBack} icon={<IconLeft />} onClick={handlePathBack} />
+          <Button disabled={!canForward} icon={<IconRight />} onClick={handlePathForward} />
         </Space>
         <div className="viewer-path-input">
           <Space size={4}>
@@ -152,9 +154,9 @@ const S3Viwer = (props: S3ViwerProps) => {
             上传
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button> 新建目录 </Button>
+            <Button type="outline"> 新建目录 </Button>
           </FolderCreateWrap>
-          <Button> 下载 </Button>
+          <Button type="outline"> 下载 </Button>
           <Dropdown
             droplist={
               <Menu>
@@ -164,22 +166,24 @@ const S3Viwer = (props: S3ViwerProps) => {
               </Menu>
             }
           >
-            <Button icon={<DownOutlined />}>
-              更多
+            <Button type="outline">
+              更多 <IconDown />
             </Button>
           </Dropdown>
         </Space>
         <Space size={4}>
-          {/* <Segmented
-            options={[
-              { value: 'List', icon: <MenuOutlined /> },
-              { value: 'Kanban', icon: <ProductOutlined /> },
-            ]}
-          /> */}
+          <RadioGroup type="button" name="lang" defaultValue="list" style={{ marginRight: 20, marginBottom: 20 }}>
+            <Radio value="list">
+              <IconList />
+            </Radio>
+            <Radio value="card">
+              <IconApps />
+            </Radio>
+          </RadioGroup>
         </Space>
       </div>
       <div className="viewer-content">
-        {display === 'table' ? (
+        {display === 'list' ? (
           <TableContent
             loading={loading}
             data={dataList}

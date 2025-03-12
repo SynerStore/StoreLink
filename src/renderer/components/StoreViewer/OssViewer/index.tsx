@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Input, Dropdown, Space, Menu } from '@arco-design/web-react';
-import { LeftOutlined, RightOutlined,  DownOutlined } from '@ant-design/icons';
+import { IconLeft,IconRight, IconDown} from "@arco-design/web-react/icon"
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
@@ -125,8 +125,8 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
     <div className="viewer">
       <div className="viewer-path">
         <Space size={2}>
-          <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
-          <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
+          <Button disabled={!canBack} icon={<IconLeft />} onClick={handlePathBack} />
+          <Button disabled={!canForward} icon={<IconRight />} onClick={handlePathForward} />
         </Space>
         <div className="viewer-path-input">
           <Space size={4}>
@@ -154,7 +154,7 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
               </Menu>
             }
           >
-            <Button icon={<DownOutlined />}>更多</Button>
+            <Button icon={<IconDown />}>更多</Button>
           </Dropdown>
         </Space>
         <Space size={4}>

@@ -21,7 +21,7 @@
 }
 
 .viewer-content {
-  height: calc(100vh - 196px);
+  height: calc(100vh - 218px);
   overflow: auto;
 }
 

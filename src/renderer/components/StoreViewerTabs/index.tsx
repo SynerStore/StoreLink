@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Tabs } from '@arco-design/web-react';
+import { IconHome } from '@arco-design/web-react/icon';
 
 import { useTabsStore } from '@/renderer/store';
 import StoreViewer from '../StoreViewer';
@@ -19,12 +20,6 @@ const StoreViewerTabs = () => {
       };
     });
 
-    // allTabs.unshift({
-    //   label: 'Home',
-    //   key: 'home',
-    //   icon: <HomeOutlined />,
-    //   children: <HomeTab />,
-    // });
     return allTabs;
   }, [tabs]);
 
@@ -39,8 +34,24 @@ const StoreViewerTabs = () => {
 
   return (
     <div>
-      <Tabs size="small" type="card-gutter" activeTab={activeTab} onDeleteTab={handleClose} onChange={handleClick}>
-        <TabPane key={'home'} title={'Home'}>
+      <Tabs
+        size="small"
+        type="card-gutter"
+        editable
+        activeTab={activeTab}
+        onDeleteTab={handleClose}
+        onChange={handleClick}
+      >
+        <TabPane
+          key={'home'}
+          title={
+            <span>
+              <IconHome style={{ marginRight: 4 }} />
+              Home
+            </span>
+          }
+          closable={false}
+        >
           <HomeTab />
         </TabPane>
         {items.map((tab: any) => (

@@ -59,7 +59,7 @@ const TableContent = (props: TableContentProps) => {
       key: 'storageClass',
       width: 180,
       render: (val: undefined | EOssStorageClass) => {
-        return val ? OssStorageClassMap[val] : '--';
+        return val || '--';
       },
     },
     {
@@ -115,7 +115,6 @@ const TableContent = (props: TableContentProps) => {
         size="small"
         loading={loading}
         rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
-        
         scroll={{ y: tableScrollHight }}
         data={data}
         pagination={false}

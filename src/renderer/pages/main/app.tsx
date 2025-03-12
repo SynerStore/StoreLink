@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { ResizeBox, Layout } from '@arco-design/web-react';
+import { Layout } from '@arco-design/web-react';
 
 import Header from '@/renderer/components/Header';
 import Sider from '@/renderer/components/Sider';
@@ -33,7 +33,6 @@ const App = () => {
         <Layout.Sider style={{ width: '53px' }}>
           <Sider />
         </Layout.Sider>
-
         <Layout.Sider style={{ minWidth: 240, maxWidth: 300 }} resizeDirections={['right']}>
           <StoreSider />
         </Layout.Sider>
