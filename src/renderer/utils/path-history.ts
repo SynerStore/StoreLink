@@ -27,9 +27,14 @@ export class PathHistory {
   }
 
   go(path: string): string {
+    const index = this.getIndex();
+    // 假如当前 path 不是最后一位，替换 path 的后的路径为 go path
+    if (index === this.history.length - 1) {
+      this.history.push(path);
+    } else {
+      this.history = [...this.history.slice(0, index + 1), path];
+    }
     this.curPath = path;
-    this.history.push(path);
-    console.log('this.curPath', this.curPath);
     return this.curPath;
   }
 
