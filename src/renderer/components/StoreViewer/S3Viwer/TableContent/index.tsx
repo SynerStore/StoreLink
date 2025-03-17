@@ -31,13 +31,13 @@ const TableContent = (props: TableContentProps) => {
       render: (text: any, record: TS3Object) => {
         if (record.isDirectory) {
           return (
-            <div className="file-item" onClick={() => onPrefixChange(record.key as string)}>
+            <div draggable="true" className="file-item" onClick={() => onPrefixChange(record.key as string)}>
               <FileIcon type="folder" /> <span>{text}</span>
             </div>
           );
         } else {
           return (
-            <div className="file-item" onClick={() => onFileView(record)}>
+            <div draggable="true" className="file-item" onClick={() => onFileView(record)}>
               <FileIcon mime={record.mime as string} /> <span>{text}</span>
             </div>
           );
@@ -113,6 +113,8 @@ const TableContent = (props: TableContentProps) => {
       <Table
         rowKey={'key'}
         size="small"
+        borderCell={false}
+        border={false}
         loading={loading}
         rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
         scroll={{ y: tableScrollHight }}
