@@ -1,5 +1,6 @@
-import { app } from 'electron';
-import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
+import { app, session } from 'electron';
+import path from 'path';
+import os from 'os';
 
 import Windows from '../windows';
 import { storeRequestRegistry } from '../stores';
@@ -52,7 +53,11 @@ export default class Core {
 
   private async installExtension() {
     if (isDev) {
-      await installExtension([REACT_DEVELOPER_TOOLS.id, REDUX_DEVTOOLS.id]);
+      const extendsionPath = path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions');
+      const reactDevToolsPath = path.join(extendsionPath, '/fmkadmapgofadopljbjfkapdkoienihi/6.1.1_0');
+      await session.defaultSession.loadExtension(reactDevToolsPath);
+      // await session.defaultSession.loadExtension(reactDevToolsPath);
+      // await installExtension([REACT_DEVELOPER_TOOLS]);
     }
   }
 

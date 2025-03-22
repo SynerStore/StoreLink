@@ -27,8 +27,9 @@ import {
   ListAllObjectsParams,
   listAllObjects,
 } from './api';
+import { IStorageHandler } from '../store';
 
-class S3Store {
+class S3Store implements IStorageHandler {
   public client: any;
   public config: any;
   constructor(config: any) {
@@ -50,7 +51,7 @@ class S3Store {
     this.client.middlewareStack.add(
       (next: any) => (args: any) => {
         // 添加中间件
-        console.log('Request Headers:', args.request.headers);
+        // console.log('Request Headers:', args.request.headers);
         return next(args);
       },
       { step: 'build' },

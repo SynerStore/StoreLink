@@ -1,4 +1,4 @@
-import S3Store from './s3';
+import S3Store from './adapters/s3';
 import { getConfData } from '../db';
 
 const storePool = new Map();
