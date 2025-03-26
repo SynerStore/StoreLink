@@ -12,7 +12,6 @@ const FileRenameWrap = (props: FolderCreateWrapProps) => {
   const handleOk = async () => {
     try {
       const values = await form.validate();
-      debugger
       onCreateFolder(values.folderName);
       setIsModalOpen(false);
     } catch (err) {

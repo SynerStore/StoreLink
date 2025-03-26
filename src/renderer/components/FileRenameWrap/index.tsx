@@ -14,7 +14,6 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
     // 空值校验、重复名称校验等
     try {
       const values = await form.validate();
-      debugger
       onRename(values.newName);
       setIsModalOpen(false);
     } catch (err) {

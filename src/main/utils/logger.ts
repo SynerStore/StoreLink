@@ -10,4 +10,5 @@ log.transports.file.resolvePathFn = (variables) =>
 
 log.initialize({ preload: true });
 
+
 export const logger = log;

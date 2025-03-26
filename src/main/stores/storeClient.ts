@@ -1,4 +1,5 @@
 import S3Store from './adapters/s3';
+import LocalStore from './adapters/local';
 import { getConfData } from '../db';
 
 const storePool = new Map();
@@ -19,6 +20,9 @@ const createStoreClient = (data: any): any => {
     case 's3':
       storeClient = new S3Store(config);
       break;
+      case 'local':
+        storeClient = new LocalStore(config);
+        break;
     default:
       break;
   }

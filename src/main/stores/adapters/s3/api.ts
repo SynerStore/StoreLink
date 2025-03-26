@@ -7,19 +7,9 @@ import fs from 'fs-extra';
 import { Buffer } from 'node:buffer';
 
 import { isDirectory, isObjectFolder, readDirectoryRecursive } from '@/main/utils';
+import {TStoreObject} from "../store"
 
-export interface TS3Object {
-  key: string | undefined;
-  name: string | undefined;
-  lastModified: Date | undefined;
-  size: number | undefined;
-  etag: string | undefined;
-  storageClass: string | undefined;
-  isDirectory?: boolean;
-  mime?: string | false;
-}
-
-export const formatObjects = (objects: S3._Object[], prefix: string): TS3Object[] => {
+export const formatObjects = (objects: S3._Object[], prefix: string): TStoreObject[] => {
   return objects
     .filter((obj: S3._Object) => obj.Key !== prefix)
     .map((obj: S3._Object) => {
@@ -38,7 +28,7 @@ export const formatObjects = (objects: S3._Object[], prefix: string): TS3Object[
     });
 };
 
-export const formatPrefixs = (prefixs: S3.CommonPrefix[]): TS3Object[] => {
+export const formatPrefixs = (prefixs: S3.CommonPrefix[]): TStoreObject[] => {
   return prefixs.map((obj) => {
     const { Prefix } = obj;
     const name = path.basename(Prefix as string);
@@ -70,7 +60,7 @@ export async function list(
   },
 ) {
   const { bucketName, prefix, nextContinuationToken, maxKeys = 1000 } = params;
-  let allObjects: TS3Object[] = [];
+  let allObjects: TStoreObject[] = [];
   const command: S3.ListObjectsV2Command = new S3.ListObjectsV2Command({
     Bucket: bucketName,
     Prefix: prefix,

@@ -13,6 +13,7 @@ export const DEFAULT_CONFIG_DATA: IConfigData = {
 };
 
 export const USER_DATA_PATH = getUserDataPath();
+console.log('USER_DATA_PATH================', USER_DATA_PATH);
 export const APP_CONFIG_PATH = path.join(USER_DATA_PATH, 'config.json');
 
 let confDB: Low<IConfigData>;

@@ -1,5 +1,6 @@
 import { useLayoutEffect, useState } from 'react';
 import { Table, Space, Button } from '@arco-design/web-react';
+import { IconDownload, IconInfoCircle, IconEdit, IconDelete } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
 
 import { EWindowSize, OssStorageClassMap, EOssStorageClass, TS3Object } from '@/types';
@@ -74,25 +75,23 @@ const TableContent = (props: TableContentProps) => {
     {
       title: '操作',
       key: 'actions',
-      width: 350,
+      with: 200,
       render: (_val: string, record: TS3Object) => {
         return (
           <Space>
-            <Button color="default" size="small">
-              详情
-            </Button>
-            <Button color="default" size="small" onClick={() => onDownload(record)}>
-              下载
-            </Button>
+            <Button icon={<IconInfoCircle />} type="text" color="default" size="small" />
+            <Button
+              icon={<IconDownload />}
+              type="text"
+              color="default"
+              size="small"
+              onClick={() => onDownload(record)}
+            />
             <FileRenameWrap name={record.name as string} onRename={(newName: string) => onRename(record, newName)}>
-              <Button color="default" size="small">
-                重命名
-              </Button>
+              <Button icon={<IconEdit />} type="text" color="default" size="small" />
             </FileRenameWrap>
             <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
-              <Button color="danger" size="small">
-                删除
-              </Button>
+              <Button icon={<IconDelete />} type="text" status="danger" size="small" />
             </FileDeteleWrap>
           </Space>
         );

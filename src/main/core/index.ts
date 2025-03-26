@@ -57,7 +57,6 @@ export default class Core {
       const reactDevToolsPath = path.join(extendsionPath, '/fmkadmapgofadopljbjfkapdkoienihi/6.1.1_0');
       await session.defaultSession.loadExtension(reactDevToolsPath);
       // await session.defaultSession.loadExtension(reactDevToolsPath);
-      // await installExtension([REACT_DEVELOPER_TOOLS]);
     }
   }
 

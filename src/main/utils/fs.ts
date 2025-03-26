@@ -74,3 +74,33 @@ export const createFileSHA256 = async (filePath: string) => {
   });
   return hash.digest('hex');
 };
+
+// 文件排名
+export const filesSort = (files: Array<{ name: string; isDirectory: boolean }>) => {
+  return files
+    .sort((a: { name: string; isDirectory: boolean }, b: { name: string; isDirectory: boolean }) => {
+      // 将文件名拆分为字母、数字、符号的混合数组
+      const splitA = a.name.split(/(\d+)/);
+      const splitB = b.name.split(/(\d+)/);
+
+      // 逐段比较
+      for (let i = 0; i < Math.max(splitA.length, splitB.length); i++) {
+        const segmentA = splitA[i] || '';
+        const segmentB = splitB[i] || '';
+
+        // 数字段按数值比较
+        if (i % 2 === 1) {
+          const numA = parseInt(segmentA, 10);
+          const numB = parseInt(segmentB, 10);
+          if (numA !== numB) return numA - numB;
+        }
+        // 非数字段按自然排序比较
+        else {
+          const compareResult = segmentA.localeCompare(segmentB, 'en', { sensitivity: 'base' });
+          if (compareResult !== 0) return compareResult;
+        }
+      }
+      return 0;
+    })
+    .sort((a: any) => (a.isDirectory ? -1 : 1)); // 文件夹排在前面;
+};

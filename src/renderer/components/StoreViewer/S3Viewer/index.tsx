@@ -1,30 +1,29 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Input, Dropdown, Space, Menu } from '@arco-design/web-react';
-import { IconLeft, IconRight, IconDown } from '@arco-design/web-react/icon';
+import { Button, Space, Input, Dropdown, Menu, Radio } from '@arco-design/web-react';
+import { IconLeft, IconRight, IconDown, IconList, IconApps } from '@arco-design/web-react/icon';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
 import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
 import ViewInput from '@/renderer/components/ViewInput';
-import { useConfigStore } from '@/renderer/store';
+import FileDropWrap from '@/renderer/components/FileDropWrap';
 import { PathHistory, events, storeRequest } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import './index.css';
 
-export type ObjectStoreViewerProps = {
-  id: string;
+const RadioGroup = Radio.Group;
+
+export type S3ViwerProps = {
+  connectionId: string;
+  bucketName: string;
 };
-const OssViewer = (props: ObjectStoreViewerProps) => {
+const S3Viewer = (props: S3ViwerProps) => {
+  const { connectionId, bucketName } = props;
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
-  const [display, setDisplay] = useState<'table' | 'card'>('table');
-  const connections = useConfigStore((state: any) => state.connections);
+  const [display, setDisplay] = useState<'list' | 'card'>('list');
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
-  const connection = useMemo(() => {
-    const data = connections.find((item: any) => item.id === props.id);
-    return data;
-  }, [props.id]);
 
   const [canBack, canForward] = useMemo(() => {
     return [pathHistory?.canBack(), pathHistory?.canForward()];
@@ -44,12 +43,15 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
     setLoading(true);
     const res = await storeRequest({
       method: 'list',
-      id: connection.id,
-      params: { prefix: curPrefix },
+      id: connectionId,
+      params: {
+        bucketName: bucketName,
+        prefix: curPrefix,
+      },
     });
     setLoading(false);
     if (res.success) {
-      setDataList(res.data);
+      setDataList(res.data.objects);
       console.log(res.data);
     }
   };
@@ -64,58 +66,73 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
   };
 
   const handleDownload = async (record: any) => {
-    const targetPath = await events.getSingleDirPath({});
-    if (targetPath) {
+    const localPath = await events.getSingleDirPath({});
+    if (localPath) {
       storeRequest({
         method: 'get',
-        id: connection.id,
-        params: { fileInfo: record, targetPath },
+        id: connectionId,
+        params: { bucketName: bucketName, prefix: curPrefix, key: record.key, localPath: localPath },
       });
     }
   };
 
+  // 上传文件
   const handleUpload = async () => {
     // 选择文件夹
     const localPaths = await events.getMultDirAndFilePath({});
     if (localPaths && localPaths.length) {
-      storeRequest({
-        method: 'put',
-        id: connection.id,
-        params: { localPaths, targetPath: curPrefix },
-      });
+      handlePut(localPaths);
     }
+  };
+
+  const handlePut = async (paths: string[]) => {
+    return storeRequest({
+      method: 'put',
+      id: connectionId,
+      params: {
+        bucketName,
+        prefix: curPrefix,
+        localPaths: paths,
+      },
+    });
   };
 
   const handlePutFolder = async (folderName: string) => {
     storeRequest({
       method: 'putFolder',
-      id: connection.id,
-      params: { folderName, targetPath: curPrefix },
+      id: connectionId,
+      params: {
+        bucketName,
+        prefix: curPrefix,
+        localPath: folderName,
+      },
     });
   };
 
-  const handleDelete = async (files: any) => {
-    const deletFiles = Array.isArray(files) ? files : [files];
+  const handleDelete = async (record: any) => {
     storeRequest({
       method: 'delete',
-      id: connection.id,
-      params: { deletFiles },
+      id: connectionId,
+      params: {
+        bucketName,
+        key: record.key,
+      },
     });
   };
 
-  const handleRename = async (fileInfo: any, newName: string) => {
+  const handleRename = async (record: any, newName: string) => {
     storeRequest({
       method: 'rename',
-      id: connection.id,
-      params: { fileInfo, newName },
+      id: connectionId,
+      params: { bucketName, prefix: curPrefix, oldKey: record.key, newKey: newName },
     });
   };
 
   useEffect(() => {
-    if (connection) {
+    if (connectionId) {
       handleGetObjects();
     }
-  }, [connection, curPrefix]);
+  }, [connectionId, curPrefix]);
 
   useEffect(() => {
     const instance = new PathHistory({ path: curPrefix });
@@ -130,11 +147,7 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
           <Button disabled={!canForward} icon={<IconRight />} onClick={handlePathForward} />
         </Space>
         <div className="viewer-path-input">
-          <Space size={4}>
-            <ViewInput value={curPrefix} onChange={handlePrefixChange} style={{ width: '100%' }} />
-            <Input.Search style={{ width: '240px' }} />
-            <Button onClick={handleGetObjects}> 刷新 </Button>
-          </Space>
+          <ViewInput prefix={bucketName} value={curPrefix} onChange={handlePrefixChange} style={{ width: '100%' }} />
         </div>
       </div>
       <div className="viewer-actions">
@@ -143,9 +156,9 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
             上传
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button> 新建目录 </Button>
+            <Button type="outline"> 新建目录 </Button>
           </FolderCreateWrap>
-          <Button> 下载 </Button>
+          <Button type="outline"> 下载 </Button>
           <Dropdown
             droplist={
               <Menu>
@@ -155,31 +168,39 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
               </Menu>
             }
           >
-            <Button icon={<IconDown />}>更多</Button>
+            <Button type="outline">
+              更多 <IconDown />
+            </Button>
           </Dropdown>
         </Space>
         <Space size={4}>
-          {/* <Segmented
-            options={[
-              { value: 'List', icon: <MenuOutlined /> },
-              { value: 'Kanban', icon: <ProductOutlined /> },
-            ]}
-          /> */}
+          <Input.Search style={{ width: '240px' }} />
+          <Button onClick={handleGetObjects}> 刷新 </Button>
+          <RadioGroup type="button" name="lang" defaultValue="list">
+            <Radio value="list">
+              <IconList />
+            </Radio>
+            <Radio value="card">
+              <IconApps />
+            </Radio>
+          </RadioGroup>
         </Space>
       </div>
       <div className="viewer-content">
-        {display === 'table' ? (
-          <TableContent
-            loading={loading}
-            data={dataList}
-            onPrefixChange={handlePrefixChange}
-            onFileView={handleFileView}
-            onDownload={handleDownload}
-            onDelete={handleDelete}
-            onRename={handleRename}
-          />
-        ) : null}
-        {display === 'card' ? <CardContent /> : null}
+        <FileDropWrap onDrop={handlePut}>
+          {display === 'list' ? (
+            <TableContent
+              loading={loading}
+              data={dataList}
+              onPrefixChange={handlePrefixChange}
+              onFileView={handleFileView}
+              onDownload={handleDownload}
+              onDelete={handleDelete}
+              onRename={handleRename}
+            />
+          ) : null}
+          {display === 'card' ? <CardContent /> : null}
+        </FileDropWrap>
       </div>
       <div className="viewer-footer">
         <span>已选 0 项，已拉取 200 项 </span>
@@ -188,4 +209,4 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
   );
 };
 
-export default OssViewer;
+export default S3Viewer;

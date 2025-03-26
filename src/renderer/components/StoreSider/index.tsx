@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Menu, Input } from '@arco-design/web-react';
+import { groupBy } from 'lodash';
 
 import { useConfigStore, useTabsStore } from '@/renderer/store';
 import './index.css';
@@ -13,14 +14,15 @@ const StoreSider = () => {
   const { activeTab, addTab } = useTabsStore();
 
   const items = useMemo(() => {
-    return connections.map((connection: any) => {
+    const groups = groupBy(connections, 'brand');
+    return Reflect.ownKeys(groups).map((groupKey: any) => {
       return {
-        key: connection.id,
-        label: connection.name,
-        children: connection.buckets.map((bucket: any) => {
+        key: groupKey,
+        label: groupKey,
+        children: groups[groupKey].map((connection: any) => {
           return {
-            key: `${connection.id}/${bucket}`,
-            label: bucket,
+            key: `${connection.id}`,
+            label: connection.name,
           };
         }),
       };
@@ -28,11 +30,11 @@ const StoreSider = () => {
   }, [connections]);
 
   const handleClick = (key: string) => {
-    const [connectionId, name] = key.split('/'); // 解构层级
+    const connection = connections.find((item: any) => item.id === key);
     addTab({
       id: key,
-      name: name,
-      connectionId: connectionId,
+      name: connection.name,
+      connectionId: key,
     });
   };
 

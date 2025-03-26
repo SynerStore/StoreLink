@@ -5,18 +5,20 @@ import { IconLeft, IconRight, IconDown, IconList, IconApps } from '@arco-design/
 import TableContent from './TableContent';
 import CardContent from './CardContent';
 import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
-import { PathHistory, events, storeRequest } from '@/renderer/utils';
+import ViewInput from '@/renderer/components/ViewInput';
+import FileDropWrap from '@/renderer/components/FileDropWrap';
+import { PathHistory, storeRequest } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import './index.css';
 
 const RadioGroup = Radio.Group;
 
-export type S3ViwerProps = {
+export type LocalViewerProps = {
   connectionId: string;
-  bucketName: string;
+  data: any;
 };
-const S3Viwer = (props: S3ViwerProps) => {
-  const { connectionId, bucketName } = props;
+const LocalViewer = (props: LocalViewerProps) => {
+  const { connectionId, data } = props;
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
   const [display, setDisplay] = useState<'list' | 'card'>('list');
@@ -43,19 +45,19 @@ const S3Viwer = (props: S3ViwerProps) => {
       method: 'list',
       id: connectionId,
       params: {
-        bucketName: bucketName,
         prefix: curPrefix,
       },
     });
     setLoading(false);
     if (res.success) {
-      setDataList(res.data.objects);
+      setDataList(res.data);
       console.log(res.data);
     }
   };
 
   const handlePrefixChange = (value: string) => {
-    const prefix = pathHistory?.go(value) as string;
+    const nextPath = value.replace(data.config.root, '');
+    const prefix = pathHistory?.go(nextPath) as string;
     setCurPrefix(prefix);
   };
 
@@ -63,40 +65,11 @@ const S3Viwer = (props: S3ViwerProps) => {
     console.log('查看文件：', data.name);
   };
 
-  const handleDownload = async (record: any) => {
-    const localPath = await events.getSingleDirPath({});
-    if (localPath) {
-      storeRequest({
-        method: 'get',
-        id: connectionId,
-        params: { bucketName: bucketName, prefix: curPrefix, key: record.key, localPath: localPath },
-      });
-    }
-  };
-
-  // 上传文件
-  const handleUpload = async () => {
-    // 选择文件夹
-    const localPaths = await events.getMultDirAndFilePath({});
-    if (localPaths && localPaths.length) {
-      storeRequest({
-        method: 'put',
-        id: connectionId,
-        params: {
-          bucketName,
-          prefix: curPrefix,
-          localPaths,
-        },
-      });
-    }
-  };
-
   const handlePutFolder = async (folderName: string) => {
     storeRequest({
       method: 'putFolder',
       id: connectionId,
       params: {
-        bucketName,
         prefix: curPrefix,
         localPath: folderName,
       },
@@ -108,8 +81,7 @@ const S3Viwer = (props: S3ViwerProps) => {
       method: 'delete',
       id: connectionId,
       params: {
-        bucketName,
-        key: record.key,
+        file: record.key,
       },
     });
   };
@@ -118,7 +90,7 @@ const S3Viwer = (props: S3ViwerProps) => {
     storeRequest({
       method: 'rename',
       id: connectionId,
-      params: { bucketName, prefix: curPrefix, oldKey: record.key, newKey: newName },
+      params: { oldName: record.key, newName: newName },
     });
   };
 
@@ -141,18 +113,16 @@ const S3Viwer = (props: S3ViwerProps) => {
           <Button disabled={!canForward} icon={<IconRight />} onClick={handlePathForward} />
         </Space>
         <div className="viewer-path-input">
-          <Space size={4}>
-            <Input style={{ width: '100%' }} />
-            <Input.Search style={{ width: '240px' }} />
-            <Button onClick={handleGetObjects}> 刷新 </Button>
-          </Space>
+          <ViewInput
+            prefix={data.config.root}
+            value={curPrefix}
+            onChange={handlePrefixChange}
+            style={{ width: '100%' }}
+          />
         </div>
       </div>
       <div className="viewer-actions">
         <Space size={4}>
-          <Button type="primary" onClick={handleUpload}>
-            上传
-          </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
             <Button type="outline"> 新建目录 </Button>
           </FolderCreateWrap>
@@ -172,7 +142,9 @@ const S3Viwer = (props: S3ViwerProps) => {
           </Dropdown>
         </Space>
         <Space size={4}>
-          <RadioGroup type="button" name="lang" defaultValue="list" style={{ marginRight: 20, marginBottom: 20 }}>
+          <Input.Search style={{ width: '240px' }} />
+          <Button onClick={handleGetObjects}> 刷新 </Button>
+          <RadioGroup type="button" name="lang" defaultValue="list">
             <Radio value="list">
               <IconList />
             </Radio>
@@ -183,18 +155,19 @@ const S3Viwer = (props: S3ViwerProps) => {
         </Space>
       </div>
       <div className="viewer-content">
-        {display === 'list' ? (
-          <TableContent
-            loading={loading}
-            data={dataList}
-            onPrefixChange={handlePrefixChange}
-            onFileView={handleFileView}
-            onDownload={handleDownload}
-            onDelete={handleDelete}
-            onRename={handleRename}
-          />
-        ) : null}
-        {display === 'card' ? <CardContent /> : null}
+        <FileDropWrap>
+          {display === 'list' ? (
+            <TableContent
+              loading={loading}
+              data={dataList}
+              onPrefixChange={handlePrefixChange}
+              onFileView={handleFileView}
+              onDelete={handleDelete}
+              onRename={handleRename}
+            />
+          ) : null}
+          {display === 'card' ? <CardContent /> : null}
+        </FileDropWrap>
       </div>
       <div className="viewer-footer">
         <span>已选 0 项，已拉取 200 项 </span>
@@ -203,4 +176,4 @@ const S3Viwer = (props: S3ViwerProps) => {
   );
 };
 
-export default S3Viwer;
+export default LocalViewer;
