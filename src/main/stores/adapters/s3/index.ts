@@ -74,7 +74,6 @@ class S3Store implements IStorageHandler {
       const result = await list(this.client, params);
       return sucessResponse(result);
     } catch (err: any) {
-      debugger
       return errorResponse(err.message);
     }
   }

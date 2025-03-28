@@ -147,7 +147,6 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
           </FolderCreateWrap>
           <Button> 下载 </Button>
           <Dropdown
-            trigger="click"
             droplist={
               <Menu>
                 <Menu.Item key="copy">复制到</Menu.Item>

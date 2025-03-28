@@ -6,25 +6,20 @@ import { shell } from 'electron';
 import { filesSort } from '@/main/utils';
 import { TStoreObject } from '../store';
 
-export const formatObjects = async (filePath: string): Promise<TStoreObject | null> => {
-  try {
-    await fs.access(filePath);
-    const stats = await fs.stat(filePath);
-    const result = {
-      key: filePath,
-      name: path.basename(filePath),
-      lastModified: stats.mtimeMs,
-      size: stats.size,
-      etag: '',
-      storageClass: '',
-      isDirectory: stats.isDirectory(),
-      mime: mime.lookup(filePath),
-      isSymbolicLink: stats.isSymbolicLink(),
-    };
-    return result;
-  } catch (_error) {
-    return null;
-  }
+export const formatObjects = async (filePath: string): Promise<TStoreObject> => {
+  const stats = await fs.stat(filePath);
+  const result = {
+    key: filePath,
+    name: path.basename(filePath),
+    lastModified: stats.mtimeMs,
+    size: stats.size,
+    etag: '',
+    storageClass: '',
+    isDirectory: stats.isDirectory(),
+    mime: mime.lookup(filePath),
+    isSymbolicLink: stats.isSymbolicLink(),
+  };
+  return result;
 };
 
 export type ListParams = {
