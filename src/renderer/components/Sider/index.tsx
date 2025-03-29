@@ -1,4 +1,4 @@
-import { Space } from '@arco-design/web-react';
+import { Space, Divider } from '@arco-design/web-react';
 import { IconSettings, IconMenuFold, IconHome, IconSwap, IconMessage, IconTool } from '@arco-design/web-react/icon';
 
 import SettingPanel from '../SettingPanel';
@@ -8,13 +8,13 @@ const Sider = () => {
   return (
     <aside className="sider">
       <div className="sider-top">
-        <Space direction="vertical">
-          <IconMenuFold />
-          <IconHome />
-        </Space>
+        <IconMenuFold />
+        <Divider style={{ margin: '8px 0px' }} />
+        <IconHome />
       </div>
 
       <div className="sider-bottom">
+        <Divider style={{ margin: '8px 0px' }} />
         <Space direction="vertical">
           <IconSwap />
           <IconMessage />

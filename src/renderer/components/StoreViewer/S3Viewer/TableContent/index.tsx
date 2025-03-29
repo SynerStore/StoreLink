@@ -7,6 +7,7 @@ import { EWindowSize, OssStorageClassMap, EOssStorageClass, TS3Object } from '@/
 import FileIcon from '@/renderer/components/FileIcon';
 import FileRenameWrap from '@/renderer/components/FileRenameWrap';
 import FileDeteleWrap from '@/renderer/components/FileDeteleWrap';
+import ContextMenu from '@/renderer/components/ContextMenu';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
@@ -30,19 +31,53 @@ const TableContent = (props: TableContentProps) => {
       dataIndex: 'name',
       key: 'name',
       render: (text: any, record: TS3Object) => {
-        if (record.isDirectory) {
-          return (
-            <div draggable="true" className="file-item" onClick={() => onPrefixChange(record.key as string)}>
-              <FileIcon type="folder" /> <span>{text}</span>
-            </div>
-          );
-        } else {
-          return (
-            <div draggable="true" className="file-item" onClick={() => onFileView(record)}>
-              <FileIcon mime={record.mime as string} /> <span>{text}</span>
-            </div>
-          );
-        }
+        return (
+          <ContextMenu
+            menu={[
+              {
+                icon: <IconInfoCircle />,
+                text: '详情',
+                onClick: () => {},
+              },
+              {
+                icon: <IconDownload />,
+                text: '下载',
+                onClick: () => onDownload(record),
+              },
+              {
+                render: () => (
+                  <FileRenameWrap
+                    name={record.name as string}
+                    onRename={(newName: string) => onRename(record, newName)}
+                  >
+                    <Space size={2}>
+                      <IconEdit /> 重命名
+                    </Space>
+                  </FileRenameWrap>
+                ),
+              },
+              {
+                render: () => (
+                  <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
+                    <Space size={2}>
+                      <IconDelete /> 删除
+                    </Space>
+                  </FileDeteleWrap>
+                ),
+              },
+            ]}
+          >
+            {record.isDirectory ? (
+              <div draggable="true" className="file-item" onClick={() => onPrefixChange(record.key as string)}>
+                <FileIcon type="folder" /> <span>{text}</span>
+              </div>
+            ) : (
+              <div draggable="true" className="file-item" onClick={() => onFileView(record)}>
+                <FileIcon mime={record.mime as string} /> <span>{text}</span>
+              </div>
+            )}
+          </ContextMenu>
+        );
       },
     },
     {

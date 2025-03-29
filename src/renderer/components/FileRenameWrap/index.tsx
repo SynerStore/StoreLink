@@ -21,9 +21,21 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
     }
   };
 
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <Fragment>
-      <Modal title="重命名" visible={isModalOpen} onOk={handleOk} onCancel={() => setIsModalOpen(false)}>
+      <Modal
+        closable={false}
+        maskClosable={false}
+        title="重命名"
+        visible={isModalOpen}
+        getPopupContainer={() => document.body}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
         <Form initialValues={{ newName: name }} form={form}>
           <Form.Item label="原名称">
             <span> {name} </span>

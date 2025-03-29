@@ -124,9 +124,15 @@ const LocalViewer = (props: LocalViewerProps) => {
       <div className="viewer-actions">
         <Space size={4}>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button type="outline"> 新建目录 </Button>
+            <Button type="outline" size="small">
+              {' '}
+              新建目录{' '}
+            </Button>
           </FolderCreateWrap>
-          <Button type="outline"> 下载 </Button>
+          <Button type="outline" size="small">
+            {' '}
+            下载{' '}
+          </Button>
           <Dropdown
             trigger="click"
             droplist={
@@ -137,7 +143,7 @@ const LocalViewer = (props: LocalViewerProps) => {
               </Menu>
             }
           >
-            <Button type="outline">
+            <Button type="outline" size="small">
               更多 <IconDown />
             </Button>
           </Dropdown>

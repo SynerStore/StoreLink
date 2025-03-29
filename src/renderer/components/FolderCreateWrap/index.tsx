@@ -21,7 +21,14 @@ const FileRenameWrap = (props: FolderCreateWrapProps) => {
 
   return (
     <Fragment>
-      <Modal title="新建目录" visible={isModalOpen} onOk={handleOk} onCancel={() => setIsModalOpen(false)}>
+      <Modal
+        title="新建目录"
+        closable={false}
+        maskClosable={false}
+        visible={isModalOpen}
+        onOk={handleOk}
+        onCancel={() => setIsModalOpen(false)}
+      >
         <Form initialValues={{ folderName: '' }} form={form}>
           <Form.Item label="目录名称" field="folderName" rules={[{ required: true, message: '请输入目录名称!' }]}>
             <Input placeholder="请输入目录名称" />

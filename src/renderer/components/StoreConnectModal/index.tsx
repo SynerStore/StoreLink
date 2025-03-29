@@ -14,7 +14,14 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
 
   return (
     <Fragment>
-      <Modal title="添加连接" visible={isModalOpen} style={{ width: 720 }} onCancel={() => setIsModalOpen(false)}>
+      <Modal
+        title="添加连接"
+        closable={false}
+        maskClosable={false}
+        visible={isModalOpen}
+        style={{ width: 720 }}
+        onCancel={() => setIsModalOpen(false)}
+      >
         <div>
           <Row gutter={20} style={{ marginBottom: 20 }}>
             <Col span={12}>

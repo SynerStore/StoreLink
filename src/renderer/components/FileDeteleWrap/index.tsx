@@ -20,6 +20,8 @@ const FileDeteleWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
       ),
       okText: '确定',
       cancelText: '取消',
+      closable: false,
+      maskClosable: false,
       onOk: () => {
         onDelete(fileInfo);
       },

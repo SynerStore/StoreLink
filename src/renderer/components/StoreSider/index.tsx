@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Menu, Input } from '@arco-design/web-react';
 import { groupBy } from 'lodash';
 
+import MenuTitle from './MenuTitle';
 import { useConfigStore, useTabsStore } from '@/renderer/store';
 import './index.css';
 
@@ -18,7 +19,7 @@ const StoreSider = () => {
     return Reflect.ownKeys(groups).map((groupKey: any) => {
       return {
         key: groupKey,
-        label: groupKey,
+        label: <MenuTitle brand={groupKey}>{groupKey}</MenuTitle>,
         children: groups[groupKey].map((connection: any) => {
           return {
             key: `${connection.id}`,

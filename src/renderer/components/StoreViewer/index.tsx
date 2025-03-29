@@ -12,11 +12,16 @@ const StoreViewer = (props: any) => {
     return connections.find((item: any) => item.id === data.connectionId);
   }, [data.connectionId]);
 
-  if (connection.type === 's3')
-    return <S3Viewer key={data.id} bucketName={data.name} connectionId={data.connectionId} />;
-  if (connection.type === 'local')
-    return <LocalViewer key={data.id} data={connection} connectionId={data.connectionId} />;
-  if (connection.type === 'ftp') return <FtpViewer key={data.id} data={connection} connectionId={data.connectionId} />;
+  switch (connection.type) {
+    case 's3':
+      return <S3Viewer key={data.id} bucketName={data.name} connectionId={data.connectionId} />;
+    case 'local':
+      return <LocalViewer key={data.id} data={connection} connectionId={data.connectionId} />;
+    case 'ftp':
+      return <FtpViewer key={data.id} data={connection} connectionId={data.connectionId} />;
+    default:
+      return null;
+  }
 };
 
 export default StoreViewer;

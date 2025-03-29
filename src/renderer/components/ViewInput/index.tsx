@@ -33,7 +33,7 @@ const ViewInput = (props: any) => {
       <Input
         ref={inputRef}
         addBefore={prefix}
-        addAfter={<IconStar />}
+        addAfter={<IconStar style={{ fontSize: 'large' }} />}
         value={inputValue}
         onChange={handleChange}
         onPressEnter={handlePressEnter}
