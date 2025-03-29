@@ -180,7 +180,7 @@ const FtpViewer = (props: FtpViewerProps) => {
         </Space>
       </div>
       <div className="viewer-content">
-        <FileDropWrap>
+        <FileDropWrap onDrop={handlePut}>
           {display === 'list' ? (
             <TableContent
               loading={loading}

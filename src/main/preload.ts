@@ -4,11 +4,15 @@ import os from 'os';
 import dispatch from './dispatch';
 const apiKey = 'electronBridge';
 
-const api: any = {
-  platform: os.platform(),
-  versions: process.versions,
-  dispatch: dispatch,
-  getPathForFile: webUtils.getPathForFile,
-};
+try {
+  const api: any = {
+    platform: os.platform(),
+    versions: process.versions,
+    dispatch: dispatch,
+    getPathForFile: webUtils.getPathForFile,
+  };
 
-contextBridge.exposeInMainWorld(apiKey, api);
+  contextBridge.exposeInMainWorld(apiKey, api);
+} catch (err) {
+  console.error(err);
+}

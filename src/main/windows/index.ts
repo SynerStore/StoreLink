@@ -6,7 +6,7 @@ import { BrowserWindow, ipcMain } from 'electron';
 import { EPages, EChannels } from '../../types';
 import { BaseWindow } from './base';
 import { MainWindow } from './main';
-import { logger } from '../utils';
+import { logger, isInMac } from '../utils';
 import Core from '../core';
 
 export default class Windows {
@@ -26,33 +26,37 @@ export default class Windows {
     });
 
     // events
-    ipcMain.on(EChannels.windowClose, (event) => {
+    ipcMain.handle(EChannels.windowClose, (event) => {
       this.logger.info(EChannels.windowClose);
       const { sender } = event;
-
-      const mainWindow = this.getBrowserWindow(EPages.Main);
-      if (sender.id === mainWindow?.id) {
-        this.core.quitApp();
-      } else {
+      if (isInMac()) {
         const browserWindow = BrowserWindow.fromWebContents(sender);
-        browserWindow?.closable && browserWindow.close();
-      }
-    });
-
-    ipcMain.on(EChannels.windowMaximize, (event) => {
-      this.logger.info(EChannels.windowMaximize);
-      const { sender } = event;
-      const browserWindow = BrowserWindow.fromWebContents(sender);
-      if (browserWindow?.maximizable) {
-        if (browserWindow.isMaximized()) {
-          browserWindow.unmaximize();
+        browserWindow?.hide();
+      } else {
+        const mainWindow = this.getBrowserWindow(EPages.Main);
+        if (sender.id === mainWindow?.id) {
+          this.core.quitApp();
         } else {
-          browserWindow.maximize();
+          const browserWindow = BrowserWindow.fromWebContents(sender);
+          browserWindow?.closable && browserWindow.close();
         }
       }
     });
 
-    ipcMain.on(EChannels.windowMinimize, (event) => {
+    ipcMain.handle(EChannels.windowFullScreen, (event) => {
+      this.logger.info(EChannels.windowFullScreen);
+      const { sender } = event;
+      const browserWindow = BrowserWindow.fromWebContents(sender);
+      if (browserWindow?.fullScreenable) {
+        if (browserWindow.isFullScreen()) {
+          browserWindow.setFullScreen(false);
+        } else {
+          browserWindow.setFullScreen(true);
+        }
+      }
+    });
+
+    ipcMain.handle(EChannels.windowMinimize, (event) => {
       this.logger.info(EChannels.windowMinimize);
       const { sender } = event;
       const browserWindow = BrowserWindow.fromWebContents(sender);

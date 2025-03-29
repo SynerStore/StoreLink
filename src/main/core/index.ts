@@ -56,7 +56,6 @@ export default class Core {
       const extendsionPath = path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions');
       const reactDevToolsPath = path.join(extendsionPath, '/fmkadmapgofadopljbjfkapdkoienihi/6.1.1_0');
       await session.defaultSession.loadExtension(reactDevToolsPath);
-      // await session.defaultSession.loadExtension(reactDevToolsPath);
     }
   }
 

@@ -4,6 +4,7 @@
   height: var(--header-height);
   -webkit-app-region: drag;
   border-bottom: 1px solid rgb(230, 232, 235);
+  position: relative;
 }
 
 .logo {
@@ -21,5 +22,33 @@
     margin-left: 8px;
     font-size: 16px;
     font-weight: 600;
+  }
+}
+
+.win-linux-traffic {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: var(--header-height);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  padding-right: 4px;
+  -webkit-app-region: none;
+
+  .traffic {
+    font-size: 20px;
+    font-weight: 600;
+    width: 32px;
+    height: 32px;
+    margin: 0 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: #ededed;
+    }
   }
 }

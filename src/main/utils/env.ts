@@ -3,12 +3,14 @@ import os from 'node:os';
 
 export const isDev = isDevelopment;
 
-// 判断是否是在win中
 export function isInWin() {
   return os.platform() === 'win32';
 }
 
-// 是否是在mac
 export function isInMac() {
   return os.platform() === 'darwin';
+}
+
+export function isInLinux() {
+  return os.platform() === 'linux';
 }

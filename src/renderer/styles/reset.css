@@ -3,17 +3,28 @@
 body {
   padding: 0;
   margin: 0;
-  /* background: @background-1; */
   overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100vh;
+  color: var(--color-text-2);
 }
 
 .store-tabs-nav {
   margin: 0 0 6px 0 !important;
 }
 
-.arco-tabs-content{
-  padding-top: 8px !important;
+.arco-tabs-content {
+  padding-top: 6px !important;
+  border: none !important;
+}
+
+.arco-tabs-header-title {
+  margin-left: 0px !important;
+  margin-right: 2px !important;
+  padding: 2px 12px !important;
+}
+
+.arco-menu-inline-header {
+  line-height: 36px !important;
 }

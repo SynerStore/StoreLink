@@ -86,6 +86,7 @@ const S3Viewer = (props: S3ViwerProps) => {
   };
 
   const handlePut = async (paths: string[]) => {
+    debugger
     return storeRequest({
       method: 'put',
       id: connectionId,

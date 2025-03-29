@@ -5,6 +5,7 @@ import { IconHome } from '@arco-design/web-react/icon';
 import { useTabsStore } from '@/renderer/store';
 import StoreViewer from '../StoreViewer';
 import HomeTab from './HomeTab';
+import './index.css';
 
 const TabPane = Tabs.TabPane;
 
@@ -33,7 +34,7 @@ const StoreViewerTabs = () => {
   };
 
   return (
-    <div className="store-viewer-tabs" style={{ display: 'flex', height: '100%' }}>
+    <div className="store-viewer-tabs">
       <Tabs
         size="small"
         type="card-gutter"
@@ -63,24 +64,6 @@ const StoreViewerTabs = () => {
           </TabPane>
         ))}
       </Tabs>
-
-      {/* <div style={{flex:1}}>
-        <Tabs
-          size="small"
-          type="card-gutter"
-          editable
-          showAddButton={false}
-          activeTab={activeTab}
-          onDeleteTab={handleClose}
-          onChange={handleClick}
-        >
-          {items.map((tab: any) => (
-            <TabPane key={tab.key} title={<div draggable>{tab.label}</div> }>
-              {tab.children}
-            </TabPane>
-          ))}
-        </Tabs>
-      </div> */}
     </div>
   );
 };

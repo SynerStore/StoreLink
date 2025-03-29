@@ -1,14 +1,14 @@
 .sider {
-  width: 52px;
+  width: var(--sider-width);
   height: 100%;
-  border-right: 1px solid rgb(230, 232, 235);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   font-size: 24px;
 
-  .arco-icon{
+  .arco-icon {
     cursor: pointer;
   }
 
