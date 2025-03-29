@@ -107,7 +107,7 @@ class FtpStore implements IStorageHandler {
   }
 
   // 删除
-  async delete(params: DeleteFileParams) {
+  async delete(params: DeleteFileParams | DeleteFolderParams) {
     try {
       let result;
       if (params.isDirectory) {
@@ -122,16 +122,16 @@ class FtpStore implements IStorageHandler {
     }
   }
 
-  // 批量删除
-  async deleteMulti(params: DeleteMultiFilesParams) {
-    try {
-      const result = await deleteMultiFiles(params);
-      return sucessResponse(result);
-    } catch (err: any) {
-      console.error(err);
-      return errorResponse(err.message);
-    }
-  }
+  // // 批量删除
+  // async deleteMulti(params: DeleteMultiFilesParams) {
+  //   try {
+  //     const result = await deleteMultiFiles(params);
+  //     return sucessResponse(result);
+  //   } catch (err: any) {
+  //     console.error(err);
+  //     return errorResponse(err.message);
+  //   }
+  // }
 
   async rename(params: RenameParams) {
     try {

@@ -33,15 +33,17 @@ const StoreViewerTabs = () => {
   };
 
   return (
-    <div className="store-viewer-tabs" style={{ display: 'flex' }}>
+    <div className="store-viewer-tabs" style={{ display: 'flex', height: '100%' }}>
       <Tabs
         size="small"
         type="card-gutter"
         editable
+        justify
         showAddButton={false}
         activeTab={activeTab}
         onDeleteTab={handleClose}
         onChange={handleClick}
+        style={{ width: '100%' }}
       >
         <TabPane
           key={'home'}

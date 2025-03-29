@@ -42,7 +42,7 @@ export type DeleteFolderParams = {
   file: string;
   isDirectory: boolean;
 };
-export async function deleteFolder(client: Client, params: DeleteFileParams) {
+export async function deleteFolder(client: Client, params: DeleteFolderParams) {
   const { file } = params;
   return client.removeDir(file);
 }

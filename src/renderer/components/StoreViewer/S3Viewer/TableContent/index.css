@@ -1,7 +1,7 @@
 @import  "../../../../styles/index.css";
 
 .table-content {
-  padding: 8px 0;
+  padding: 6px 0;
 
   .file-item {
     cursor: pointer;

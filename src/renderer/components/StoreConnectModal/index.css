@@ -1,0 +1,14 @@
+.store-selection{
+    display: flex;
+}
+
+.store-brand{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding:10px 20px;
+    border-radius: 4px;
+    &:hover{
+        background-color: #f5f5f5;
+    }
+}

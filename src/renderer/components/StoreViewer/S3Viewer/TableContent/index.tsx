@@ -139,7 +139,7 @@ const TableContent = (props: TableContentProps) => {
   };
 
   useLayoutEffect(() => {
-    seTableScrollHight(document.body.clientHeight - 196 - 55 - 20);
+    seTableScrollHight(document.body.clientHeight - 235);
   }, []);
 
   return (

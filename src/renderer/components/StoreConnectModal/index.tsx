@@ -1,17 +1,34 @@
 import { Fragment, useState } from 'react';
-import { Modal, Card, Space, Avatar, Typography, Grid } from '@arco-design/web-react';
+import { Modal } from '@arco-design/web-react';
+
+import StoreSelection from './StoreSelection';
+import StoreConnectForm from './StoreConnectForm';
+import './index.css';
 
 export type StoreConnectModalProps = {
   children?: React.ReactNode;
   onAddConnection?: (v: any) => void;
 };
 
-const { Row, Col } = Grid;
-
 const StoreConnectModal = (props: StoreConnectModalProps) => {
   const { children, onAddConnection } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeBrand, setActiveBrand] = useState('');
+  const [step, setStep] = useState(0);
 
+  const handleNext = () => {
+    setStep(step + 1);
+  };
+
+  const handlePrev = () => {
+    setStep(step - 1);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleOk = () => {};
   return (
     <Fragment>
       <Modal
@@ -20,76 +37,16 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
         maskClosable={false}
         visible={isModalOpen}
         style={{ width: 720 }}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={step === 0 ? handleCancel : handlePrev}
+        onOk={step === 0 ? handleNext : handleOk}
+        cancelText={step === 0 ? '取消' : '上一步'}
+        okText={step === 0 ? '下一步' : '确定'}
       >
-        <div>
-          <Row gutter={20} style={{ marginBottom: 20 }}>
-            <Col span={12}>
-              <Card hoverable>
-                <Space>
-                  <Avatar
-                    style={{
-                      backgroundColor: '#165DFF',
-                    }}
-                    size={28}
-                  >
-                    阿
-                  </Avatar>
-                  <Typography.Text>阿里云 OSS</Typography.Text>
-                </Space>
-              </Card>
-            </Col>
-
-            <Col span={12}>
-              <Card hoverable>
-                <Space>
-                  <Avatar
-                    style={{
-                      backgroundColor: '#165DFF',
-                    }}
-                    size={28}
-                  >
-                    腾
-                  </Avatar>
-                  <Typography.Text>腾讯云 OSS</Typography.Text>
-                </Space>
-              </Card>
-            </Col>
-          </Row>
-          <Row gutter={20}>
-            <Col span={12}>
-              <Card hoverable>
-                <Space>
-                  <Avatar
-                    style={{
-                      backgroundColor: '#165DFF',
-                    }}
-                    size={28}
-                  >
-                    华
-                  </Avatar>
-                  <Typography.Text>华为云 OSS</Typography.Text>
-                </Space>
-              </Card>
-            </Col>
-
-            <Col span={12}>
-              <Card hoverable>
-                <Space>
-                  <Avatar
-                    style={{
-                      backgroundColor: '#165DFF',
-                    }}
-                    size={28}
-                  >
-                    ftp
-                  </Avatar>
-                  <Typography.Text>ftp</Typography.Text>
-                </Space>
-              </Card>
-            </Col>
-          </Row>
-        </div>
+        {step === 0 ? (
+          <StoreSelection activeBrand={activeBrand} onActive={setActiveBrand} />
+        ) : (
+          <StoreConnectForm brand={activeBrand} />
+        )}
       </Modal>
       <span onClick={() => setIsModalOpen(true)}>{children}</span>
     </Fragment>

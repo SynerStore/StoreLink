@@ -13,3 +13,7 @@ body {
 .store-tabs-nav {
   margin: 0 0 6px 0 !important;
 }
+
+.arco-tabs-content{
+  padding-top: 8px !important;
+}

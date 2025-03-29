@@ -2,5 +2,6 @@
 :root{
     --primary-color: #3c62cd;
     --header-height: 40px;
+    --viewer-content-height: calc(100vh - 190px);
     --border-color:#e6e8eb;
 }
