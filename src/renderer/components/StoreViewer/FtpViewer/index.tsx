@@ -1,24 +1,26 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Menu, Radio } from '@arco-design/web-react';
 import { IconLeft, IconRight, IconDown, IconList, IconApps } from '@arco-design/web-react/icon';
+import { debounce } from 'lodash';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
 import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
 import ViewInput from '@/renderer/components/ViewInput';
 import FileDropWrap from '@/renderer/components/FileDropWrap';
-import { PathHistory, events, storeRequest } from '@/renderer/utils';
+import { PathHistory, storeRequest, events } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import './index.css';
+import { isDirectory } from '@/main/utils';
 
 const RadioGroup = Radio.Group;
 
-export type S3ViwerProps = {
+export type FtpViewerProps = {
   connectionId: string;
-  bucketName: string;
+  data: any;
 };
-const S3Viewer = (props: S3ViwerProps) => {
-  const { connectionId, bucketName } = props;
+const FtpViewer = (props: FtpViewerProps) => {
+  const { connectionId, data } = props;
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
   const [display, setDisplay] = useState<'list' | 'card'>('list');
@@ -39,22 +41,21 @@ const S3Viewer = (props: S3ViwerProps) => {
     setCurPrefix(prefix);
   };
 
-  const handleGetObjects = async () => {
+  const handleGetObjects = debounce(async () => {
     setLoading(true);
     const res = await storeRequest({
       method: 'list',
       id: connectionId,
       params: {
-        bucketName: bucketName,
         prefix: curPrefix,
       },
     });
     setLoading(false);
     if (res.success) {
-      setDataList(res.data.objects);
+      setDataList(res.data);
       console.log(res.data);
     }
-  };
+  }, 100);
 
   const handlePrefixChange = (value: string) => {
     const prefix = pathHistory?.go(value) as string;
@@ -63,17 +64,6 @@ const S3Viewer = (props: S3ViwerProps) => {
 
   const handleFileView = (data: any) => {
     console.log('查看文件：', data.name);
-  };
-
-  const handleDownload = async (record: any) => {
-    const localPath = await events.getSingleDirPath({});
-    if (localPath) {
-      storeRequest({
-        method: 'get',
-        id: connectionId,
-        params: { bucketName: bucketName, prefix: curPrefix, key: record.key, localPath: localPath },
-      });
-    }
   };
 
   // 上传文件
@@ -90,19 +80,16 @@ const S3Viewer = (props: S3ViwerProps) => {
       method: 'put',
       id: connectionId,
       params: {
-        bucketName,
         prefix: curPrefix,
         localPaths: paths,
       },
     });
   };
-
   const handlePutFolder = async (folderName: string) => {
     storeRequest({
       method: 'putFolder',
       id: connectionId,
       params: {
-        bucketName,
         prefix: curPrefix,
         localPath: folderName,
       },
@@ -114,8 +101,8 @@ const S3Viewer = (props: S3ViwerProps) => {
       method: 'delete',
       id: connectionId,
       params: {
-        bucketName,
-        key: record.key,
+        file: record.key,
+        isDirectory: record.isDirectory,
       },
     });
   };
@@ -124,7 +111,7 @@ const S3Viewer = (props: S3ViwerProps) => {
     storeRequest({
       method: 'rename',
       id: connectionId,
-      params: { bucketName, prefix: curPrefix, oldKey: record.key, newKey: newName },
+      params: { oldName: record.key, newName: newName },
     });
   };
 
@@ -147,7 +134,12 @@ const S3Viewer = (props: S3ViwerProps) => {
           <Button disabled={!canForward} icon={<IconRight />} onClick={handlePathForward} />
         </Space>
         <div className="viewer-path-input">
-          <ViewInput prefix={bucketName} value={curPrefix} onChange={handlePrefixChange} style={{ width: '100%' }} />
+          <ViewInput
+            prefix={data.config.root}
+            value={curPrefix}
+            onChange={handlePrefixChange}
+            style={{ width: '100%' }}
+          />
         </div>
       </div>
       <div className="viewer-actions">
@@ -188,14 +180,13 @@ const S3Viewer = (props: S3ViwerProps) => {
         </Space>
       </div>
       <div className="viewer-content">
-        <FileDropWrap onDrop={handlePut}>
+        <FileDropWrap>
           {display === 'list' ? (
             <TableContent
               loading={loading}
               data={dataList}
               onPrefixChange={handlePrefixChange}
               onFileView={handleFileView}
-              onDownload={handleDownload}
               onDelete={handleDelete}
               onRename={handleRename}
             />
@@ -210,4 +201,4 @@ const S3Viewer = (props: S3ViwerProps) => {
   );
 };
 
-export default S3Viewer;
+export default FtpViewer;

@@ -128,6 +128,7 @@ const LocalViewer = (props: LocalViewerProps) => {
           </FolderCreateWrap>
           <Button type="outline"> 下载 </Button>
           <Dropdown
+            trigger="click"
             droplist={
               <Menu>
                 <Menu.Item key="copy">复制到</Menu.Item>

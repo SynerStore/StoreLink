@@ -2,4 +2,21 @@
   width: 52px;
   height: 100%;
   border-right: 1px solid rgb(230, 232, 235);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24px;
+
+  .arco-icon{
+    cursor: pointer;
+  }
+
+  .sider-top {
+    padding-top: 8px;
+  }
+
+  .sider-bottom {
+    padding-bottom: 16px;
+  }
 }

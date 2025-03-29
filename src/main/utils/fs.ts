@@ -78,6 +78,7 @@ export const createFileSHA256 = async (filePath: string) => {
 // 文件排名
 export const filesSort = (files: Array<{ name: string; isDirectory: boolean }>) => {
   return files
+    .filter((file) => file !== null)
     .sort((a: { name: string; isDirectory: boolean }, b: { name: string; isDirectory: boolean }) => {
       // 将文件名拆分为字母、数字、符号的混合数组
       const splitA = a.name.split(/(\d+)/);
