@@ -22,9 +22,7 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
   };
 
   const handleOpen = () => {
-    setTimeout(() => {
-      setIsModalOpen(true);
-    }, 100);
+    setIsModalOpen(true);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
