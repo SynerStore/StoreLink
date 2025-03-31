@@ -1,2 +1,2 @@
 export * from './dialog';
-export { getConfData, setConfData } from '../db';
+export { getConfData, setConfData, updateConfData } from '../db';

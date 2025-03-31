@@ -6,6 +6,7 @@ export enum EChannels {
 
   // store
   storeRequest = 'storeRequest',
+  storeConnect = 'storeConnect',
 
   // events
   eventsX = 'eventsX',

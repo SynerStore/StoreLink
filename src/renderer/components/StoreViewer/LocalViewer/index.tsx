@@ -125,13 +125,11 @@ const LocalViewer = (props: LocalViewerProps) => {
         <Space size={4}>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
             <Button type="outline" size="small">
-              {' '}
-              新建目录{' '}
+              新建目录
             </Button>
           </FolderCreateWrap>
           <Button type="outline" size="small">
-            {' '}
-            下载{' '}
+            下载
           </Button>
           <Dropdown
             trigger="click"

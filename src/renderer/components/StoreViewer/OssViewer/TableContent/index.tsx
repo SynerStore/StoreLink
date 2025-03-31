@@ -1,27 +1,18 @@
 import { useLayoutEffect, useState } from 'react';
 import { Table, Space, Button } from '@arco-design/web-react';
+import { IconDownload, IconInfoCircle, IconEdit, IconDelete } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
 
-import { EWindowSize, OssStorageClassMap, EOssStorageClass } from '@/types';
+import { EWindowSize, OssStorageClassMap, EOssStorageClass, TS3Object } from '@/types';
 import FileIcon from '@/renderer/components/FileIcon';
 import FileRenameWrap from '@/renderer/components/FileRenameWrap';
 import FileDeteleWrap from '@/renderer/components/FileDeteleWrap';
+import ContextMenu from '@/renderer/components/ContextMenu';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
-export type DataItem = {
-  etag: String;
-  lastModified: String;
-  name: String;
-  owner: String;
-  restoreInfo: String;
-  size: number;
-  storageClass: String;
-  type: String;
-  url: String;
-};
 export type TableContentProps = {
-  data: any[];
+  data: TS3Object[];
   loading: boolean;
   onPrefixChange: (prefix: string) => void;
   onFileView: (data: any) => void;
@@ -39,26 +30,61 @@ const TableContent = (props: TableContentProps) => {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
-      render: (text: any, record: any) => {
-        if (record.isDir) {
-          return (
-            <div className="file-item" onClick={() => onPrefixChange(record.path)}>
-              <FileIcon type="folder" /> <span>{text}</span>
-            </div>
-          );
-        } else {
-          return (
-            <div className="file-item" onClick={() => onFileView(record)}>
-              <FileIcon mime={record.mime} /> <span>{text}</span>
-            </div>
-          );
-        }
+      render: (text: any, record: TS3Object) => {
+        return (
+          <ContextMenu
+            menu={[
+              {
+                icon: <IconInfoCircle />,
+                text: '详情',
+                onClick: () => {},
+              },
+              {
+                icon: <IconDownload />,
+                text: '下载',
+                onClick: () => onDownload(record),
+              },
+              {
+                render: () => (
+                  <FileRenameWrap
+                    name={record.name as string}
+                    onRename={(newName: string) => onRename(record, newName)}
+                  >
+                    <Space size={2}>
+                      <IconEdit /> 重命名
+                    </Space>
+                  </FileRenameWrap>
+                ),
+              },
+              {
+                render: () => (
+                  <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
+                    <Space size={2}>
+                      <IconDelete /> 删除
+                    </Space>
+                  </FileDeteleWrap>
+                ),
+              },
+            ]}
+          >
+            {record.isDirectory ? (
+              <div draggable="true" className="file-item" onClick={() => onPrefixChange(record.key as string)}>
+                <FileIcon type="folder" /> <span>{text}</span>
+              </div>
+            ) : (
+              <div draggable="true" className="file-item" onClick={() => onFileView(record)}>
+                <FileIcon mime={record.mime as string} /> <span>{text}</span>
+              </div>
+            )}
+          </ContextMenu>
+        );
       },
     },
     {
       title: '大小',
       dataIndex: 'size',
       key: 'size',
+      width: 120,
       render: (val: number) => {
         return val ? calculateSize(val) : '--';
       },
@@ -67,14 +93,16 @@ const TableContent = (props: TableContentProps) => {
       title: '存储类型',
       dataIndex: 'storageClass',
       key: 'storageClass',
+      width: 180,
       render: (val: undefined | EOssStorageClass) => {
-        return val ? OssStorageClassMap[val] : '--';
+        return val || '--';
       },
     },
     {
       title: '修改时间',
       dataIndex: 'lastModified',
       key: 'lastModified',
+      width: 200,
       render: (val: string) => {
         return val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : '--';
       },
@@ -82,25 +110,23 @@ const TableContent = (props: TableContentProps) => {
     {
       title: '操作',
       key: 'actions',
-      // width: 180,
-      render: (_val: string, record: any) => {
+      with: 200,
+      render: (_val: string, record: TS3Object) => {
         return (
           <Space>
-            <Button color="default" size="small">
-              详情
-            </Button>
-            <Button color="default" size="small" onClick={() => onDownload(record)}>
-              下载
-            </Button>
-            <FileRenameWrap name={record.name} onRename={(newName: string) => onRename(record, newName)}>
-              <Button color="default" size="small">
-                重命名
-              </Button>
+            <Button icon={<IconInfoCircle />} type="text" color="default" size="small" />
+            <Button
+              icon={<IconDownload />}
+              type="text"
+              color="default"
+              size="small"
+              onClick={() => onDownload(record)}
+            />
+            <FileRenameWrap name={record.name as string} onRename={(newName: string) => onRename(record, newName)}>
+              <Button icon={<IconEdit />} type="text" color="default" size="small" />
             </FileRenameWrap>
             <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
-              <Button color="danger" size="small">
-                删除
-              </Button>
+              <Button icon={<IconDelete />} type="text" status="danger" size="small" />
             </FileDeteleWrap>
           </Space>
         );
@@ -108,19 +134,21 @@ const TableContent = (props: TableContentProps) => {
     },
   ];
 
-  const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: DataItem[]) => {
+  const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: TS3Object[]) => {
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
   };
 
   useLayoutEffect(() => {
-    seTableScrollHight(document.body.clientHeight - 196 - 55 - 20);
+    seTableScrollHight(document.body.clientHeight - 235);
   }, []);
 
   return (
     <div className="table-content">
       <Table
-        rowKey={'name'}
+        rowKey={'key'}
         size="small"
+        borderCell={false}
+        border={false}
         loading={loading}
         rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
         scroll={{ y: tableScrollHight }}

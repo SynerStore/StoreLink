@@ -4,6 +4,7 @@
   --header-height: 40px;
   --sider-width: 52px;
   --store-sider-width: 230px;
-  --viewer-content-height: calc(100vh - 190px);
+  --viewer-content-height: calc(100vh - 185px);
   --border-color: #e6e8eb;
+  --icon-hover-bg-color: #ededed;
 }

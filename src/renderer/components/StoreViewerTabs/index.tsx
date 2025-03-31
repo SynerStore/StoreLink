@@ -29,7 +29,6 @@ const StoreViewerTabs = () => {
   };
 
   const handleClose = (key: any) => {
-    console.log(key);
     removeTab(key);
   };
 

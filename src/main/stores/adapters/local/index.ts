@@ -15,10 +15,11 @@ import {
 
 class LocalStore implements IStorageHandler {
   root: string;
+  config: any;
   constructor(config: any) {
+    this.config = config;
     this.root = config.root;
   }
-
   //   需要获取权限 如何通过系统询问访问
   async test() {
     try {

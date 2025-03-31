@@ -37,18 +37,18 @@
   -webkit-app-region: none;
 
   .traffic {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
-    width: 32px;
-    height: 32px;
-    margin: 0 4px;
+    width: 30px;
+    height: 30px;
+    margin: 0 2px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
 
     &:hover {
-      background-color: #ededed;
+      background-color: var(--icon-hover-bg-color);
     }
   }
 }

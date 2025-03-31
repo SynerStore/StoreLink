@@ -1,9 +1,9 @@
 export const CHANNEL_NAME = `__CHANNEL_X__`;
 
-export const StoreTypes = [
+export const StoreBrands = [
   {
     brand: 'aliyun',
-    type: 's3',
+    type: 'oss',
   },
   {
     brand: 'local',

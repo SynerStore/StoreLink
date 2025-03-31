@@ -1,8 +1,11 @@
 import { useMemo } from 'react';
-import { Menu, Input } from '@arco-design/web-react';
+import { Menu, Input, Space, Button } from '@arco-design/web-react';
 import { groupBy } from 'lodash';
+import { IconEdit, IconDelete, IconPlus } from '@arco-design/web-react/icon';
 
+import StoreConnectModal from '@/renderer/components/StoreConnectModal';
 import MenuTitle from './MenuTitle';
+import ContextMenu from '@/renderer/components/ContextMenu';
 import { useConfigStore, useTabsStore } from '@/renderer/store';
 import './index.css';
 
@@ -39,9 +42,22 @@ const StoreSider = () => {
     });
   };
 
+  // 删除
+  const handleDelete = (key: string) => {};
+
+  //编辑
+  const handleEdit = () => {};
+
   return (
     <div className="store-sider">
-      <div className="store-sider-tip">存储库 </div>
+      <div className="store-sider-tip">
+        <span>存储库</span>
+        <StoreConnectModal>
+          <div className='store-sider-tip-add'>
+            <IconPlus style={{ fontSize: 'medium' }} />
+          </div>
+        </StoreConnectModal>
+      </div>
       <div className="store-sider-search">
         <Search />
       </div>
@@ -59,7 +75,27 @@ const StoreSider = () => {
             return (
               <SubMenu key={item.key} title={item.label}>
                 {item.children.map((child: any) => {
-                  return <MenuItem key={child.key}> {child.label}</MenuItem>;
+                  return (
+                    <ContextMenu
+                      key={child.key}
+                      menu={[
+                        {
+                          icon: <IconEdit />,
+                          text: '编辑',
+                          onClick: () => {},
+                        },
+                        {
+                          render: () => (
+                            <Space size={2}>
+                              <IconDelete /> 删除
+                            </Space>
+                          ),
+                        },
+                      ]}
+                    >
+                      <MenuItem key={child.key}>{child.label}</MenuItem>
+                    </ContextMenu>
+                  );
                 })}
               </SubMenu>
             );

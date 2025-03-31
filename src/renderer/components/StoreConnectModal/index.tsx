@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useRef } from 'react';
 import { Modal } from '@arco-design/web-react';
 
 import StoreSelection from './StoreSelection';
@@ -12,6 +12,7 @@ export type StoreConnectModalProps = {
 
 const StoreConnectModal = (props: StoreConnectModalProps) => {
   const { children, onAddConnection } = props;
+  const formRef = useRef<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeBrand, setActiveBrand] = useState('');
   const [step, setStep] = useState(0);
@@ -28,7 +29,10 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
     setIsModalOpen(false);
   };
 
-  const handleOk = () => {};
+  const handleOk = () => {
+    formRef.current.onConfirm();
+  };
+  
   return (
     <Fragment>
       <Modal
@@ -45,7 +49,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
         {step === 0 ? (
           <StoreSelection activeBrand={activeBrand} onActive={setActiveBrand} />
         ) : (
-          <StoreConnectForm brand={activeBrand} />
+          <StoreConnectForm brand={activeBrand} ref={formRef} />
         )}
       </Modal>
       <span onClick={() => setIsModalOpen(true)}>{children}</span>

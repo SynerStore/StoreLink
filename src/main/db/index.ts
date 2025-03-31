@@ -34,3 +34,8 @@ export async function setConfData(data: IConfigData) {
   confDB.data = data;
   await confDB.write();
 }
+
+export async function updateConfData(data: Partial<IConfigData>) {
+  confDB.data = { ...confDB.data, ...data };
+  await confDB.write();
+}

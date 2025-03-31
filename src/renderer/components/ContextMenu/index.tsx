@@ -13,6 +13,7 @@ function ContextMenu(props: ContextMenuProps) {
   const { children, menu = [] } = props;
   return (
     <Dropdown
+      unmountOnExit={false}
       trigger="contextMenu"
       position="bl"
       droplist={

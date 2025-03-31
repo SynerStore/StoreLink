@@ -29,12 +29,11 @@
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "noEmitOnError": true,
-    "typeRoots": ["./node_modules/@types", "./src"],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    },
-    "types":["./src/*.d.ts"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules/**/*"]

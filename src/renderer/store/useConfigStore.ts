@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
 
 import { events } from '@/renderer/utils';
@@ -7,10 +8,10 @@ export type Connection = {
   id: string;
   type: string;
   brand: string;
-  authInfo: Record<string, any>;
+  name: string;
+  config: Record<string, any>;
   createDate?: string;
   updateDate?: string;
-  subStores?: any[];
 };
 
 type DataState = {
@@ -19,37 +20,58 @@ type DataState = {
   initializeData: () => Promise<void>;
   removeConnection: (v: Connection) => void;
   updateConnection: (v: Connection) => void;
-  addConnection: (v: Connection) => void;
+  addConnection: (v: Connection | Connection[]) => Promise<void>;
 };
 
-// 账号连接的更新
-export const useConfigStore = create<DataState>((set) => ({
-  connections: [], // 连接
-  loading: false,
-  initializeData: async () => {
-    set(() => ({ loading: true }));
-    const res = await events.getConfData();
-    set(() => ({ loading: true }));
-    if (res) {
-      return set(() => ({ connections: res.connections }));
-    }
-  },
-  addConnection: (connection: Connection) => {
-    return set((state: any) => ({
-      connections: [
-        ...state.connections,
-        { connection, id: uuidv4(), createDate: new Date().toLocaleString(), updateDate: new Date().toLocaleString() },
-      ],
-    }));
-  },
-  removeConnection: (connection: Connection) => {
-    return set((state: any) => ({ connections: state.connections.filter((c: any) => c.id !== connection.id) }));
-  },
-  updateConnection: (connection: Connection) => {
-    return set((state: any) => ({
-      connections: state.connections.map((c: any) =>
-        c.id === connection.id ? { ...connection, updateDate: new Date().toLocaleString() } : c,
-      ),
-    }));
-  },
-}));
+// 使用泛型参数明确类型定义
+export const useConfigStore = create<DataState>()(
+  devtools(
+    (set, get) => ({
+      connections: [], // 连接
+      loading: false,
+      initializeData: async () => {
+        set(() => ({ loading: true }));
+        const res = await events.getConfData();
+        if (res) {
+          set(() => ({ connections: res.connections || [], loading: false }));
+        } else {
+          set(() => ({ loading: false }));
+        }
+      },
+      addConnection: async (connection: Connection | Connection[]) => {
+        if (!Array.isArray(connection)) {
+          connection = [connection];
+        }
+        const newConnections = connection.map((con: Connection) => ({
+          ...con,
+          id: con.id || uuidv4(), // 确保 id 唯一性
+          createDate: con.createDate || new Date().toLocaleString(),
+          updateDate: new Date().toLocaleString(),
+        }));
+        const currentConnections = get().connections;
+        const cons = [...currentConnections, ...newConnections];
+        await events.updateConfData({ connections: cons });
+        set(() => {
+          return { connections: cons };
+        });
+      },
+      removeConnection: (connection: Connection) => {
+        set((state) => ({
+          connections: state.connections.filter((c) => c.id !== connection.id),
+        }));
+      },
+      updateConnection: (connection: Connection) => {
+        set((state) => ({
+          connections: state.connections.map((c) =>
+            c.id === connection.id ? { ...connection, updateDate: new Date().toLocaleString() } : c,
+          ),
+        }));
+      },
+    }),
+
+    {
+      name: 'useConfigStore', // DevTools 中显示的名称
+      enabled: process.env.NODE_ENV !== 'production', // 生产环境禁用
+    },
+  ),
+);

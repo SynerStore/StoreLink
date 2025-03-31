@@ -25,6 +25,7 @@ body {
   padding: 2px 12px !important;
 }
 
+.arco-menu-item,
 .arco-menu-inline-header {
   line-height: 36px !important;
 }

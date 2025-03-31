@@ -1,30 +1,29 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Input, Dropdown, Space, Menu } from '@arco-design/web-react';
-import { IconLeft, IconRight, IconDown } from '@arco-design/web-react/icon';
+import { Button, Space, Input, Dropdown, Menu, Radio } from '@arco-design/web-react';
+import { IconLeft, IconRight, IconDown, IconList, IconApps } from '@arco-design/web-react/icon';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
 import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
 import ViewInput from '@/renderer/components/ViewInput';
-import { useConfigStore } from '@/renderer/store';
+import FileDropWrap from '@/renderer/components/FileDropWrap';
 import { PathHistory, events, storeRequest } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import './index.css';
 
-export type ObjectStoreViewerProps = {
-  id: string;
+const RadioGroup = Radio.Group;
+
+export type OssViewerProps = {
+  connectionId: string;
+  bucketName: string;
 };
-const OssViewer = (props: ObjectStoreViewerProps) => {
+const OssViewer = (props: OssViewerProps) => {
+  const { connectionId, bucketName } = props;
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
-  const [display, setDisplay] = useState<'table' | 'card'>('table');
-  const connections = useConfigStore((state: any) => state.connections);
+  const [display, setDisplay] = useState<'list' | 'card'>('list');
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
-  const connection = useMemo(() => {
-    const data = connections.find((item: any) => item.id === props.id);
-    return data;
-  }, [props.id]);
 
   const [canBack, canForward] = useMemo(() => {
     return [pathHistory?.canBack(), pathHistory?.canForward()];
@@ -44,12 +43,14 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
     setLoading(true);
     const res = await storeRequest({
       method: 'list',
-      id: connection.id,
-      params: { prefix: curPrefix },
+      id: connectionId,
+      params: {
+        prefix: curPrefix,
+      },
     });
     setLoading(false);
     if (res.success) {
-      setDataList(res.data);
+      setDataList(res.data.objects);
       console.log(res.data);
     }
   };
@@ -64,58 +65,73 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
   };
 
   const handleDownload = async (record: any) => {
-    const targetPath = await events.getSingleDirPath({});
-    if (targetPath) {
+    const localPath = await events.getSingleDirPath({});
+    if (localPath) {
       storeRequest({
         method: 'get',
-        id: connection.id,
-        params: { fileInfo: record, targetPath },
+        id: connectionId,
+        params: { bucketName: bucketName, prefix: curPrefix, key: record.key, localPath: localPath },
       });
     }
   };
 
+  // 上传文件
   const handleUpload = async () => {
     // 选择文件夹
     const localPaths = await events.getMultDirAndFilePath({});
     if (localPaths && localPaths.length) {
-      storeRequest({
-        method: 'put',
-        id: connection.id,
-        params: { localPaths, targetPath: curPrefix },
-      });
+      handlePut(localPaths);
     }
+  };
+
+  const handlePut = async (paths: string[]) => {
+    return storeRequest({
+      method: 'put',
+      id: connectionId,
+      params: {
+        bucketName,
+        prefix: curPrefix,
+        localPaths: paths,
+      },
+    });
   };
 
   const handlePutFolder = async (folderName: string) => {
     storeRequest({
       method: 'putFolder',
-      id: connection.id,
-      params: { folderName, targetPath: curPrefix },
+      id: connectionId,
+      params: {
+        bucketName,
+        prefix: curPrefix,
+        localPath: folderName,
+      },
     });
   };
 
-  const handleDelete = async (files: any) => {
-    const deletFiles = Array.isArray(files) ? files : [files];
+  const handleDelete = async (record: any) => {
     storeRequest({
       method: 'delete',
-      id: connection.id,
-      params: { deletFiles },
+      id: connectionId,
+      params: {
+        bucketName,
+        key: record.key,
+      },
     });
   };
 
-  const handleRename = async (fileInfo: any, newName: string) => {
+  const handleRename = async (record: any, newName: string) => {
     storeRequest({
       method: 'rename',
-      id: connection.id,
-      params: { fileInfo, newName },
+      id: connectionId,
+      params: { bucketName, prefix: curPrefix, oldKey: record.key, newKey: newName },
     });
   };
 
   useEffect(() => {
-    if (connection) {
+    if (connectionId) {
       handleGetObjects();
     }
-  }, [connection, curPrefix]);
+  }, [connectionId, curPrefix]);
 
   useEffect(() => {
     const instance = new PathHistory({ path: curPrefix });
@@ -126,26 +142,22 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
     <div className="viewer">
       <div className="viewer-path">
         <Space size={2}>
-          <Button disabled={!canBack} icon={<IconLeft />} onClick={handlePathBack} />
-          <Button disabled={!canForward} icon={<IconRight />} onClick={handlePathForward} />
+          <Button disabled={!canBack} icon={<IconLeft style={{ fontSize: "large"} } />} onClick={handlePathBack} />
+          <Button disabled={!canForward} icon={<IconRight style={{ fontSize: "large"} } />} onClick={handlePathForward} />
         </Space>
         <div className="viewer-path-input">
-          <Space size={4}>
-            <ViewInput value={curPrefix} onChange={handlePrefixChange} style={{ width: '100%' }} />
-            <Input.Search style={{ width: '240px' }} />
-            <Button onClick={handleGetObjects}> 刷新 </Button>
-          </Space>
+          <ViewInput prefix={bucketName} value={curPrefix} onChange={handlePrefixChange} style={{ width: '100%' }} />
         </div>
       </div>
       <div className="viewer-actions">
         <Space size={4}>
-          <Button type="primary" onClick={handleUpload}>
+          <Button type="primary" onClick={handleUpload} size="small">
             上传
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button> 新建目录 </Button>
+            <Button type="outline" size="small"> 新建目录 </Button>
           </FolderCreateWrap>
-          <Button> 下载 </Button>
+          <Button type="outline" size="small"> 下载 </Button>
           <Dropdown
             trigger="click"
             droplist={
@@ -156,31 +168,39 @@ const OssViewer = (props: ObjectStoreViewerProps) => {
               </Menu>
             }
           >
-            <Button icon={<IconDown />}>更多</Button>
+            <Button type="outline" size="small">
+              更多 <IconDown style={{ fontSize: "medium"} } />
+            </Button>
           </Dropdown>
         </Space>
         <Space size={4}>
-          {/* <Segmented
-            options={[
-              { value: 'List', icon: <MenuOutlined /> },
-              { value: 'Kanban', icon: <ProductOutlined /> },
-            ]}
-          /> */}
+          <Input.Search style={{ width: '240px' }} />
+          <Button onClick={handleGetObjects}> 刷新 </Button>
+          <RadioGroup type="button" name="lang" defaultValue="list">
+            <Radio value="list"  style={{ fontSize: "medium"} }>
+              <IconList />
+            </Radio>
+            <Radio value="card" style={{ fontSize: "medium"} }>
+              <IconApps />
+            </Radio>
+          </RadioGroup>
         </Space>
       </div>
       <div className="viewer-content">
-        {display === 'table' ? (
-          <TableContent
-            loading={loading}
-            data={dataList}
-            onPrefixChange={handlePrefixChange}
-            onFileView={handleFileView}
-            onDownload={handleDownload}
-            onDelete={handleDelete}
-            onRename={handleRename}
-          />
-        ) : null}
-        {display === 'card' ? <CardContent /> : null}
+        <FileDropWrap onDrop={handlePut}>
+          {display === 'list' ? (
+            <TableContent
+              loading={loading}
+              data={dataList}
+              onPrefixChange={handlePrefixChange}
+              onFileView={handleFileView}
+              onDownload={handleDownload}
+              onDelete={handleDelete}
+              onRename={handleRename}
+            />
+          ) : null}
+          {display === 'card' ? <CardContent /> : null}
+        </FileDropWrap>
       </div>
       <div className="viewer-footer">
         <span>已选 0 项，已拉取 200 项 </span>

@@ -4,8 +4,6 @@ import { winClose, winFullScreen, winMinimize, isInMac } from '@/renderer/utils'
 import logo from '@/assets/logo.png';
 import './index.css';
 import { useState } from 'react';
-
-debugger;
 const Header = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
 

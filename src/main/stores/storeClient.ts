@@ -1,7 +1,9 @@
 import S3Store from './adapters/s3';
 import LocalStore from './adapters/local';
 import FtpStore from './adapters/ftp';
+import OssStore from './adapters/oss';
 import { getConfData } from '../db';
+import { StoreTypes } from '@/types';
 
 const storePool = new Map();
 
@@ -18,13 +20,16 @@ const createStoreClient = (data: any): any => {
   const { type, config } = data;
   let storeClient;
   switch (type) {
-    case 's3':
+    case StoreTypes.OSS:
+      storeClient = new OssStore(config);
+      break;
+    case StoreTypes.S3:
       storeClient = new S3Store(config);
       break;
-    case 'local':
+    case StoreTypes.LOCAL:
       storeClient = new LocalStore(config);
       break;
-    case 'ftp':
+    case StoreTypes.FTP:
       storeClient = new FtpStore(config);
       break;
     default:
@@ -47,4 +52,9 @@ export const getStoreInstance = (id: string) => {
     storePool.set(id, storeClient);
     return storeClient;
   }
+};
+
+export const storeConnect = async (params: any) => {
+  const storeClient = await createStoreClient(params);
+  return storeClient.test();
 };
