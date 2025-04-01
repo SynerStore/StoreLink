@@ -1,5 +1,6 @@
 .store-sider {
   width: var(--store-sider-width);
+  overflow-x: hidden;
 
   .store-sider-tip {
     height: 28px;
@@ -38,6 +39,6 @@
 
   .store-sider-content {
     overflow-y: auto;
-    height: calc(100vh - 72px);
+    height: calc(100vh - 112px);
   }
 }

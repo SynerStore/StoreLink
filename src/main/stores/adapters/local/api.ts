@@ -3,13 +3,14 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { shell } from 'electron';
 
-import { filesSort } from '@/main/utils';
+import { filesSort, isHiddenFile } from '@/main/utils';
 import { TStoreObject } from '../store';
 
 export const formatObjects = async (filePath: string): Promise<TStoreObject | null> => {
   try {
     await fs.access(filePath);
     const stats = await fs.stat(filePath);
+    const isHdFile = await isHiddenFile(filePath);
     const result = {
       key: filePath,
       name: path.basename(filePath),
@@ -17,6 +18,7 @@ export const formatObjects = async (filePath: string): Promise<TStoreObject | nu
       size: stats.size,
       etag: '',
       storageClass: '',
+      isHiddenFile: isHdFile,
       isDirectory: stats.isDirectory(),
       mime: mime.lookup(filePath),
       isSymbolicLink: stats.isSymbolicLink(),
@@ -34,7 +36,8 @@ export async function list(root: string, params: ListParams) {
   const prefix = path.join(root, params.prefix);
   const files = await fs.readdir(prefix);
   const filesObjects = await Promise.all(files.map((file) => formatObjects(path.join(prefix, file))));
-  return filesSort(filesObjects as any[]);
+  const accessFiles = filesObjects.filter((file) => !!file);
+  return filesSort(accessFiles as any[]);
 }
 
 // 删除桶内的全部对象

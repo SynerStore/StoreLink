@@ -46,7 +46,6 @@ const OssForm = forwardRef((_props, ref) => {
   // 确认
   const handleConfirm = async () => {
     const res = await form.validate();
-    debugger;
     const connections = res.bucketName.map((item: any) => {
       const bucket: any = buckets.find((bucket: any) => bucket.name === item);
       return {

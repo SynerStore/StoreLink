@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { events } from '@/renderer/utils';
 
 export type Connection = {
-  id: string;
+  id?: string;
   type: string;
   brand: string;
   name: string;
@@ -54,7 +54,7 @@ export const useConfigStore = create<DataState>()(
         set(() => {
           return { connections: cons };
         });
-        return newConnections;  // 返回新增 connect 用于创建 tab
+        return newConnections; // 返回新增 connect 用于创建 tab
       },
       removeConnection: async (id: string) => {
         const currentConnections = get().connections;

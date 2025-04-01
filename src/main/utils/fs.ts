@@ -24,6 +24,18 @@ export const isObjectFolder = (key: string) => {
   return key.endsWith('/');
 };
 
+// 隐藏文件
+export const isHiddenFile = (filePath: string) => {
+  if (process.platform === 'win32') {
+    // Windows: 检查隐藏属性
+    const stats = fs.statSync(filePath);
+    return (stats.mode & 0o100000) !== 0; // 隐藏位判断
+  } else {
+    // macOS/Linux: 检查文件名
+    return path.basename(filePath).startsWith('.');
+  }
+};
+
 /**
  * 给定一组路径，返回所有文件路径
  * 忽略略掉.DS_Store和.git
@@ -104,6 +116,5 @@ const fileNameSort = (a: string, b: string) => {
 export const filesSort = (files: Array<{ name: string; isDirectory: boolean }>) => {
   const foldersData = files.filter((file) => file.isDirectory).sort((a, b) => fileNameSort(a.name, b.name));
   const filesData = files.filter((file) => !file.isDirectory).sort((a, b) => fileNameSort(a.name, b.name));
-
   return [...foldersData, ...filesData];
 };

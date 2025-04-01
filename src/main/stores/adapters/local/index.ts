@@ -34,7 +34,11 @@ class LocalStore implements IStorageHandler {
 
   async list(params: ListParams) {
     try {
-      const result = await list(this.root, params);
+      let result = await list(this.root, params);
+      // 隐藏文件
+      if (this.config?.isShowHiddenFiles === false) {
+        result = result.filter((item: any) => !item.isHiddenFile);
+      }
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);
