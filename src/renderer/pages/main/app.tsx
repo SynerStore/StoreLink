@@ -1,17 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import Header from '@/renderer/components/Header';
 import Sider from '@/renderer/components/Sider';
 import StoreSider from '@/renderer/components/StoreSider';
 import StoreViewerTabs from '@/renderer/components/StoreViewerTabs';
 import { useConfigStore } from '@/renderer/store';
+import { updateRootStyleProperty } from '@/renderer/utils';
 import './index.css';
 
 const App = () => {
   const configStore = useConfigStore();
-
+  const [storeSiderfold, setStoreSiderfold] = useState(false);
   const handleOnready = () => {
     configStore.initializeData();
+  };
+
+  const handleFold = () => {
+    setStoreSiderfold(!storeSiderfold);
+    const newStoreSiderWidth = storeSiderfold ? '230px' : '0px';
+    updateRootStyleProperty('--store-sider-width', newStoreSiderWidth);
   };
 
   useEffect(() => {
@@ -23,8 +30,8 @@ const App = () => {
     <div className="container">
       <Header />
       <main className="main">
-        <Sider />
-        <StoreSider />
+        <Sider fold={storeSiderfold} onFold={handleFold} />
+        <StoreSider fold={storeSiderfold} />
         <StoreViewerTabs />
       </main>
     </div>

@@ -118,3 +118,4 @@ export const filesSort = (files: Array<{ name: string; isDirectory: boolean }>) 
   const filesData = files.filter((file) => !file.isDirectory).sort((a, b) => fileNameSort(a.name, b.name));
   return [...foldersData, ...filesData];
 };
+

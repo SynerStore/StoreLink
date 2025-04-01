@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Space, Divider } from '@arco-design/web-react';
 import {
   IconSettings,
@@ -12,21 +11,19 @@ import {
 
 import SettingPanel from '../SettingPanel';
 import TaskPanel from '../TaskPanel';
-import { updateRootStyleProperty } from '@/renderer/utils';
 import './index.css';
 
-const Sider = () => {
-  const [showSettingPanel, setShowSettingPanel] = useState(false);
-  const handleFold = () => {
-    setShowSettingPanel(!showSettingPanel);
-    const newStoreSiderWidth = showSettingPanel ? '230px' : '0px';
-    updateRootStyleProperty('--store-sider-width', newStoreSiderWidth);
-  };
+export type SiderProps = {
+  onFold: () => void;
+  fold: boolean;
+};
+const Sider = (props: SiderProps) => {
+  const { onFold, fold } = props;
 
   return (
     <aside className="sider">
       <div className="sider-top">
-        {showSettingPanel ? <IconMenuUnfold onClick={handleFold} /> : <IconMenuFold onClick={handleFold} />}
+        {fold ? <IconMenuUnfold onClick={onFold} /> : <IconMenuFold onClick={onFold} />}
         <Divider style={{ margin: '8px 0px' }} />
         <IconHome style={{ color: 'var(--primary-color)' }} />
       </div>

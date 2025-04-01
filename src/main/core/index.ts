@@ -15,11 +15,11 @@ export default class Core {
   async startApp() {
     try {
       this.logger.info('app start');
-
+      // app.commandLine.appendSwitch('lang', 'zh-CN'); // 强制使用简体中文
       await this.beforeAppReady();
       await app.whenReady();
       await this.afterAppReady();
-
+      // console.log(app.getLocale()); // 应为 zh-CN 或 zh-TW
       this.logger.info('app start success');
     } catch (e) {
       this.logger.error(e);

@@ -4,7 +4,7 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { Buffer } from 'node:buffer';
 
-import { isDirectory, isObjectFolder, readDirectoryRecursive } from '@/main/utils';
+import { isDirectory, isObjectFolder, readDirectoryRecursive, streamOnProgress } from '@/main/utils';
 import { TStoreObject } from '../store';
 
 export const formatObjects = (objects: OSS.ObjectMeta[]): TStoreObject[] => {
@@ -91,14 +91,18 @@ export type GetObjectParams = {
   localPath?: string;
   localFilePath?: string;
 };
-export async function getObject(client: OSS, params: GetObjectParams) {
+export async function getObject(client: OSS, params: GetObjectParams, onProgress?: any) {
   const { key, localPath, localFilePath } = params;
   // 假如传入了文件路径，则直接下载到指定路径
   const targetFilePath = localFilePath || path.join(localPath as string, path.basename(key));
-  const result = await client.getStream(key, {
-    timeout: 1000 * 60 * 60 * 24,
-  });
-  result.stream.pipe(fs.createWriteStream(targetFilePath));
+  //   @ts-ignore
+  const meta = await client.getObjectMeta(key);
+  const size = meta.res.headers['content-length'];
+  const result = await client.getStream(key);
+  const readerStream = result.stream;
+  const writerStream = fs.createWriteStream(targetFilePath);
+  streamOnProgress(readerStream, writerStream, size, onProgress);
+  readerStream.pipe(writerStream);
 }
 
 // 获取桶内的全部对象

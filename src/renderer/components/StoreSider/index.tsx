@@ -14,7 +14,11 @@ const MenuItem = Menu.Item;
 const SubMenu = Menu.SubMenu;
 const Search = Input.Search;
 
-const StoreSider = () => {
+export type StoreSiderProps = {
+  fold: boolean;
+};
+const StoreSider = (props: StoreSiderProps) => {
+  const { fold } = props;
   const { connections, removeConnection } = useConfigStore();
   const { activeTab, addTab, removeTab } = useTabsStore();
 
@@ -56,7 +60,7 @@ const StoreSider = () => {
   const handleEdit = () => {};
 
   return (
-    <div className="store-sider">
+    <div className="store-sider" style={{ visibility: fold ? 'hidden' : 'visible' }}>
       <div className="store-sider-tip">
         <span>存储库</span>
         <StoreConnectModal>

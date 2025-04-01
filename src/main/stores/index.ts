@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 
 import { EChannels } from '@/types';
 import { getStoreInstance, storeConnect, storeRemove } from './storeManage';
+export * from './storeManage';
 
 // store request 注册
 export const storeRequestRegistry = () => {

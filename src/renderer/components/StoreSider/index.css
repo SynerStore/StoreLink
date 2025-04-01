@@ -1,6 +1,7 @@
 .store-sider {
   width: var(--store-sider-width);
   overflow-x: hidden;
+  border-right: 1px solid var(--border-color);
 
   .store-sider-tip {
     height: 28px;
