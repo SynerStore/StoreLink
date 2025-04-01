@@ -16,7 +16,9 @@ import {
 class LocalStore implements IStorageHandler {
   root: string;
   config: any;
-  constructor(config: any) {
+  id: string;
+  constructor(id: string, config: any) {
+    this.id = id;
     this.config = config;
     this.root = config.root;
   }

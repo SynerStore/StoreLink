@@ -11,18 +11,18 @@ const StoreViewer = (props: any) => {
   const connections = useConfigStore((state: any) => state.connections);
 
   const connection = useMemo(() => {
-    return connections.find((item: any) => item.id === data.connectionId);
-  }, [data.connectionId]);
+    return connections.find((item: any) => item.id === data.id);
+  }, [data.id]);
 
   switch (connection.type) {
     case StoreTypes.OSS:
-      return <OssViewer key={data.id} bucketName={data.name} connectionId={data.connectionId} />;
+      return <OssViewer key={data.id} bucketName={data.name} connectionId={data.id} />;
     case StoreTypes.S3:
-      return <S3Viewer key={data.id} bucketName={data.name} connectionId={data.connectionId} />;
+      return <S3Viewer key={data.id} bucketName={data.name} connectionId={data.id} />;
     case StoreTypes.LOCAL:
-      return <LocalViewer key={data.id} data={connection} connectionId={data.connectionId} />;
+      return <LocalViewer key={data.id} data={connection} connectionId={data.id} />;
     case StoreTypes.FTP:
-      return <FtpViewer key={data.id} data={connection} connectionId={data.connectionId} />;
+      return <FtpViewer key={data.id} data={connection} connectionId={data.id} />;
     default:
       return null;
   }

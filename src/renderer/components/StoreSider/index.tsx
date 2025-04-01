@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
-import { Menu, Input, Space, Button } from '@arco-design/web-react';
+import { Menu, Input, Space } from '@arco-design/web-react';
 import { groupBy } from 'lodash';
 import { IconEdit, IconDelete, IconPlus } from '@arco-design/web-react/icon';
 
 import StoreConnectModal from '@/renderer/components/StoreConnectModal';
 import MenuTitle from './MenuTitle';
+import ConnectionDeleteWrap from '@/renderer/components/ConnectionDeleteWrap';
 import ContextMenu from '@/renderer/components/ContextMenu';
 import { useConfigStore, useTabsStore } from '@/renderer/store';
 import './index.css';
@@ -14,8 +15,8 @@ const SubMenu = Menu.SubMenu;
 const Search = Input.Search;
 
 const StoreSider = () => {
-  const connections = useConfigStore((state: any) => state.connections);
-  const { activeTab, addTab } = useTabsStore();
+  const { connections, removeConnection } = useConfigStore();
+  const { activeTab, addTab, removeTab } = useTabsStore();
 
   const items = useMemo(() => {
     const groups = groupBy(connections, 'brand');
@@ -34,16 +35,22 @@ const StoreSider = () => {
   }, [connections]);
 
   const handleClick = (key: string) => {
-    const connection = connections.find((item: any) => item.id === key);
+    const connection: any = connections.find((item: any) => item.id === key);
     addTab({
       id: key,
       name: connection.name,
-      connectionId: key,
     });
   };
 
-  // 删除
-  const handleDelete = (key: string) => {};
+  /**
+   * 删除链接
+   * 删除tab
+   * 删除链接实例
+   * */
+  const handleDelete = async (data: { key: string; label: string }) => {
+    await removeConnection(data.key);
+    removeTab(data.key);
+  };
 
   //编辑
   const handleEdit = () => {};
@@ -53,7 +60,7 @@ const StoreSider = () => {
       <div className="store-sider-tip">
         <span>存储库</span>
         <StoreConnectModal>
-          <div className='store-sider-tip-add'>
+          <div className="store-sider-tip-add">
             <IconPlus style={{ fontSize: 'medium' }} />
           </div>
         </StoreConnectModal>
@@ -86,9 +93,11 @@ const StoreSider = () => {
                         },
                         {
                           render: () => (
-                            <Space size={2}>
-                              <IconDelete /> 删除
-                            </Space>
+                            <ConnectionDeleteWrap onDelete={handleDelete} connection={child}>
+                              <Space size={2}>
+                                <IconDelete /> 删除
+                              </Space>
+                            </ConnectionDeleteWrap>
                           ),
                         },
                       ]}

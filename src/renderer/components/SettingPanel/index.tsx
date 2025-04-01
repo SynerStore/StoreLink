@@ -14,6 +14,7 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
     <Fragment>
       <Modal
         title="设置"
+        simple={true}
         closable={false}
         maskClosable={false}
         visible={isModalOpen}

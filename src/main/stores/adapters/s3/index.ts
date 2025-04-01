@@ -28,17 +28,20 @@ import {
   listAllObjects,
 } from './api';
 import { IStorageHandler } from '../store';
+import { storeRemove } from '../../storeManage';
 
 class S3Store implements IStorageHandler {
-  public client: any;
+  private client: any;
   public config: any;
-  constructor(config: any) {
+  public id: string;
+  constructor(id: string, config: any) {
+    this.id = id;
+    this.config = config;
     this.init(config);
   }
 
   init(config: any) {
     const { region, endpoint, accessKeyId, secretAccessKey } = config;
-    this.config = config;
     this.client = new S3.S3Client({
       region: region,
       endpoint: endpoint,
@@ -58,6 +61,12 @@ class S3Store implements IStorageHandler {
     );
   }
 
+  // 销毁
+  destroy() {
+    storeRemove(this.id);
+  }
+
+  // 测试链接
   async test() {
     try {
       // 列举当前账号所有地域下的存储空间。
@@ -69,6 +78,7 @@ class S3Store implements IStorageHandler {
     }
   }
 
+  // 列表
   async list(params: ListParams) {
     try {
       const result = await list(this.client, params);

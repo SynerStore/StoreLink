@@ -8,7 +8,7 @@ import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
 import ViewInput from '@/renderer/components/ViewInput';
 import FileDropWrap from '@/renderer/components/FileDropWrap';
 import { PathHistory, events, storeRequest } from '@/renderer/utils';
-import { useLoading } from '@/renderer/hooks';
+import { useLoading, useUnmount } from '@/renderer/hooks';
 import './index.css';
 
 const RadioGroup = Radio.Group;
@@ -138,12 +138,23 @@ const OssViewer = (props: OssViewerProps) => {
     setPathHistory(instance);
   }, []);
 
+  useUnmount(() => {
+    storeRequest({
+      method: 'destroy',
+      id: connectionId,
+    });
+  });
+
   return (
     <div className="viewer">
       <div className="viewer-path">
         <Space size={2}>
-          <Button disabled={!canBack} icon={<IconLeft style={{ fontSize: "large"} } />} onClick={handlePathBack} />
-          <Button disabled={!canForward} icon={<IconRight style={{ fontSize: "large"} } />} onClick={handlePathForward} />
+          <Button disabled={!canBack} icon={<IconLeft style={{ fontSize: 'large' }} />} onClick={handlePathBack} />
+          <Button
+            disabled={!canForward}
+            icon={<IconRight style={{ fontSize: 'large' }} />}
+            onClick={handlePathForward}
+          />
         </Space>
         <div className="viewer-path-input">
           <ViewInput prefix={bucketName} value={curPrefix} onChange={handlePrefixChange} style={{ width: '100%' }} />
@@ -155,9 +166,13 @@ const OssViewer = (props: OssViewerProps) => {
             上传
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button type="outline" size="small"> 新建目录 </Button>
+            <Button type="outline" size="small">
+              新建目录
+            </Button>
           </FolderCreateWrap>
-          <Button type="outline" size="small"> 下载 </Button>
+          <Button type="outline" size="small">
+            下载
+          </Button>
           <Dropdown
             trigger="click"
             droplist={
@@ -169,7 +184,7 @@ const OssViewer = (props: OssViewerProps) => {
             }
           >
             <Button type="outline" size="small">
-              更多 <IconDown style={{ fontSize: "medium"} } />
+              更多 <IconDown style={{ fontSize: 'medium' }} />
             </Button>
           </Dropdown>
         </Space>
@@ -177,10 +192,10 @@ const OssViewer = (props: OssViewerProps) => {
           <Input.Search style={{ width: '240px' }} />
           <Button onClick={handleGetObjects}> 刷新 </Button>
           <RadioGroup type="button" name="lang" defaultValue="list">
-            <Radio value="list"  style={{ fontSize: "medium"} }>
+            <Radio value="list" style={{ fontSize: 'medium' }}>
               <IconList />
             </Radio>
-            <Radio value="card" style={{ fontSize: "medium"} }>
+            <Radio value="card" style={{ fontSize: 'medium' }}>
               <IconApps />
             </Radio>
           </RadioGroup>

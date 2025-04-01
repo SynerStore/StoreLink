@@ -7,7 +7,6 @@ import {
   ListParams,
   deleteFile,
   DeleteFileParams,
-  DeleteMultiFilesParams,
   deleteFolder,
   DeleteFolderParams,
   rename,
@@ -17,12 +16,16 @@ import {
   putFolder,
   PutFolderParams,
 } from './api';
+import { storeRemove } from '../../storeManage';
 
 class FtpStore implements IStorageHandler {
   public config: any;
   public client: any;
   private connecting: boolean;
-  constructor(config: any) {
+  public id: string;
+  constructor(id: string, config: any) {
+    this.id = id;
+    this.config = config;
     this.config = config;
     this.client = new Client();
     this.connecting = false;
@@ -51,6 +54,12 @@ class FtpStore implements IStorageHandler {
         console.log(err);
       }
     }
+  }
+
+  // 销毁
+  destroy() {
+    this.client.close();
+    storeRemove(this.id);
   }
 
   async reConnect() {

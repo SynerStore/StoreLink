@@ -5,7 +5,7 @@ import OssStore from './adapters/oss';
 import { getConfData } from '../db';
 import { StoreTypes } from '@/types';
 
-const storePool = new Map();
+export const storePool = new Map();
 
 const getConfigById = (id: string) => {
   const confData = getConfData();
@@ -17,20 +17,20 @@ const getConfigById = (id: string) => {
 };
 
 const createStoreClient = (data: any): any => {
-  const { type, config } = data;
+  const { id, type, config } = data;
   let storeClient;
   switch (type) {
     case StoreTypes.OSS:
-      storeClient = new OssStore(config);
+      storeClient = new OssStore(id, config);
       break;
     case StoreTypes.S3:
-      storeClient = new S3Store(config);
+      storeClient = new S3Store(id, config);
       break;
     case StoreTypes.LOCAL:
-      storeClient = new LocalStore(config);
+      storeClient = new LocalStore(id, config);
       break;
     case StoreTypes.FTP:
-      storeClient = new FtpStore(config);
+      storeClient = new FtpStore(id, config);
       break;
     default:
       break;
@@ -57,4 +57,8 @@ export const getStoreInstance = (id: string) => {
 export const storeConnect = async (params: any) => {
   const storeClient = await createStoreClient(params);
   return storeClient.test();
+};
+
+export const storeRemove = async (id: string) => {
+  storePool.delete(id);
 };

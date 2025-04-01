@@ -3,7 +3,6 @@ import { create } from 'zustand';
 export type Tab = {
   id: string;
   name: string;
-  connectionId: string;
 };
 
 type DataType = {
@@ -11,7 +10,7 @@ type DataType = {
   tabs: Tab[];
   addTab: (v: Tab) => void;
   selectTab: (v: string) => void;
-  removeTab: (v: Tab) => void;
+  removeTab: (v: string) => void;
 };
 
 // 账号连接的更新
@@ -41,7 +40,7 @@ export const useTabsStore = create<DataType>((set) => ({
       };
     });
   },
-  removeTab: (id: Tab) => {
+  removeTab: (id: string) => {
     return set((state: any) => {
       const newTabs = state.tabs.filter((c: any) => c.id !== id);
       return {

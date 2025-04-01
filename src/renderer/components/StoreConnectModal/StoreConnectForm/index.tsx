@@ -10,11 +10,10 @@ import { StoreBrands } from '@/constants';
 
 export type StoreConnectFormProps = {
   brand: string;
-  onAddConnection?: (v: any) => void;
 };
 const StoreConnectForm = forwardRef((props: StoreConnectFormProps, ref) => {
-  const { brand, onAddConnection } = props;
-  
+  const { brand } = props;
+
   const store: any = useMemo(() => {
     return StoreBrands.find((item: any) => item.brand === brand);
   }, [brand]);

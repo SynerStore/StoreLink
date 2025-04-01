@@ -28,11 +28,14 @@ import {
   PutFolderParams,
   putFolder,
 } from './api';
+import { storeRemove } from '../../storeManage';
 
 class OssStore implements IStorageHandler {
   public client: any;
   public config: any;
-  constructor(config: any) {
+  public id: string;
+  constructor(id: string, config: any) {
+    this.id = id;
     this.config = config;
     this.init(config);
   }
@@ -46,6 +49,12 @@ class OssStore implements IStorageHandler {
     });
   }
 
+  // 销毁
+  destroy() {
+    storeRemove(this.id);
+  }
+
+  // 测试链接
   async test() {
     try {
       let result;
@@ -60,6 +69,7 @@ class OssStore implements IStorageHandler {
     }
   }
 
+  // 列表
   async list(params: ListParams) {
     try {
       const result = await list(this.client, params);

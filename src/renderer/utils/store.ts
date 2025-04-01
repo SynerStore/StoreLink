@@ -9,3 +9,8 @@ export const storeConnect = async (data: Record<string, any>) => {
   if (!window.electronBridge) return;
   return await window.electronBridge.dispatch(EChannels.storeConnect, data);
 };
+
+export const storeRemove = async (id: string) => {
+  if (!window.electronBridge) return;
+  return await window.electronBridge.dispatch(EChannels.storeRemove, id);
+};

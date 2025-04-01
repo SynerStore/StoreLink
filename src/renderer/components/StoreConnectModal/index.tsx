@@ -3,6 +3,7 @@ import { Modal } from '@arco-design/web-react';
 
 import StoreSelection from './StoreSelection';
 import StoreConnectForm from './StoreConnectForm';
+import { useTabsStore } from '@/renderer/store';
 import './index.css';
 
 export type StoreConnectModalProps = {
@@ -16,6 +17,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeBrand, setActiveBrand] = useState('');
   const [step, setStep] = useState(0);
+  const { addTab } = useTabsStore();
 
   const handleNext = () => {
     setStep(step + 1);
@@ -29,10 +31,16 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
     setIsModalOpen(false);
   };
 
-  const handleOk = () => {
-    formRef.current.onConfirm();
+  const handleOk = async () => {
+    const connections = await formRef.current.onConfirm();
+    setIsModalOpen(false);
+    const activeConnection = connections[0];
+    addTab({
+      id: activeConnection.id,
+      name: activeConnection.name,
+    });
   };
-  
+
   return (
     <Fragment>
       <Modal

@@ -8,6 +8,7 @@ import { useConfigStore } from '@/renderer/store';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
+
 const OssForm = forwardRef((_props, ref) => {
   const [form] = Form.useForm();
   const [buckets, setBuckets] = useState([]);
@@ -45,6 +46,7 @@ const OssForm = forwardRef((_props, ref) => {
   // 确认
   const handleConfirm = async () => {
     const res = await form.validate();
+    debugger;
     const connections = res.bucketName.map((item: any) => {
       const bucket: any = buckets.find((bucket: any) => bucket.name === item);
       return {
@@ -59,7 +61,9 @@ const OssForm = forwardRef((_props, ref) => {
         },
       };
     });
-   await addConnection(connections);
+    // 判断是否存在
+    const newCons = await addConnection(connections);
+    return newCons;
   };
 
   return (

@@ -18,7 +18,7 @@ type DataState = {
   connections: Connection[];
   loading: boolean;
   initializeData: () => Promise<void>;
-  removeConnection: (v: Connection) => void;
+  removeConnection: (v: string) => void;
   updateConnection: (v: Connection) => void;
   addConnection: (v: Connection | Connection[]) => Promise<void>;
 };
@@ -54,11 +54,15 @@ export const useConfigStore = create<DataState>()(
         set(() => {
           return { connections: cons };
         });
+        return newConnections;  // 返回新增 connect 用于创建 tab
       },
-      removeConnection: (connection: Connection) => {
-        set((state) => ({
-          connections: state.connections.filter((c) => c.id !== connection.id),
-        }));
+      removeConnection: async (id: string) => {
+        const currentConnections = get().connections;
+        const cons = currentConnections.filter((c) => c.id !== id);
+        await events.updateConfData({ connections: cons });
+        set(() => {
+          return { connections: cons };
+        });
       },
       updateConnection: (connection: Connection) => {
         set((state) => ({
@@ -68,7 +72,6 @@ export const useConfigStore = create<DataState>()(
         }));
       },
     }),
-
     {
       name: 'useConfigStore', // DevTools 中显示的名称
       enabled: process.env.NODE_ENV !== 'production', // 生产环境禁用

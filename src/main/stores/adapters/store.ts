@@ -2,6 +2,7 @@ import { ResponseData } from '@/main/utils';
 
 export interface IStorageHandler {
   init?(config: any): void;
+  destroy?(): void;
   test?(): Promise<ResponseData<any>>;
   list?(params: any): Promise<ResponseData<any>>;
   get?(params: any): Promise<ResponseData<any>>;
