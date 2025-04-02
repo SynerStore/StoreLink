@@ -12,11 +12,10 @@ const rspackConfig: Configuration = {
   name: 'renderer',
   mode: isDev ? 'development' : 'production',
   entry: {
-    main: path.resolve(ROOT, './src/renderer/pages/main/index.tsx'),
-    launch: path.resolve(ROOT, './src/renderer/pages/launch/index.tsx'),
+    render_main: path.resolve(ROOT, './src/renderer/pages/main/index.tsx'),
+    render_launch: path.resolve(ROOT, './src/renderer/pages/launch/index.tsx'),
   },
   output: {
-    clean: true,
     path: path.resolve(ROOT, 'build'),
     filename: '[name].js',
     publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
@@ -27,6 +26,7 @@ const rspackConfig: Configuration = {
       '@': path.resolve(ROOT, 'src'),
     },
   },
+  devtool: isDev ? 'source-map' : false,
   devServer: {
     port: 3000,
     open: false,
@@ -81,14 +81,14 @@ const rspackConfig: Configuration = {
   },
   plugins: [
     new rspack.HtmlRspackPlugin({
-      title: 'main',
-      chunks: ['main'],
+      title: 'render_main',
+      chunks: ['render_main'],
       templateContent: HTML_TEMPLATE,
       filename: 'main.html',
     }),
     new rspack.HtmlRspackPlugin({
-      title: 'launch',
-      chunks: ['launch'],
+      title: 'render_launch',
+      chunks: ['render_launch'],
       templateContent: HTML_TEMPLATE,
       filename: 'launch.html',
     }),

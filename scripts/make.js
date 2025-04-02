@@ -6,8 +6,10 @@ const pkg = require('../package.json');
 
 const root_dir = path.normalize(path.join(__dirname, '..'));
 const dist_dir = path.normalize(path.join(__dirname, '..', 'dist'));
+const macIcon = path.normalize(path.join(__dirname, './assets', 'mac.png'));
+const winIcon = path.normalize(path.join(__dirname, './assets', 'win.png'));
 
-const APP_NAME = 'Developer Assistant';
+const APP_NAME = 'SynerStore';
 
 const TARGET_PLATFORMS_configs = {
   mac: {
@@ -22,7 +24,7 @@ const TARGET_PLATFORMS_configs = {
   all: {
     mac: ['dmg:x64', 'dmg:arm64', 'zip:universal'],
     win: ['nsis:ia32', 'nsis:x64', 'nsis:arm64', 'portable:x64', 'zip:x64' /* , 'appx:x64'*/],
-    // linux: ['AppImage:x64', 'AppImage:arm64', 'deb:x64', 'deb:arm64'],
+    linux: ['AppImage:x64', 'AppImage:arm64', 'deb:x64', 'deb:arm64'],
   },
 };
 
@@ -46,7 +48,7 @@ const beforeMake = async () => {
   fs.ensureDirSync(dist_dir);
 
   const app_pkg = {
-    name: pkg.name,
+    name: APP_NAME,
     version: pkg.version,
     description: pkg.description,
     author: pkg.author,
@@ -83,11 +85,11 @@ const doMake = async () => {
     ...targets,
     config: {
       ...cfg_common,
-      appId: 'developer.assistant.app',
+      appId: 'syner.store.app',
       productName: APP_NAME,
       asarUnpack: ['**/*.node'],
       mac: {
-        icon: '../assets/icon.png',
+        icon: macIcon,
         target: {
           target: 'default',
           arch: ['arm64', 'x64'],
@@ -96,20 +98,19 @@ const doMake = async () => {
         hardenedRuntime: true,
       },
       win: {
-        icon: '../assets/icon.png',
+        icon: winIcon,
       },
-
-      // linux: {
-      //   icon: '../assets/icon.png',
-      //   artifactName: '${productName}_linux_${arch}_${version}(${buildVersion}).${ext}',
-      //   category: 'Utility',
-      //   synopsis: 'An App for hosts management and switching.',
-      //   desktop: {
-      //     Name: 'Developer Assistant',
-      //     Type: 'Application',
-      //     GenericName: 'An App for hosts management and switching.',
-      //   },
-      // },
+      linux: {
+        icon: macIcon,
+        artifactName: '${productName}_linux_${arch}_${version}(${buildVersion}).${ext}',
+        category: 'Utility',
+        synopsis: 'An App for management your multiple storeage',
+        desktop: {
+          Name: APP_NAME,
+          Type: 'Application',
+          GenericName: 'An App for management your multiple storeage',
+        },
+      },
     },
   });
 

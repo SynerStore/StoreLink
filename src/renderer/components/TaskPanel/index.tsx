@@ -35,7 +35,7 @@ const TaskPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => {
         focusLock={false}
         simple={true}
         visible={isModalOpen}
-        style={{ width: 900 ,height:500}}
+        style={{ width: 900, height: 500 }}
         onCancel={() => setIsModalOpen(false)}
       >
         {/* 任务的上传下载同步等 */}

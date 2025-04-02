@@ -13,7 +13,6 @@ const config: Configuration = {
     preload: path.resolve(ROOT, './src/main/preload.ts'),
   },
   output: {
-    clean: true,
     path: path.resolve(ROOT, 'build'),
     filename: '[name].js',
     library: {

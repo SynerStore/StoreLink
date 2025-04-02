@@ -7,5 +7,5 @@ export const getRcloneCmdPath = () => {
   } else if (process.platform === 'linux') {
     return path.join('../../../bin/rclone', 'linux', 'rclone');
   }
-  return undefined
+  return undefined;
 };

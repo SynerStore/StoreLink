@@ -143,8 +143,12 @@ const S3Viewer = (props: S3ViwerProps) => {
     <div className="viewer">
       <div className="viewer-path">
         <Space size={2}>
-          <Button disabled={!canBack} icon={<IconLeft style={{ fontSize: "large"} } />} onClick={handlePathBack} />
-          <Button disabled={!canForward} icon={<IconRight style={{ fontSize: "large"} } />} onClick={handlePathForward} />
+          <Button disabled={!canBack} icon={<IconLeft style={{ fontSize: 'large' }} />} onClick={handlePathBack} />
+          <Button
+            disabled={!canForward}
+            icon={<IconRight style={{ fontSize: 'large' }} />}
+            onClick={handlePathForward}
+          />
         </Space>
         <div className="viewer-path-input">
           <ViewInput prefix={bucketName} value={curPrefix} onChange={handlePrefixChange} style={{ width: '100%' }} />
@@ -156,9 +160,15 @@ const S3Viewer = (props: S3ViwerProps) => {
             上传
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button type="outline" size="small"> 新建目录 </Button>
+            <Button type="outline" size="small">
+              {' '}
+              新建目录{' '}
+            </Button>
           </FolderCreateWrap>
-          <Button type="outline" size="small"> 下载 </Button>
+          <Button type="outline" size="small">
+            {' '}
+            下载{' '}
+          </Button>
           <Dropdown
             trigger="click"
             droplist={
@@ -170,7 +180,7 @@ const S3Viewer = (props: S3ViwerProps) => {
             }
           >
             <Button type="outline" size="small">
-              更多 <IconDown style={{ fontSize: "medium"} } />
+              更多 <IconDown style={{ fontSize: 'medium' }} />
             </Button>
           </Dropdown>
         </Space>
@@ -178,10 +188,10 @@ const S3Viewer = (props: S3ViwerProps) => {
           <Input.Search style={{ width: '240px' }} />
           <Button onClick={handleGetObjects}> 刷新 </Button>
           <RadioGroup type="button" name="lang" defaultValue="list">
-            <Radio value="list"  style={{ fontSize: "medium"} }>
+            <Radio value="list" style={{ fontSize: 'medium' }}>
               <IconList />
             </Radio>
-            <Radio value="card" style={{ fontSize: "medium"} }>
+            <Radio value="card" style={{ fontSize: 'medium' }}>
               <IconApps />
             </Radio>
           </RadioGroup>

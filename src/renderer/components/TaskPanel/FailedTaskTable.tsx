@@ -72,7 +72,7 @@ const DownloadingTaskTable = () => {
             删除
           </Button>
         </Space>
-        <InputSearch size='small' allowClear placeholder="搜索" style={{ width: 280 }} />
+        <InputSearch size="small" allowClear placeholder="搜索" style={{ width: 280 }} />
       </div>
       <Table columns={columns} data={data} />
     </div>

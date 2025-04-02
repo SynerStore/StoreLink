@@ -1,7 +1,7 @@
 {
   "name": "syner-store-client",
   "version": "0.0.1",
-  "description": "store  client",
+  "description": "An App for management your multiple storeage",
   "main": "main.js",
   "keywords": [
     "electron",
@@ -17,10 +17,14 @@
     "build:renderer": "cross-env NODE_ENV=production rspack build -c ./scripts/rspack.render.config.ts",
     "dev:main": "cross-env NODE_ENV=development rspack build -c  ./scripts/rspack.main.config.ts -w",
     "build:main": "cross-env NODE_ENV=production rspack build -c ./scripts/rspack.main.config.ts",
-    "build": "npm run build:renderer && npm run build:main",
+    "build": "npm run clean:build && npm run build:renderer && npm run build:main",
     "clean:build": "rimraf ./build",
     "install:rclone": "./scripts/update-rclone-binaries.sh ",
-    "package": ""
+    "make": "node scripts/make.js",
+    "make:mac": "cross-env MAKE_FOR=mac node scripts/make.js",
+    "make:win": "cross-env MAKE_FOR=win node scripts/make.js",
+    "make:linux": "cross-env MAKE_FOR=linux node scripts/make.js",
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,less,md}\""
   },
   "devDependencies": {
     "@rspack/cli": "^1.2.6",
@@ -39,6 +43,7 @@
     "electron-builder": "^25.1.8",
     "less": "^4.2.2",
     "less-loader": "^12.2.0",
+    "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",

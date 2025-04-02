@@ -7,7 +7,7 @@ import fs from 'fs-extra';
 import { Buffer } from 'node:buffer';
 
 import { isDirectory, isObjectFolder, readDirectoryRecursive } from '@/main/utils';
-import {TStoreObject} from "../store"
+import { TStoreObject } from '../store';
 
 export const formatObjects = (objects: S3._Object[], prefix: string): TStoreObject[] => {
   return objects

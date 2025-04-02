@@ -12,7 +12,7 @@ if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
     <React.StrictMode>
-      <ConfigProvider >
+      <ConfigProvider>
         <App />
       </ConfigProvider>
     </React.StrictMode>,

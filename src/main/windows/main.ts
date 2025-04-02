@@ -1,6 +1,6 @@
 import { BrowserWindowConstructorOptions } from 'electron';
 import path from 'path';
-import { isDev } from "../utils"
+import { isDev } from '../utils';
 import { EWindowSize, EPages } from '../../types';
 import { BaseWindow } from './base';
 export function getMainWindowOptions(): BrowserWindowConstructorOptions {
