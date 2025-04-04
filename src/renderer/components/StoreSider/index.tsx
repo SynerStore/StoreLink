@@ -7,7 +7,7 @@ import StoreConnectModal from '@/renderer/components/StoreConnectModal';
 import MenuTitle from './MenuTitle';
 import ConnectionDeleteWrap from '@/renderer/components/ConnectionDeleteWrap';
 import ContextMenu from '@/renderer/components/ContextMenu';
-import { useConfigStore, useTabsStore } from '@/renderer/store';
+import { useConfigStore, useTabsStore, ETabDisplay } from '@/renderer/store';
 import './index.css';
 
 const MenuItem = Menu.Item;
@@ -43,7 +43,7 @@ const StoreSider = (props: StoreSiderProps) => {
     addTab({
       id: key,
       name: connection.name,
-      display: 'list',
+      display: ETabDisplay.LIST,
     });
   };
 

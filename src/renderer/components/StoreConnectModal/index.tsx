@@ -3,7 +3,7 @@ import { Modal } from '@arco-design/web-react';
 
 import StoreSelection from './StoreSelection';
 import StoreConnectForm from './StoreConnectForm';
-import { useTabsStore } from '@/renderer/store';
+import { useTabsStore, ETabDisplay } from '@/renderer/store';
 import './index.css';
 
 export type StoreConnectModalProps = {
@@ -38,7 +38,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
     addTab({
       id: activeConnection.id,
       name: activeConnection.name,
-      display: 'list',
+      display: ETabDisplay.LIST,
     });
   };
 
