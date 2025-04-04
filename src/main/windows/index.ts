@@ -29,6 +29,7 @@ export default class Windows {
     ipcMain.handle(EChannels.windowClose, (event) => {
       this.logger.info(EChannels.windowClose);
       const { sender } = event;
+
       if (isInMac()) {
         const browserWindow = BrowserWindow.fromWebContents(sender);
         browserWindow?.hide();
@@ -83,7 +84,7 @@ export default class Windows {
   hiddenMainWindow() {
     const mainWindow = this.getWindowInstance(EPages.Main);
     if (mainWindow) {
-      mainWindow.show();
+      mainWindow.hidden();
     }
   }
 

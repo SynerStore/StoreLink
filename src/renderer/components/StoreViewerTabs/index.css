@@ -1,4 +1,18 @@
 .store-viewer-tabs {
   width: calc(100% - var(--store-sider-width) - var(--sider-width));
   height: 100%;
+  display: flex;
+
+  .store-viewer-tab-right {
+    border-left: 1px solid var(--border-color);
+  }
+}
+
+.store-viewer-split-icon {
+  cursor: pointer;
+  margin-right: 2px;
+
+  &:hover {
+    color: var(--primary-color);
+  }
 }

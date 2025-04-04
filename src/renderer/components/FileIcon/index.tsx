@@ -1,17 +1,22 @@
-import { getFiletype } from '../../utils';
+import { getFiletype } from '@/renderer/utils';
 
-import ExeIcon from '../../assets/file-icons/exe.png';
-import Folder from '../../assets/file-icons/folder.png';
-import ImageIcon from '../../assets/file-icons/jpg.png';
-import PdfIcon from '../../assets/file-icons/pdf.png';
-import MiscIcon from '../../assets/file-icons/misc.png';
+import ExeIcon from '@/renderer/assets/file-icons/exe.png';
+import Folder from '@/renderer/assets/file-icons/folder.png';
+import ImageIcon from '@/renderer/assets/file-icons/jpg.png';
+import PdfIcon from '@/renderer/assets/file-icons/pdf.png';
+import MiscIcon from '@/renderer/assets/file-icons/misc.png';
+import VideoIcon from '@/renderer/assets/file-icons/video.png';
+import TextIcon from '@/renderer/assets/file-icons/text.png';
+import ZipIcon from '@/renderer/assets/file-icons/zip.png';
 
 export type FileIconProps = {
   type?: string;
   mime?: string;
+  size?: 'small' | 'large';
 };
 
 const FileIcon = (props: FileIconProps) => {
+  const { size = 'small' } = props;
   const type = props.type || getFiletype(props?.mime || '');
 
   const getFileIcon = (type: string) => {
@@ -24,12 +29,25 @@ const FileIcon = (props: FileIconProps) => {
         return PdfIcon;
       case 'exe':
         return ExeIcon;
+      case 'video':
+        return VideoIcon;
+      case 'text':
+        return TextIcon;
+      case 'zip':
+        return ZipIcon;
       default:
         return MiscIcon;
     }
   };
 
-  return <img style={{ height: 16 }} src={getFileIcon(type)} alt="File Icon" />;
+  return (
+    <img
+      // @ts-ignore
+      style={{ height: size === 'small' ? 16 : 64, WebkitUserDrag: 'none' }}
+      src={getFileIcon(type)}
+      alt="File Icon"
+    />
+  );
 };
 
 export default FileIcon;

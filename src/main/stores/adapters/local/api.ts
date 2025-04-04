@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import { shell } from 'electron';
 
 import { filesSort, isHiddenFile } from '@/main/utils';
-import { TStoreObject } from '../store';
+import { TStoreObject } from '@/types';
 
 export const formatObjects = async (filePath: string): Promise<TStoreObject | null> => {
   try {

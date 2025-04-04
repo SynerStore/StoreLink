@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import { Buffer } from 'node:buffer';
 
 import { isDirectory, isObjectFolder, readDirectoryRecursive, streamOnProgress } from '@/main/utils';
-import { TStoreObject } from '../store';
+import { TStoreObject } from '@/types';
 
 export const formatObjects = (objects: OSS.ObjectMeta[]): TStoreObject[] => {
   return objects

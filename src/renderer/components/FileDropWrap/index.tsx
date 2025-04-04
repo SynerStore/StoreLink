@@ -13,12 +13,20 @@ const FileDropWrap = (props: FileDropWrapProps) => {
     event.stopPropagation();
     event.preventDefault();
     const filePaths = [];
+    // 本地文件拖拽
     if (event.dataTransfer.files.length !== 0) {
       for (const file of event.dataTransfer.files) {
         const filePath = window.electronBridge.getPathForFile(file);
         filePaths.push(filePath);
       }
     }
+    // 分栏文件拖拽
+    else if (event.dataTransfer.dropEffect === 'copy') {
+      // 判断是否是子元素，是子元素则不生效
+      const dataInfo = event.dataTransfer.getData('application/json');
+      console.log('文件拖拽信息', dataInfo);
+    }
+
     if (onDrop) onDrop(filePaths);
   };
 

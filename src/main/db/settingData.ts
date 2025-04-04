@@ -12,29 +12,28 @@ export const DEFAULT_CONFIG_DATA: ISettingData = {
   downloadPath: getDownloadsPath(),
 };
 
-export const USER_DATA_PATH = getUserDataPath();
-export const APP_CONFIG_PATH = path.join(USER_DATA_PATH, 'setting.json');
+const APP_CONFIG_PATH = path.join(getUserDataPath(), 'setting.json');
 
-let confDB: Low<ISettingData>;
+let db: Low<ISettingData>;
 
-export async function dbRegistory() {
-  fs.ensureFileSync(APP_CONFIG_PATH);
-
-  const adapter = new JSONFile<ISettingData>(APP_CONFIG_PATH);
-  confDB = new Low(adapter, DEFAULT_CONFIG_DATA);
-  await confDB.read();
+export async function settingDBRegistory() {
+  if (!fs.existsSync(APP_CONFIG_PATH)) {
+    await fs.writeJSON(APP_CONFIG_PATH, DEFAULT_CONFIG_DATA);
+  }
+  db = new Low(new JSONFile(APP_CONFIG_PATH), DEFAULT_CONFIG_DATA);
+  await db.read();
 }
 
 export function getSettingData(): ISettingData {
-  return confDB.data;
+  return db.data;
 }
 
 export async function setSettingData(data: ISettingData) {
-  confDB.data = data;
-  await confDB.write();
+  db.data = data;
+  await db.write();
 }
 
 export async function updateSettingData(data: Partial<ISettingData>) {
-  confDB.data = { ...confDB.data, ...data };
-  await confDB.write();
+  db.data = { ...db.data, ...data };
+  await db.write();
 }

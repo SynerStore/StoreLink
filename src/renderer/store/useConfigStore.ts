@@ -31,7 +31,7 @@ export const useConfigStore = create<DataState>()(
       loading: false,
       initializeData: async () => {
         set(() => ({ loading: true }));
-        const res = await events.getConfData();
+        const res = await events.getConnectionsData();
         if (res) {
           set(() => ({ connections: res.connections || [], loading: false }));
         } else {
@@ -50,7 +50,7 @@ export const useConfigStore = create<DataState>()(
         }));
         const currentConnections = get().connections;
         const cons = [...currentConnections, ...newConnections];
-        await events.updateConfData({ connections: cons });
+        await events.updateConnectionsData({ connections: cons });
         set(() => {
           return { connections: cons };
         });
@@ -59,7 +59,7 @@ export const useConfigStore = create<DataState>()(
       removeConnection: async (id: string) => {
         const currentConnections = get().connections;
         const cons = currentConnections.filter((c) => c.id !== id);
-        await events.updateConfData({ connections: cons });
+        await events.updateConnectionsData({ connections: cons });
         set(() => {
           return { connections: cons };
         });

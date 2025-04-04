@@ -70,7 +70,7 @@ const OssViewer = (props: OssViewerProps) => {
       storeRequest({
         method: 'get',
         id: connectionId,
-        params: { bucketName: bucketName, prefix: curPrefix, key: record.key, localPath: localPath },
+        params: { prefix: curPrefix, key: record.key, localPath: localPath },
       });
     }
   };
@@ -89,7 +89,6 @@ const OssViewer = (props: OssViewerProps) => {
       method: 'put',
       id: connectionId,
       params: {
-        bucketName,
         prefix: curPrefix,
         localPaths: paths,
       },
@@ -101,7 +100,6 @@ const OssViewer = (props: OssViewerProps) => {
       method: 'putFolder',
       id: connectionId,
       params: {
-        bucketName,
         prefix: curPrefix,
         localPath: folderName,
       },
@@ -113,7 +111,6 @@ const OssViewer = (props: OssViewerProps) => {
       method: 'delete',
       id: connectionId,
       params: {
-        bucketName,
         key: record.key,
       },
     });
@@ -123,7 +120,7 @@ const OssViewer = (props: OssViewerProps) => {
     storeRequest({
       method: 'rename',
       id: connectionId,
-      params: { bucketName, prefix: curPrefix, oldKey: record.key, newKey: newName },
+      params: { prefix: curPrefix, oldKey: record.key, newKey: newName },
     });
   };
 
@@ -191,7 +188,7 @@ const OssViewer = (props: OssViewerProps) => {
         <Space size={4}>
           <Input.Search style={{ width: '240px' }} />
           <Button onClick={handleGetObjects}> 刷新 </Button>
-          <RadioGroup type="button" name="lang" defaultValue="list">
+          <RadioGroup type="button" name="lang" defaultValue="list" onChange={setDisplay}>
             <Radio value="list" style={{ fontSize: 'medium' }}>
               <IconList />
             </Radio>
@@ -205,6 +202,7 @@ const OssViewer = (props: OssViewerProps) => {
         <FileDropWrap onDrop={handlePut}>
           {display === 'list' ? (
             <TableContent
+              connectionId={connectionId}
               loading={loading}
               data={dataList}
               onPrefixChange={handlePrefixChange}
@@ -214,7 +212,18 @@ const OssViewer = (props: OssViewerProps) => {
               onRename={handleRename}
             />
           ) : null}
-          {display === 'card' ? <CardContent /> : null}
+          {display === 'card' ? (
+            <CardContent
+              connectionId={connectionId}
+              loading={loading}
+              data={dataList}
+              onPrefixChange={handlePrefixChange}
+              onFileView={handleFileView}
+              onDownload={handleDownload}
+              onDelete={handleDelete}
+              onRename={handleRename}
+            />
+          ) : null}
         </FileDropWrap>
       </div>
       <div className="viewer-footer">

@@ -35,20 +35,20 @@ export default class Core {
   }
 
   private async afterAppReady() {
+    await this.resistry();
     this.windows = new Windows(this);
-    this.resistry();
     this.installExtension();
 
     app.on('activate', () => {
-      this.windows?.hiddenLaunchWindow();
+      // this.windows?.hiddenLaunchWindow();
       this.windows?.showMainWindow();
     });
   }
 
-  private resistry() {
-    dbRegistory();
-    storeRequestRegistry();
-    eventsRegistry();
+  private async resistry() {
+    await dbRegistory();
+    await storeRequestRegistry();
+    await eventsRegistry();
   }
 
   private async installExtension() {

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Tabs } from '@arco-design/web-react';
 import { IconHome } from '@arco-design/web-react/icon';
 
+// import { IconSplitColumn } from '@/renderer/components/Icons';
 import { useTabsStore } from '@/renderer/store';
 import StoreViewer from '../StoreViewer';
 import HomeTab from './HomeTab';
@@ -37,13 +38,15 @@ const StoreViewerTabs = () => {
       <Tabs
         size="small"
         type="card-gutter"
+        className="store-viewer-tab store-viewer-tab-left "
         editable
         justify
         showAddButton={false}
+        // extra={<IconSplitColumn className="store-viewer-split-icon" size={20} />}
         activeTab={activeTab}
         onDeleteTab={handleClose}
         onChange={handleClick}
-        style={{ width: '100%' }}
+        // style={{ width: '50%' }}
       >
         <TabPane
           key={'home'}
@@ -63,6 +66,25 @@ const StoreViewerTabs = () => {
           </TabPane>
         ))}
       </Tabs>
+      {/* <Tabs
+        size="small"
+        type="card-gutter"
+        editable
+        justify
+        className="store-viewer-tab store-viewer-tab-right "
+        showAddButton={false}
+        extra={<IconSplitColumn className="store-viewer-split-icon" />}
+        activeTab={activeTab}
+        onDeleteTab={handleClose}
+        onChange={handleClick}
+        style={{ width: '50%' }}
+      >
+        {items.map((tab: any) => (
+          <TabPane key={tab.key} title={tab.label}>
+            {tab.children}
+          </TabPane>
+        ))}
+      </Tabs> */}
     </div>
   );
 };

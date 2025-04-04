@@ -14,12 +14,14 @@ export const DefaultConfig = {
 };
 
 export class BaseWindow {
-  browserWindow: BrowserWindow | null = null;
-  page: EPages | null = null;
+  public browserWindow: BrowserWindow | null = null;
+  public page: EPages | null = null;
+  public options: Electron.BrowserWindowConstructorOptions | null = null;
   constructor() {}
 
   show() {
-    this.browserWindow?.show();
+    // this.browserWindow?.show();
+    this.create(this.options as Electron.BrowserWindowConstructorOptions);
   }
 
   hidden() {
@@ -27,6 +29,7 @@ export class BaseWindow {
   }
 
   create(options?: Electron.BrowserWindowConstructorOptions) {
+    this.options = options as Electron.BrowserWindowConstructorOptions;
     if (this.browserWindow && !this.browserWindow.isDestroyed()) {
       this.browserWindow.show();
       this.browserWindow.focus();

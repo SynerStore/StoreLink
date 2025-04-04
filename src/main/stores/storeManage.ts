@@ -2,15 +2,15 @@ import S3Store from './adapters/s3';
 import LocalStore from './adapters/local';
 import FtpStore from './adapters/ftp';
 import OssStore from './adapters/oss';
-import { getConfData } from '../db';
+import { getConnectionsData } from '../db';
 import { StoreTypes } from '@/types';
 
 export const storePool = new Map();
 
 const getConfigById = (id: string) => {
-  const confData = getConfData();
-  if (confData.connections.length) {
-    const connection = confData.connections.find((item: any) => item.id === id);
+  const dbData = getConnectionsData();
+  if (dbData.connections.length) {
+    const connection = dbData.connections.find((item: any) => item.id === id);
     return connection;
   }
   return undefined;

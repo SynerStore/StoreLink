@@ -1,41 +1,13 @@
-import fs from 'fs-extra';
-import { Low } from 'lowdb';
-import { JSONFile } from 'lowdb/node';
-import path from 'path';
-import { getUserDataPath } from '@/main/utils';
+import { connectionsDBRegistory } from './connectionsData';
+import { settingDBRegistory } from './settingData';
+import { viewerDBRegistory } from './viewerData';
 
-export interface IConfigData {
-  connections: any[];
-}
+export * from './connectionsData';
+export * from './settingData';
+export * from './viewerData';
 
-export const DEFAULT_CONFIG_DATA: IConfigData = {
-  connections: [],
+export const dbRegistory = async () => {
+  await connectionsDBRegistory();
+  await settingDBRegistory();
+  await viewerDBRegistory();
 };
-
-export const USER_DATA_PATH = getUserDataPath();
-console.log('USER_DATA_PATH================', USER_DATA_PATH);
-export const APP_CONFIG_PATH = path.join(USER_DATA_PATH, 'config.json');
-
-let confDB: Low<IConfigData>;
-
-export async function dbRegistory() {
-  fs.ensureFileSync(APP_CONFIG_PATH);
-
-  const adapter = new JSONFile<IConfigData>(APP_CONFIG_PATH);
-  confDB = new Low(adapter, DEFAULT_CONFIG_DATA);
-  await confDB.read();
-}
-
-export function getConfData(): IConfigData {
-  return confDB.data;
-}
-
-export async function setConfData(data: IConfigData) {
-  confDB.data = data;
-  await confDB.write();
-}
-
-export async function updateConfData(data: Partial<IConfigData>) {
-  confDB.data = { ...confDB.data, ...data };
-  await confDB.write();
-}

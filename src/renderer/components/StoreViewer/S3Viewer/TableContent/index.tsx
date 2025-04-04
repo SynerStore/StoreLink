@@ -1,9 +1,9 @@
 import { useLayoutEffect, useState } from 'react';
-import { Table, Space, Button } from '@arco-design/web-react';
+import { Table, Space } from '@arco-design/web-react';
 import { IconDownload, IconInfoCircle, IconEdit, IconDelete } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
 
-import { EWindowSize, OssStorageClassMap, EOssStorageClass, TS3Object } from '@/types';
+import { EWindowSize, EOssStorageClass, TStoreObject } from '@/types';
 import FileIcon from '@/renderer/components/FileIcon';
 import FileRenameWrap from '@/renderer/components/FileRenameWrap';
 import FileDeteleWrap from '@/renderer/components/FileDeteleWrap';
@@ -12,7 +12,7 @@ import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
 export type TableContentProps = {
-  data: TS3Object[];
+  data: TStoreObject[];
   loading: boolean;
   onPrefixChange: (prefix: string) => void;
   onFileView: (data: any) => void;
@@ -30,7 +30,7 @@ const TableContent = (props: TableContentProps) => {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
-      render: (text: any, record: TS3Object) => {
+      render: (text: any, record: TStoreObject) => {
         return (
           <ContextMenu
             menu={[
@@ -107,34 +107,9 @@ const TableContent = (props: TableContentProps) => {
         return val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : '--';
       },
     },
-    {
-      title: '操作',
-      key: 'actions',
-      with: 200,
-      render: (_val: string, record: TS3Object) => {
-        return (
-          <Space>
-            <Button icon={<IconInfoCircle />} type="text" color="default" size="small" />
-            <Button
-              icon={<IconDownload />}
-              type="text"
-              color="default"
-              size="small"
-              onClick={() => onDownload(record)}
-            />
-            <FileRenameWrap name={record.name as string} onRename={(newName: string) => onRename(record, newName)}>
-              <Button icon={<IconEdit />} type="text" color="default" size="small" />
-            </FileRenameWrap>
-            <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
-              <Button icon={<IconDelete />} type="text" status="danger" size="small" />
-            </FileDeteleWrap>
-          </Space>
-        );
-      },
-    },
   ];
 
-  const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: TS3Object[]) => {
+  const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: TStoreObject[]) => {
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
   };
 

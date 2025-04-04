@@ -90,6 +90,7 @@ const doMake = async () => {
       asarUnpack: ['**/*.node'],
       mac: {
         icon: macIcon,
+        category: 'public.app-category.utilities',
         target: {
           target: 'default',
           arch: ['arm64', 'x64'],

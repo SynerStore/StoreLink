@@ -46,9 +46,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 4px;
 
     &:hover {
       background-color: var(--icon-hover-bg-color);
+    }
+  }
+
+  .traffic-close {
+    &:hover {
+      color: #fff;
+      background-color: var(--icon-hover-danger-color);
     }
   }
 }

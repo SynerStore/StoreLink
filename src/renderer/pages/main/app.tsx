@@ -4,15 +4,17 @@ import Header from '@/renderer/components/Header';
 import Sider from '@/renderer/components/Sider';
 import StoreSider from '@/renderer/components/StoreSider';
 import StoreViewerTabs from '@/renderer/components/StoreViewerTabs';
-import { useConfigStore } from '@/renderer/store';
+import { useConfigStore, useTabsStore } from '@/renderer/store';
 import { updateRootStyleProperty } from '@/renderer/utils';
 import './index.css';
 
 const App = () => {
   const configStore = useConfigStore();
+  const tabsStore = useTabsStore();
   const [storeSiderfold, setStoreSiderfold] = useState(false);
   const handleOnready = () => {
     configStore.initializeData();
+    tabsStore.initializeData();
   };
 
   const handleFold = () => {

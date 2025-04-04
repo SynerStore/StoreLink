@@ -3,7 +3,7 @@ import mime from 'mime-types';
 import { Client, FileInfo, FileType } from 'basic-ftp';
 
 import { filesSort, runTasksSequentially } from '@/main/utils';
-import { TStoreObject } from '../store';
+import { TStoreObject } from '@/types';
 
 export const formatObjects = async (prefix: string, file: FileInfo): Promise<TStoreObject | null> => {
   const filePath = path.join(prefix, file.name);

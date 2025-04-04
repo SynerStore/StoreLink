@@ -1,16 +1,18 @@
 import { useLayoutEffect, useState } from 'react';
-import { Table, Space, Button } from '@arco-design/web-react';
+import { Table, Space } from '@arco-design/web-react';
+import { IconInfoCircle, IconEdit, IconDelete } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
 
-import { EWindowSize, EOssStorageClass, TS3Object } from '@/types';
+import { EWindowSize, TStoreObject } from '@/types';
 import FileIcon from '@/renderer/components/FileIcon';
 import FileRenameWrap from '@/renderer/components/FileRenameWrap';
 import FileDeteleWrap from '@/renderer/components/FileDeteleWrap';
+import ContextMenu from '@/renderer/components/ContextMenu';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
 export type TableContentProps = {
-  data: TS3Object[];
+  data: TStoreObject[];
   loading: boolean;
   onPrefixChange: (prefix: string) => void;
   onFileView: (data: any) => void;
@@ -27,20 +29,49 @@ const TableContent = (props: TableContentProps) => {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
-      render: (text: any, record: TS3Object) => {
-        if (record.isDirectory) {
-          return (
-            <div draggable="true" className="file-item" onClick={() => onPrefixChange(record.key as string)}>
-              <FileIcon type="folder" /> <span>{text}</span>
-            </div>
-          );
-        } else {
-          return (
-            <div draggable="true" className="file-item" onClick={() => onFileView(record)}>
-              <FileIcon mime={record.mime as string} /> <span>{text}</span>
-            </div>
-          );
-        }
+      render: (text: any, record: TStoreObject) => {
+        return (
+          <ContextMenu
+            menu={[
+              {
+                icon: <IconInfoCircle />,
+                text: '详情',
+                onClick: () => {},
+              },
+              {
+                render: () => (
+                  <FileRenameWrap
+                    name={record.name as string}
+                    onRename={(newName: string) => onRename(record, newName)}
+                  >
+                    <Space size={2}>
+                      <IconEdit /> 重命名
+                    </Space>
+                  </FileRenameWrap>
+                ),
+              },
+              {
+                render: () => (
+                  <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
+                    <Space size={2}>
+                      <IconDelete /> 删除
+                    </Space>
+                  </FileDeteleWrap>
+                ),
+              },
+            ]}
+          >
+            {record.isDirectory ? (
+              <div draggable="true" className="file-item" onClick={() => onPrefixChange(record.key as string)}>
+                <FileIcon type="folder" /> <span>{text}</span>
+              </div>
+            ) : (
+              <div draggable="true" className="file-item" onClick={() => onFileView(record)}>
+                <FileIcon mime={record.mime as string} /> <span>{text}</span>
+              </div>
+            )}
+          </ContextMenu>
+        );
       },
     },
     {
@@ -61,34 +92,9 @@ const TableContent = (props: TableContentProps) => {
         return val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : '--';
       },
     },
-    {
-      title: '操作',
-      key: 'actions',
-      width: 350,
-      render: (_val: string, record: TS3Object) => {
-        return (
-          <Space>
-            <Button color="default" size="small">
-              详情
-            </Button>
-
-            <FileRenameWrap name={record.name as string} onRename={(newName: string) => onRename(record, newName)}>
-              <Button color="default" size="small">
-                重命名
-              </Button>
-            </FileRenameWrap>
-            <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
-              <Button color="danger" size="small">
-                删除
-              </Button>
-            </FileDeteleWrap>
-          </Space>
-        );
-      },
-    },
   ];
 
-  const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: TS3Object[]) => {
+  const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: TStoreObject[]) => {
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
   };
 
