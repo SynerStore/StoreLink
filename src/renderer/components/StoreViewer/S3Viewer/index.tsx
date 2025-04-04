@@ -9,6 +9,7 @@ import ViewInput from '@/renderer/components/ViewInput';
 import FileDropWrap from '@/renderer/components/FileDropWrap';
 import { PathHistory, events, storeRequest } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
+import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import './index.css';
 
 const RadioGroup = Radio.Group;
@@ -16,14 +17,19 @@ const RadioGroup = Radio.Group;
 export type S3ViwerProps = {
   connectionId: string;
   bucketName: string;
+  data: Tab;
 };
 const S3Viewer = (props: S3ViwerProps) => {
-  const { connectionId, bucketName } = props;
+  const { connectionId, bucketName, data } = props;
+  const { updateTab } = useTabsStore();
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
-  const [display, setDisplay] = useState<'list' | 'card'>('list');
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
+
+  const display = useMemo(() => {
+    return data?.display || ETabDisplay.LIST;
+  }, [data?.display]);
 
   const [canBack, canForward] = useMemo(() => {
     return [pathHistory?.canBack(), pathHistory?.canForward()];
@@ -128,6 +134,10 @@ const S3Viewer = (props: S3ViwerProps) => {
     });
   };
 
+  const handleDisplayChange = (value: ETabDisplay) => {
+    updateTab({ ...data, display: value });
+  };
+
   useEffect(() => {
     if (connectionId) {
       handleGetObjects();
@@ -185,7 +195,7 @@ const S3Viewer = (props: S3ViwerProps) => {
         <Space size={4}>
           <Input.Search style={{ width: '240px' }} />
           <Button onClick={handleGetObjects}> 刷新 </Button>
-          <RadioGroup type="button" name="lang" defaultValue="list">
+          <RadioGroup type="button" name="lang" value={display} onChange={handleDisplayChange}>
             <Radio value="list" style={{ fontSize: 'medium' }}>
               <IconList />
             </Radio>
@@ -208,7 +218,18 @@ const S3Viewer = (props: S3ViwerProps) => {
               onRename={handleRename}
             />
           ) : null}
-          {display === 'card' ? <CardContent /> : null}
+          {display === 'card' ? (
+            <CardContent
+              connectionId={connectionId}
+              loading={loading}
+              data={dataList}
+              onPrefixChange={handlePrefixChange}
+              onFileView={handleFileView}
+              onDownload={handleDownload}
+              onDelete={handleDelete}
+              onRename={handleRename}
+            />
+          ) : null}
         </FileDropWrap>
       </div>
       <div className="viewer-footer">

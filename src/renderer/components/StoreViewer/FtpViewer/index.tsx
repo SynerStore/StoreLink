@@ -10,22 +10,27 @@ import ViewInput from '@/renderer/components/ViewInput';
 import FileDropWrap from '@/renderer/components/FileDropWrap';
 import { PathHistory, storeRequest, events } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
+import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import './index.css';
-import { isDirectory } from '@/main/utils';
 
 const RadioGroup = Radio.Group;
 
 export type FtpViewerProps = {
   connectionId: string;
-  data: any;
+  tabData: Tab;
+  connection: any;
 };
 const FtpViewer = (props: FtpViewerProps) => {
-  const { connectionId, data } = props;
+  const { connectionId, connection, tabData } = props;
+  const { updateTab } = useTabsStore();
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
-  const [display, setDisplay] = useState<'list' | 'card'>('list');
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
+
+  const display = useMemo(() => {
+    return tabData?.display || ETabDisplay.LIST;
+  }, [tabData?.display]);
 
   const [canBack, canForward] = useMemo(() => {
     return [pathHistory?.canBack(), pathHistory?.canForward()];
@@ -115,6 +120,10 @@ const FtpViewer = (props: FtpViewerProps) => {
     });
   };
 
+  const handleDisplayChange = (value: ETabDisplay) => {
+    updateTab({ ...tabData, display: value });
+  };
+
   useEffect(() => {
     if (connectionId) {
       handleGetObjects();
@@ -135,7 +144,7 @@ const FtpViewer = (props: FtpViewerProps) => {
         </Space>
         <div className="viewer-path-input">
           <ViewInput
-            prefix={data.config.root}
+            prefix={connection.config.root}
             value={curPrefix}
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
@@ -169,11 +178,11 @@ const FtpViewer = (props: FtpViewerProps) => {
         <Space size={4}>
           <Input.Search style={{ width: '240px' }} />
           <Button onClick={handleGetObjects}> 刷新 </Button>
-          <RadioGroup type="button" name="lang" defaultValue="list">
-            <Radio value="list">
+          <RadioGroup type="button" name="lang" value={display} onChange={handleDisplayChange}>
+            <Radio value="list" style={{ fontSize: 'medium' }}>
               <IconList />
             </Radio>
-            <Radio value="card">
+            <Radio value="card" style={{ fontSize: 'medium' }}>
               <IconApps />
             </Radio>
           </RadioGroup>
@@ -191,7 +200,18 @@ const FtpViewer = (props: FtpViewerProps) => {
               onRename={handleRename}
             />
           ) : null}
-          {display === 'card' ? <CardContent /> : null}
+          {display === 'card' ? (
+            <CardContent
+              connectionId={connectionId}
+              loading={loading}
+              data={dataList}
+              onPrefixChange={handlePrefixChange}
+              onFileView={handleFileView}
+              // onDownload={handleDownload}
+              onDelete={handleDelete}
+              onRename={handleRename}
+            />
+          ) : null}
         </FileDropWrap>
       </div>
       <div className="viewer-footer">

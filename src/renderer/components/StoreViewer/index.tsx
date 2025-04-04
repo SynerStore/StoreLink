@@ -34,13 +34,13 @@ const StoreViewer = (props: any) => {
 
   switch (connection.type) {
     case StoreTypes.OSS:
-      return <OssViewer key={data.id} bucketName={data.name} connectionId={data.id} />;
+      return <OssViewer data={data} key={data.id} bucketName={data.name} connectionId={data.id} />;
     case StoreTypes.S3:
-      return <S3Viewer key={data.id} bucketName={data.name} connectionId={data.id} />;
+      return <S3Viewer data={data} key={data.id} bucketName={data.name} connectionId={data.id} />;
     case StoreTypes.LOCAL:
-      return <LocalViewer key={data.id} data={connection} connectionId={data.id} />;
+      return <LocalViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     case StoreTypes.FTP:
-      return <FtpViewer key={data.id} data={connection} connectionId={data.id} />;
+      return <FtpViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     default:
       return null;
   }

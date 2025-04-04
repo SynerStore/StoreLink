@@ -88,7 +88,7 @@ const TableContent = (props: TableContentProps) => {
               },
             ]}
           >
-            <div draggable="true" className="file-item" data-info={dataInfo} onClick={() => handleFileClick(record)}>
+            <div draggable="true" className="file-item" data-info={dataInfo} onDoubleClick={() => handleFileClick(record)}>
               {record.isDirectory ? (
                 <Fragment>
                   <FileIcon type="folder" /> <span>{text}</span>

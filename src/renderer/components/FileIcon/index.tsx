@@ -2,7 +2,7 @@ import { getFiletype } from '@/renderer/utils';
 
 import ExeIcon from '@/renderer/assets/file-icons/exe.png';
 import Folder from '@/renderer/assets/file-icons/folder.png';
-import ImageIcon from '@/renderer/assets/file-icons/jpg.png';
+import ImageIcon from '@/renderer/assets/file-icons/png.png';
 import PdfIcon from '@/renderer/assets/file-icons/pdf.png';
 import MiscIcon from '@/renderer/assets/file-icons/misc.png';
 import VideoIcon from '@/renderer/assets/file-icons/video.png';

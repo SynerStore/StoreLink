@@ -9,6 +9,7 @@ import ViewInput from '@/renderer/components/ViewInput';
 import FileDropWrap from '@/renderer/components/FileDropWrap';
 import { PathHistory, events, storeRequest } from '@/renderer/utils';
 import { useLoading, useUnmount } from '@/renderer/hooks';
+import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import './index.css';
 
 const RadioGroup = Radio.Group;
@@ -16,14 +17,19 @@ const RadioGroup = Radio.Group;
 export type OssViewerProps = {
   connectionId: string;
   bucketName: string;
+  data: Tab;
 };
 const OssViewer = (props: OssViewerProps) => {
-  const { connectionId, bucketName } = props;
+  const { connectionId, bucketName, data } = props;
+  const { updateTab } = useTabsStore();
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
-  const [display, setDisplay] = useState<'list' | 'card'>('list');
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
+
+  const display = useMemo(() => {
+    return data?.display || ETabDisplay.LIST;
+  }, [data?.display]);
 
   const [canBack, canForward] = useMemo(() => {
     return [pathHistory?.canBack(), pathHistory?.canForward()];
@@ -124,6 +130,10 @@ const OssViewer = (props: OssViewerProps) => {
     });
   };
 
+  const handleDisplayChange = (value: ETabDisplay) => {
+    updateTab({ ...data, display: value });
+  };
+
   useEffect(() => {
     if (connectionId) {
       handleGetObjects();
@@ -188,7 +198,7 @@ const OssViewer = (props: OssViewerProps) => {
         <Space size={4}>
           <Input.Search style={{ width: '240px' }} />
           <Button onClick={handleGetObjects}> 刷新 </Button>
-          <RadioGroup type="button" name="lang" defaultValue="list" onChange={setDisplay}>
+          <RadioGroup type="button" name="lang" value={display} onChange={handleDisplayChange}>
             <Radio value="list" style={{ fontSize: 'medium' }}>
               <IconList />
             </Radio>

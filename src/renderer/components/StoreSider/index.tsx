@@ -43,6 +43,7 @@ const StoreSider = (props: StoreSiderProps) => {
     addTab({
       id: key,
       name: connection.name,
+      display: 'list',
     });
   };
 

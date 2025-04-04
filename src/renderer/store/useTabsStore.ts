@@ -3,9 +3,15 @@ import { devtools } from 'zustand/middleware';
 
 import { events } from '@/renderer/utils';
 
+export enum ETabDisplay {
+  LIST = 'list',
+  CARD = 'card',
+}
+
 export type Tab = {
   id: string;
   name: string;
+  display: ETabDisplay;
 };
 
 type DataType = {
@@ -16,6 +22,7 @@ type DataType = {
   addTab: (v: Tab) => Promise<void>;
   selectTab: (v: string) => Promise<void>;
   removeTab: (v: string) => Promise<void>;
+  updateTab: (v: Tab) => Promise<void>;
 };
 
 // 账号连接的更新
@@ -75,6 +82,20 @@ export const useTabsStore = create<DataType>()(
             activeTab: newActiveTab,
           };
         });
+      },
+      updateTab: async (params: Partial<Tab> & { id: string }) => {
+        const curTabs = get().tabs;
+        const newTabs = curTabs.map((c: any) => {
+          if (c.id === params.id) {
+            c = { ...c, ...params };
+          }
+          return c;
+        });
+        await events.updateViewerData({ tabs: newTabs });
+        return set((state: any) => ({
+          ...state,
+          tabs: newTabs,
+        }));
       },
     }),
     {

@@ -9,21 +9,27 @@ import ViewInput from '@/renderer/components/ViewInput';
 import FileDropWrap from '@/renderer/components/FileDropWrap';
 import { PathHistory, storeRequest } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
+import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import './index.css';
 
 const RadioGroup = Radio.Group;
 
 export type LocalViewerProps = {
   connectionId: string;
-  data: any;
+  tabData: Tab;
+  connection: any;
 };
 const LocalViewer = (props: LocalViewerProps) => {
-  const { connectionId, data } = props;
+  const { connectionId, tabData, connection } = props;
+  const { updateTab } = useTabsStore();
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
-  const [display, setDisplay] = useState<'list' | 'card'>('list');
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
+
+  const display = useMemo(() => {
+    return tabData?.display || ETabDisplay.LIST;
+  }, [tabData?.display]);
 
   const [canBack, canForward] = useMemo(() => {
     return [pathHistory?.canBack(), pathHistory?.canForward()];
@@ -56,13 +62,13 @@ const LocalViewer = (props: LocalViewerProps) => {
   };
 
   const handlePrefixChange = (value: string) => {
-    const nextPath = value.replace(data.config.root, '');
+    const nextPath = value.replace(connection.config.root, '');
     const prefix = pathHistory?.go(nextPath) as string;
     setCurPrefix(prefix);
   };
 
   const handleFileView = (data: any) => {
-    console.log('查看文件：', data.name);
+    console.log('查看文件：', connection.name);
   };
 
   const handlePutFolder = async (folderName: string) => {
@@ -94,6 +100,10 @@ const LocalViewer = (props: LocalViewerProps) => {
     });
   };
 
+  const handleDisplayChange = (value: ETabDisplay) => {
+    updateTab({ ...tabData, display: value });
+  };
+
   useEffect(() => {
     if (connectionId) {
       handleGetObjects();
@@ -114,7 +124,7 @@ const LocalViewer = (props: LocalViewerProps) => {
         </Space>
         <div className="viewer-path-input">
           <ViewInput
-            prefix={data.config.root}
+            prefix={connection.config.root}
             value={curPrefix}
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
@@ -149,11 +159,11 @@ const LocalViewer = (props: LocalViewerProps) => {
         <Space size={4}>
           <Input.Search style={{ width: '240px' }} />
           <Button onClick={handleGetObjects}> 刷新 </Button>
-          <RadioGroup type="button" name="lang" defaultValue="list">
-            <Radio value="list">
+          <RadioGroup type="button" name="lang" value={display} onChange={handleDisplayChange}>
+            <Radio value="list" style={{ fontSize: 'medium' }}>
               <IconList />
             </Radio>
-            <Radio value="card">
+            <Radio value="card" style={{ fontSize: 'medium' }}>
               <IconApps />
             </Radio>
           </RadioGroup>
@@ -171,7 +181,17 @@ const LocalViewer = (props: LocalViewerProps) => {
               onRename={handleRename}
             />
           ) : null}
-          {display === 'card' ? <CardContent /> : null}
+          {display === 'card' ? (
+            <CardContent
+              connectionId={connectionId}
+              loading={loading}
+              data={dataList}
+              onPrefixChange={handlePrefixChange}
+              onFileView={handleFileView}
+              onDelete={handleDelete}
+              onRename={handleRename}
+            />
+          ) : null}
         </FileDropWrap>
       </div>
       <div className="viewer-footer">

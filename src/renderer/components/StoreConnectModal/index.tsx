@@ -38,6 +38,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
     addTab({
       id: activeConnection.id,
       name: activeConnection.name,
+      display: 'list',
     });
   };
 

@@ -93,14 +93,14 @@ const rspackConfig: Configuration = {
       filename: 'launch.html',
     }),
     new rspack.ProgressPlugin({}),
-    new rspack.CopyRspackPlugin({
-      patterns: [
-        {
-          from: path.resolve(ROOT, './src/renderer/public'),
-          to: path.resolve(ROOT, './build'),
-        },
-      ],
-    }),
+    // new rspack.CopyRspackPlugin({
+    //   patterns: [
+    //     {
+    //       from: path.resolve(ROOT, './src/renderer/public'),
+    //       to: path.resolve(ROOT, './build'),
+    //     },
+    //   ],
+    // }),
     isDev ? new RefreshPlugin() : null,
   ].filter(Boolean),
 

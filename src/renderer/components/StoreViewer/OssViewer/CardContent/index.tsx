@@ -1,5 +1,5 @@
 import { Fragment, useLayoutEffect, useState } from 'react';
-import { Table, Space } from '@arco-design/web-react';
+import { Tooltip, Space } from '@arco-design/web-react';
 import { IconDownload, IconInfoCircle, IconEdit, IconDelete } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
 
@@ -47,25 +47,33 @@ const CardContent = (props: CardContentProps) => {
       <Space size={12} wrap>
         {data.map((item) => {
           return (
-            <div
+            <Tooltip
               key={item.key}
-              draggable="true"
-              className="file-item"
-              data-info={item}
-              onClick={() => handleFileClick(item)}
+              mini
+              position="bottom"
+              trigger="hover"
+              content={
+                <div>
+                  <div>名称:{item.name}</div>
+                  <div>大小:{calculateSize(item.size as number)}</div>
+                  <div>修改时间:{dayjs(item.lastModified).format('YYYY-MM-DD HH:mm:ss')}</div>
+                </div>
+              }
             >
-              {item.isDirectory ? (
-                <Fragment>
-                  <FileIcon size="large" type="folder" />
-                  <div className='file-name'>{item.name}</div>
-                </Fragment>
-              ) : (
-                <Fragment>
-                  <FileIcon size="large" mime={item.mime as string} />
-                  <div className='file-name'>{item.name}</div>
-                </Fragment>
-              )}
-            </div>
+              <div draggable="true" className="file-item" data-info={item} onDoubleClick={() => handleFileClick(item)}>
+                {item.isDirectory ? (
+                  <Fragment>
+                    <FileIcon size="large" type="folder" />
+                    <div className="file-name">{item.name}</div>
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    <FileIcon size="large" mime={item.mime as string} />
+                    <div className="file-name">{item.name}</div>
+                  </Fragment>
+                )}
+              </div>{' '}
+            </Tooltip>
           );
         })}
       </Space>

@@ -2,7 +2,7 @@ import { IconMinus, IconExpand, IconShrink, IconClose } from '@arco-design/web-r
 
 import { winClose, winFullScreen, winMinimize, isInMac } from '@/renderer/utils';
 import { IconFullScreen, IconUnFullScreen } from '@/renderer/components/Icons';
-import logo from '@/assets/logo.png';
+import logo from '@/renderer/assets/logo.png';
 import './index.css';
 import { useState } from 'react';
 const Header = () => {
