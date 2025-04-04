@@ -20,7 +20,6 @@ export class BaseWindow {
   constructor() {}
 
   show() {
-    // this.browserWindow?.show();
     this.create(this.options as Electron.BrowserWindowConstructorOptions);
   }
 
