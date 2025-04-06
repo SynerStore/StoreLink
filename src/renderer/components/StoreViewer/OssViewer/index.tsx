@@ -210,7 +210,7 @@ const OssViewer = (props: OssViewerProps) => {
       </div>
       <div className="viewer-content">
         <FileDropWrap onDrop={handlePut}>
-          {display === 'list' ? (
+          {display === ETabDisplay.LIST ? (
             <TableContent
               connectionId={connectionId}
               loading={loading}
@@ -222,7 +222,7 @@ const OssViewer = (props: OssViewerProps) => {
               onRename={handleRename}
             />
           ) : null}
-          {display === 'card' ? (
+          {display === ETabDisplay.CARD ? (
             <CardContent
               connectionId={connectionId}
               loading={loading}
@@ -237,7 +237,7 @@ const OssViewer = (props: OssViewerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
-        <span>已选 0 项，已拉取 200 项 </span>
+        <span>已选 0 项，已拉取 {dataList.length} 项 </span>
       </div>
     </div>
   );

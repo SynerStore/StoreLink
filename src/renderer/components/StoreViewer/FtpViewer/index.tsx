@@ -153,13 +153,17 @@ const FtpViewer = (props: FtpViewerProps) => {
       </div>
       <div className="viewer-actions">
         <Space size={4}>
-          <Button type="primary" onClick={handleUpload}>
+          <Button size="small" type="primary" onClick={handleUpload}>
             上传
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button type="outline"> 新建目录 </Button>
+            <Button size="small" type="outline">
+              新建目录
+            </Button>
           </FolderCreateWrap>
-          <Button type="outline"> 下载 </Button>
+          <Button size="small" type="outline">
+            下载
+          </Button>
           <Dropdown
             trigger="click"
             droplist={
@@ -170,7 +174,7 @@ const FtpViewer = (props: FtpViewerProps) => {
               </Menu>
             }
           >
-            <Button type="outline">
+            <Button size="small" type="outline">
               更多 <IconDown />
             </Button>
           </Dropdown>
@@ -190,8 +194,9 @@ const FtpViewer = (props: FtpViewerProps) => {
       </div>
       <div className="viewer-content">
         <FileDropWrap onDrop={handlePut}>
-          {display === 'list' ? (
+          {display === ETabDisplay.LIST ? (
             <TableContent
+              connectionId={connectionId}
               loading={loading}
               data={dataList}
               onPrefixChange={handlePrefixChange}
@@ -200,7 +205,7 @@ const FtpViewer = (props: FtpViewerProps) => {
               onRename={handleRename}
             />
           ) : null}
-          {display === 'card' ? (
+          {display === ETabDisplay.CARD ? (
             <CardContent
               connectionId={connectionId}
               loading={loading}
@@ -215,7 +220,7 @@ const FtpViewer = (props: FtpViewerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
-        <span>已选 0 项，已拉取 200 项 </span>
+        <span>已选 0 项，已拉取 {dataList.length} 项 </span>
       </div>
     </div>
   );

@@ -43,7 +43,7 @@ const FileIcon = (props: FileIconProps) => {
   return (
     <img
       // @ts-ignore
-      style={{ height: size === 'small' ? 16 : 64, WebkitUserDrag: 'none' }}
+      style={{ height: size === 'small' ? 18 : 64, WebkitUserDrag: 'none' }}
       src={getFileIcon(type)}
       alt="File Icon"
     />

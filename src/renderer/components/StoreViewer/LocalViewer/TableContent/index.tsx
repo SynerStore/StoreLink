@@ -1,17 +1,15 @@
-import { useLayoutEffect, useState } from 'react';
-import { Table, Space } from '@arco-design/web-react';
-import { IconInfoCircle, IconEdit, IconDelete } from '@arco-design/web-react/icon';
+import { Fragment, useLayoutEffect, useState } from 'react';
+import { Table } from '@arco-design/web-react';
 import dayjs from 'dayjs';
 
 import { EWindowSize, TStoreObject } from '@/types';
 import FileIcon from '@/renderer/components/FileIcon';
-import FileRenameWrap from '@/renderer/components/FileRenameWrap';
-import FileDeteleWrap from '@/renderer/components/FileDeteleWrap';
-import ContextMenu from '@/renderer/components/ContextMenu';
+import FileContextMenu from '@/renderer/components/FileContextMenu';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
 export type TableContentProps = {
+  connectionId: string;
   data: TStoreObject[];
   loading: boolean;
   onPrefixChange: (prefix: string) => void;
@@ -22,7 +20,15 @@ export type TableContentProps = {
 
 const TableContent = (props: TableContentProps) => {
   const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 196 - 55);
-  const { data, onPrefixChange, onFileView, loading, onRename, onDelete } = props;
+  const { data, connectionId, onPrefixChange, onFileView, loading, onRename, onDelete } = props;
+
+  const handleFileClick = (record: TStoreObject) => {
+    if (record.isDirectory) {
+      onPrefixChange(record.key as string);
+    } else {
+      onFileView(record);
+    }
+  };
 
   const columns = [
     {
@@ -30,47 +36,29 @@ const TableContent = (props: TableContentProps) => {
       dataIndex: 'name',
       key: 'name',
       render: (text: any, record: TStoreObject) => {
+        const dataInfo = JSON.stringify({
+          connectionId: connectionId,
+          key: record.key,
+        });
         return (
-          <ContextMenu
-            menu={[
-              {
-                icon: <IconInfoCircle />,
-                text: '详情',
-                onClick: () => {},
-              },
-              {
-                render: () => (
-                  <FileRenameWrap
-                    name={record.name as string}
-                    onRename={(newName: string) => onRename(record, newName)}
-                  >
-                    <Space size={2}>
-                      <IconEdit /> 重命名
-                    </Space>
-                  </FileRenameWrap>
-                ),
-              },
-              {
-                render: () => (
-                  <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
-                    <Space size={2}>
-                      <IconDelete /> 删除
-                    </Space>
-                  </FileDeteleWrap>
-                ),
-              },
-            ]}
-          >
-            {record.isDirectory ? (
-              <div draggable="true" className="file-item" onClick={() => onPrefixChange(record.key as string)}>
-                <FileIcon type="folder" /> <span>{text}</span>
-              </div>
-            ) : (
-              <div draggable="true" className="file-item" onClick={() => onFileView(record)}>
-                <FileIcon mime={record.mime as string} /> <span>{text}</span>
-              </div>
-            )}
-          </ContextMenu>
+          <FileContextMenu data={record} onDetail={(data: any) => {}} onRename={onRename} onDelete={onDelete}>
+            <div
+              draggable="true"
+              className="file-item"
+              data-info={dataInfo}
+              onDoubleClick={() => handleFileClick(record)}
+            >
+              {record.isDirectory ? (
+                <Fragment>
+                  <FileIcon type="folder" /> <span>{text}</span>
+                </Fragment>
+              ) : (
+                <Fragment>
+                  <FileIcon mime={record.mime as string} /> <span>{text}</span>
+                </Fragment>
+              )}
+            </div>
+          </FileContextMenu>
         );
       },
     },

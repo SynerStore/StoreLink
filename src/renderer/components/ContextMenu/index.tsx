@@ -1,13 +1,15 @@
 import { Dropdown, Menu, Space } from '@arco-design/web-react';
 
+export type MenuItem = {
+  icon?: React.ReactNode;
+  text?: string;
+  onClick?: () => void;
+  render?: () => React.ReactNode;
+};
+
 export type ContextMenuProps = {
   children: React.ReactNode;
-  menu?: {
-    icon?: React.ReactNode;
-    text?: string;
-    onClick?: () => void;
-    render?: () => React.ReactNode;
-  }[];
+  menu?: MenuItem[];
 };
 function ContextMenu(props: ContextMenuProps) {
   const { children, menu = [] } = props;

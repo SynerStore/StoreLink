@@ -1,13 +1,10 @@
 import { Fragment, useLayoutEffect, useState } from 'react';
-import { Table, Space } from '@arco-design/web-react';
-import { IconDownload, IconInfoCircle, IconEdit, IconDelete } from '@arco-design/web-react/icon';
+import { Table } from '@arco-design/web-react';
 import dayjs from 'dayjs';
 
 import { EWindowSize, EOssStorageClass, TStoreObject } from '@/types';
 import FileIcon from '@/renderer/components/FileIcon';
-import FileRenameWrap from '@/renderer/components/FileRenameWrap';
-import FileDeteleWrap from '@/renderer/components/FileDeteleWrap';
-import ContextMenu from '@/renderer/components/ContextMenu';
+import FileContextMenu from '@/renderer/components/FileContextMenu';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
@@ -53,42 +50,19 @@ const TableContent = (props: TableContentProps) => {
           key: record.key,
         });
         return (
-          <ContextMenu
-            menu={[
-              {
-                icon: <IconInfoCircle />,
-                text: '详情',
-                onClick: () => {},
-              },
-              {
-                icon: <IconDownload />,
-                text: '下载',
-                onClick: () => onDownload(record),
-              },
-              {
-                render: () => (
-                  <FileRenameWrap
-                    name={record.name as string}
-                    onRename={(newName: string) => onRename(record, newName)}
-                  >
-                    <Space size={2}>
-                      <IconEdit /> 重命名
-                    </Space>
-                  </FileRenameWrap>
-                ),
-              },
-              {
-                render: () => (
-                  <FileDeteleWrap fileInfo={record} onDelete={onDelete}>
-                    <Space size={2}>
-                      <IconDelete /> 删除
-                    </Space>
-                  </FileDeteleWrap>
-                ),
-              },
-            ]}
+          <FileContextMenu
+            data={record}
+            onDetail={(data: any) => {}}
+            onDownload={onDownload}
+            onRename={onRename}
+            onDelete={onDelete}
           >
-            <div draggable="true" className="file-item" data-info={dataInfo} onDoubleClick={() => handleFileClick(record)}>
+            <div
+              draggable="true"
+              className="file-item"
+              data-info={dataInfo}
+              onDoubleClick={() => handleFileClick(record)}
+            >
               {record.isDirectory ? (
                 <Fragment>
                   <FileIcon type="folder" /> <span>{text}</span>
@@ -99,7 +73,7 @@ const TableContent = (props: TableContentProps) => {
                 </Fragment>
               )}
             </div>
-          </ContextMenu>
+          </FileContextMenu>
         );
       },
     },

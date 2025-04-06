@@ -1,13 +1,10 @@
-import { Fragment, useLayoutEffect, useState } from 'react';
+import { Fragment } from 'react';
 import { Tooltip, Space } from '@arco-design/web-react';
-import { IconDownload, IconInfoCircle, IconEdit, IconDelete } from '@arco-design/web-react/icon';
 import dayjs from 'dayjs';
 
-import { EWindowSize, EOssStorageClass, TStoreObject } from '@/types';
+import { TStoreObject } from '@/types';
 import FileIcon from '@/renderer/components/FileIcon';
-import FileRenameWrap from '@/renderer/components/FileRenameWrap';
-import FileDeteleWrap from '@/renderer/components/FileDeteleWrap';
-import ContextMenu from '@/renderer/components/ContextMenu';
+import FileContextMenu from '@/renderer/components/FileContextMenu';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
@@ -23,7 +20,6 @@ export type CardContentProps = {
 };
 
 const CardContent = (props: CardContentProps) => {
-  const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 251);
   const { data, onPrefixChange, onFileView, onDownload, loading, onRename, onDelete, connectionId } = props;
 
   const handleFileClick = (record: TStoreObject) => {
@@ -38,42 +34,50 @@ const CardContent = (props: CardContentProps) => {
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
   };
 
-  useLayoutEffect(() => {
-    seTableScrollHight(document.body.clientHeight - 235);
-  }, []);
-
   return (
     <div className="cards-content">
       <Space size={12} wrap>
         {data.map((item) => {
           return (
-            <Tooltip
+            <FileContextMenu
               key={item.key}
-              mini
-              position="bottom"
-              trigger="hover"
-              content={
-                <div>
-                  <div>名称:{item.name}</div>
-                  <div>大小:{calculateSize(item.size as number)}</div>
-                  <div>修改时间:{dayjs(item.lastModified).format('YYYY-MM-DD HH:mm:ss')}</div>
-                </div>
-              }
+              data={item}
+              onDetail={(data: any) => {}}
+              onRename={onRename}
+              onDelete={onDelete}
             >
-              <div draggable="true" className="file-item" data-info={item} onDoubleClick={() => handleFileClick(item)}>
-                {item.isDirectory ? (
-                  <Fragment>
-                    <FileIcon size="large" type="folder" />
-                    <div className="file-name">{item.name}</div>
-                  </Fragment>
-                ) : (
-                  <Fragment>
-                    <FileIcon size="large" mime={item.mime as string} />
-                    <div className="file-name">{item.name}</div>
-                  </Fragment>
-                )}
-              </div>{' '}
-            </Tooltip>
+              <Tooltip
+                mini
+                position="bottom"
+                trigger="hover"
+                content={
+                  <div>
+                    <div>名称:{item.name}</div>
+                    <div>大小:{calculateSize(item.size as number)}</div>
+                    <div>修改时间:{dayjs(item.lastModified).format('YYYY-MM-DD HH:mm:ss')}</div>
+                  </div>
+                }
+              >
+                <div
+                  draggable="true"
+                  className="file-item"
+                  data-info={item}
+                  onDoubleClick={() => handleFileClick(item)}
+                >
+                  {item.isDirectory ? (
+                    <Fragment>
+                      <FileIcon size="large" type="folder" />
+                      <div className="file-name">{item.name}</div>
+                    </Fragment>
+                  ) : (
+                    <Fragment>
+                      <FileIcon size="large" mime={item.mime as string} />
+                      <div className="file-name">{item.name}</div>
+                    </Fragment>
+                  )}
+                </div>
+              </Tooltip>
+            </FileContextMenu>
           );
         })}
       </Space>

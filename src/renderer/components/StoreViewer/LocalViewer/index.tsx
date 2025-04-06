@@ -171,8 +171,9 @@ const LocalViewer = (props: LocalViewerProps) => {
       </div>
       <div className="viewer-content">
         <FileDropWrap>
-          {display === 'list' ? (
+          {display === ETabDisplay.LIST ? (
             <TableContent
+              connectionId={connectionId}
               loading={loading}
               data={dataList}
               onPrefixChange={handlePrefixChange}
@@ -181,7 +182,7 @@ const LocalViewer = (props: LocalViewerProps) => {
               onRename={handleRename}
             />
           ) : null}
-          {display === 'card' ? (
+          {display === ETabDisplay.CARD ? (
             <CardContent
               connectionId={connectionId}
               loading={loading}
@@ -195,7 +196,7 @@ const LocalViewer = (props: LocalViewerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
-        <span>已选 0 项，已拉取 200 项 </span>
+        <span>已选 0 项，已拉取 {dataList.length} 项 </span>
       </div>
     </div>
   );
