@@ -1,20 +1,19 @@
-import { useEffect } from 'react';
-import { Layout } from '@arco-design/web-react';
+import qs from 'query-string';
 
 import Header from '@/renderer/components/Header';
-
+import FileViewer from '@/renderer/components/FileViewer';
 import './index.css';
 
 const App = () => {
-  useEffect(() => {}, []);
+  const query = qs.parse(window.location.search);
 
   return (
-    <Layout style={{ width: '100vw', height: '100vh' }}>
-      <Layout.Header>
-        <Header />
-      </Layout.Header>
-      <Layout.Content>文件预览</Layout.Content>
-    </Layout>
+    <div className="container">
+      <Header />
+      <main className="main">
+        <FileViewer id={query.id as string} mime={query.mime as string} />
+      </main>
+    </div>
   );
 };
 

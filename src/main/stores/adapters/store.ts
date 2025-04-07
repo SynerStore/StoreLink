@@ -13,4 +13,5 @@ export interface IStorageHandler {
   deleteMulti?(params: any): Promise<ResponseData<any>>;
   rename?(params: any): Promise<ResponseData<any>>;
   statistic?(params: any): Promise<ResponseData<any>>;
+  getSourceUrl?(params: any): Promise<ResponseData<any>>;
 }

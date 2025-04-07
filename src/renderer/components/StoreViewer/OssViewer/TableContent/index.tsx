@@ -56,6 +56,7 @@ const TableContent = (props: TableContentProps) => {
             onDownload={onDownload}
             onRename={onRename}
             onDelete={onDelete}
+            onOpen={onFileView}
           >
             <div
               draggable="true"

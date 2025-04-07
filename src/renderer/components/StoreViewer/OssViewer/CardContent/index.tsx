@@ -46,6 +46,7 @@ const CardContent = (props: CardContentProps) => {
               onDownload={onDownload}
               onRename={onRename}
               onDelete={onDelete}
+              onOpen={onFileView}
             >
               <Tooltip
                 key={item.key}

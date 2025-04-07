@@ -27,7 +27,7 @@ export class BaseWindow {
     this.browserWindow?.hide();
   }
 
-  create(options?: Electron.BrowserWindowConstructorOptions) {
+  create(options?: Electron.BrowserWindowConstructorOptions, query?: Record<string, any>) {
     this.options = options as Electron.BrowserWindowConstructorOptions;
     if (this.browserWindow && !this.browserWindow.isDestroyed()) {
       this.browserWindow.show();
@@ -35,7 +35,7 @@ export class BaseWindow {
     } else {
       this.browserWindow = new BrowserWindow(merge({}, DefaultConfig, options));
 
-      this.browserWindow.loadURL(getPageUrl(this.page as EPages));
+      this.browserWindow.loadURL(getPageUrl(this.page as EPages, query));
 
       this.browserWindow.on('ready-to-show', () => {
         this.browserWindow?.show();

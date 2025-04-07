@@ -1,8 +1,9 @@
-import { app, session } from 'electron';
+import { app, session, protocol } from 'electron';
 import path from 'path';
 import os from 'os';
 
 import Windows from '../windows';
+import ViewerWindowManager from '../viewer';
 import { storeRequestRegistry } from '../stores';
 import eventsRegistry from '../events/registry';
 import { dbRegistory } from '../db';
@@ -11,15 +12,15 @@ import { logger, isDev } from '../utils';
 export default class Core {
   logger = logger.scope('Core');
   windows: Windows | null = null;
+  viewer: ViewerWindowManager | null = null;
 
   async startApp() {
     try {
       this.logger.info('app start');
-      // app.commandLine.appendSwitch('lang', 'zh-CN'); // 强制使用简体中文
       await this.beforeAppReady();
+      protocol.registerSchemesAsPrivileged([{ scheme: 'localfile', privileges: { bypassCSP: true } }]);
       await app.whenReady();
       await this.afterAppReady();
-      // console.log(app.getLocale()); // 应为 zh-CN 或 zh-TW
       this.logger.info('app start success');
     } catch (e) {
       this.logger.error(e);
@@ -37,6 +38,7 @@ export default class Core {
   private async afterAppReady() {
     await this.resistry();
     this.windows = new Windows(this);
+    this.viewer = new ViewerWindowManager();
     this.installExtension();
 
     app.on('activate', () => {

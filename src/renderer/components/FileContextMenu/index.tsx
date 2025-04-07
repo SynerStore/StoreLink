@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Space } from '@arco-design/web-react';
 
 import { IconDownload, IconInfoCircle, IconEdit, IconEye, IconDelete, IconCopy } from '@arco-design/web-react/icon';
@@ -31,7 +31,7 @@ const FileContextMenu = (props: any) => {
       });
     }
 
-    if (onOpen) {
+    if (onOpen && !data.isDirectory) {
       baseMenus.push({
         icon: <IconEye />,
         text: '查看',
@@ -59,7 +59,7 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         render: () => (
           <FileRenameWrap name={data.name as string} onRename={(newName: string) => onRename(data, newName)}>
-            <Space size={2}>
+            <Space size={1}>
               <IconEdit /> 重命名
             </Space>
           </FileRenameWrap>
@@ -71,7 +71,7 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         render: () => (
           <FileDeteleWrap fileInfo={data} onDelete={onDelete}>
-            <Space size={2}>
+            <Space size={1}>
               <IconDelete /> 删除
             </Space>
           </FileDeteleWrap>

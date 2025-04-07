@@ -27,6 +27,8 @@ import {
   listAllObjects,
   PutFolderParams,
   putFolder,
+  getSourceUrl,
+  GetSourceUrlParams,
 } from './api';
 import { storeRemove } from '../../storeManage';
 
@@ -46,6 +48,7 @@ class OssStore implements IStorageHandler {
       accessKeyId: accessKeyId, // 推荐使用环境变量获取；用户的 SecretId，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参考https://cloud.tencent.com/document/product/598/37140
       accessKeySecret: secretAccessKey,
       bucket: bucketName,
+      secure: true,
     });
   }
 
@@ -171,6 +174,16 @@ class OssStore implements IStorageHandler {
   async statistic(params: ListAllObjectsParams) {
     try {
       const result = await listAllObjects(this.client, params);
+      return sucessResponse(result);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
+
+  // 获取资源地址
+  async getSourceUrl(params: GetSourceUrlParams) {
+    try {
+      const result = await getSourceUrl(this.client, params);
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);

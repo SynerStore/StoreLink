@@ -4,7 +4,14 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { Buffer } from 'node:buffer';
 
-import { isDirectory, isObjectFolder, readDirectoryRecursive, streamOnProgress } from '@/main/utils';
+import {
+  isDirectory,
+  isObjectFolder,
+  readDirectoryRecursive,
+  streamOnProgress,
+  getTempPath,
+  streamToPromise,
+} from '@/main/utils';
 import { TStoreObject } from '@/types';
 
 export const formatObjects = (objects: OSS.ObjectMeta[]): TStoreObject[] => {
@@ -333,4 +340,28 @@ export async function renameFolder(client: OSS, params: RenameFolderParams) {
     const objectNewKey = key.replace(oldKey, newKeyPrefix);
     await renameObject(client, { oldKey: key, newKey: objectNewKey });
   }
+}
+
+// 获取资源地址
+export type GetSourceUrlParams = {
+  key: string;
+};
+export async function getSourceUrl(client: OSS, params: GetSourceUrlParams) {
+  const { key } = params;
+  //   @ts-ignore
+  const meta = await client.getObjectMeta(key);
+  const size = meta.res.headers['content-length'];
+  let result;
+  if (size < 1024 * 1024 * 8) {
+    // @ts-ignore
+    result = await client.signatureUrlV4('GET', 3600, undefined, key);
+  } else {
+    const targetFilePath = path.join(getTempPath(), path.basename(key));
+    const readerStream = (await client.getStream(key)).stream;
+    const writerStream = fs.createWriteStream(targetFilePath);
+    await streamToPromise(readerStream, writerStream);
+    result = `file://${targetFilePath}`;
+  }
+
+  return result;
 }

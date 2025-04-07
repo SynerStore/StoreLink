@@ -1,6 +1,8 @@
 import { app } from 'electron';
 import path from 'node:path';
+import qs from 'query-string';
 
+import { isEmpty } from '@/main/utils';
 import { isDev } from './env';
 import { EPages } from '../../types';
 
@@ -20,12 +22,14 @@ export const getPublicFilePath = ({ name }: { name: string }) => {
   return encodeURI('file://' + ensureFirstBackSlash(pathName));
 };
 
-export const getPageUrl = (page: EPages) => {
+export const getPageUrl = (page: EPages, query: Record<string, any> = {}) => {
+  let url;
   if (isDev) {
-    return `http://localhost:3000/${page}.html`;
+    url = `http://localhost:3000/${page}.html`;
   } else {
-    return getPublicFilePath({ name: `${page}.html` });
+    url = getPublicFilePath({ name: `${page}.html` });
   }
+  return url + (isEmpty(query) ? '' : `?${qs.stringify(query)}`);
 };
 
 // rclone 路径

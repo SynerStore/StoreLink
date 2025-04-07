@@ -7,7 +7,7 @@ import CardContent from './CardContent';
 import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
 import ViewInput from '@/renderer/components/ViewInput';
 import FileDropWrap from '@/renderer/components/FileDropWrap';
-import { PathHistory, events, storeRequest } from '@/renderer/utils';
+import { PathHistory, events, storeRequest, openViewer } from '@/renderer/utils';
 import { useLoading, useUnmount } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import './index.css';
@@ -68,6 +68,9 @@ const OssViewer = (props: OssViewerProps) => {
 
   const handleFileView = (data: any) => {
     console.log('查看文件：', data.name);
+    openViewer(connectionId, data);
+
+    // 打开一个新窗口显示文件内容
   };
 
   const handleDownload = async (record: any) => {

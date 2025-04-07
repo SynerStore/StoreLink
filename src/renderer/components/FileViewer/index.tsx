@@ -1,0 +1,57 @@
+import React, { useMemo, useState, useEffect } from 'react';
+import { Spin } from '@arco-design/web-react';
+
+import MarkdownViewer from './MarkdownViewer';
+import PdfViewer from './PdfViewer';
+import TxtViewer from './TxtViewer';
+import VideoViewer from './VideoViewer';
+import ImageViewer from './ImageViewer';
+import { getFiletype, getViewerSource } from '@/renderer/utils';
+import { useLoading } from '@/renderer/hooks';
+import "./index.css";
+
+export type FileViewerProps = {
+  mime: string;
+  id: string;
+};
+const FileViewer = (props: FileViewerProps) => {
+  const { loading, setLoading } = useLoading();
+  const [sourceUrl, setSourceUrl] = useState('');
+  const type = getFiletype(props?.mime || '');
+
+  const handleGetViewerSource = async () => {
+    setLoading(true);
+    const { src } = await getViewerSource(props.id);
+    setSourceUrl(src);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    handleGetViewerSource();
+  }, []);
+
+  const ViewerComponent = useMemo(() => {
+    switch (type) {
+      case 'image':
+        return ImageViewer;
+      case 'pdf':
+        return PdfViewer;
+      case 'video':
+        return VideoViewer;
+      case 'text':
+        return TxtViewer;
+      case 'markdown':
+        return MarkdownViewer;
+      default:
+        return null;
+    }
+  }, [type]);
+
+  return (
+    <Spin className="file-viewer-spin" dot loading={loading}>
+      {ViewerComponent ? React.createElement(ViewerComponent, { src: sourceUrl }) : <div> 该文档无法查看</div>}
+    </Spin>
+  );
+};
+
+export default FileViewer;

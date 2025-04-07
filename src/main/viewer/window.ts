@@ -2,7 +2,7 @@ import { BrowserWindowConstructorOptions } from 'electron';
 import path from 'path';
 import { isDev } from '../utils';
 import { EWindowSize, EPages } from '../../types';
-import { BaseWindow } from './base';
+import { BaseWindow } from '../windows/base';
 export function getMainWindowOptions(): BrowserWindowConstructorOptions {
   return {
     width: EWindowSize.width,
@@ -16,6 +16,7 @@ export function getMainWindowOptions(): BrowserWindowConstructorOptions {
     },
     resizable: true,
     webPreferences: {
+      webSecurity: false,
       devTools: isDev,
       nodeIntegration: true,
       contextIsolation: true,
@@ -25,9 +26,10 @@ export function getMainWindowOptions(): BrowserWindowConstructorOptions {
 }
 
 export class ViewerWindow extends BaseWindow {
-  page: EPages = EPages.Main;
-  constructor() {
+  page: EPages = EPages.Viewer;
+  id: string | undefined = undefined;
+  constructor(query: Record<string, any>) {
     super();
-    this.create(getMainWindowOptions());
+    this.create(getMainWindowOptions(), query);
   }
 }

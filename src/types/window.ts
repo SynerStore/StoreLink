@@ -10,4 +10,5 @@ export enum EWindowSize {
 export enum EPages {
   Main = 'main',
   Launch = 'launch',
+  Viewer = 'viewer',
 }

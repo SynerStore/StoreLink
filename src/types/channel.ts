@@ -11,6 +11,10 @@ export enum EChannels {
 
   // events
   eventsX = 'eventsX',
+
+  // viewer
+  openViewer = 'openViewer',
+  getViewerSource = 'getViewerSource',
 }
 
 export type ChannelData = {

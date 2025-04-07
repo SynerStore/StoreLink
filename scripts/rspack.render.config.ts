@@ -14,6 +14,7 @@ const rspackConfig: Configuration = {
   entry: {
     render_main: path.resolve(ROOT, './src/renderer/pages/main/index.tsx'),
     render_launch: path.resolve(ROOT, './src/renderer/pages/launch/index.tsx'),
+    render_viewer: path.resolve(ROOT, './src/renderer/pages/viewer/index.tsx'),
   },
   output: {
     path: path.resolve(ROOT, 'build'),
@@ -92,15 +93,21 @@ const rspackConfig: Configuration = {
       templateContent: HTML_TEMPLATE,
       filename: 'launch.html',
     }),
+    new rspack.HtmlRspackPlugin({
+      title: 'render_viewer',
+      chunks: ['render_viewer'],
+      templateContent: HTML_TEMPLATE,
+      filename: 'viewer.html',
+    }),
     new rspack.ProgressPlugin({}),
-    // new rspack.CopyRspackPlugin({
-    //   patterns: [
-    //     {
-    //       from: path.resolve(ROOT, './src/renderer/public'),
-    //       to: path.resolve(ROOT, './build'),
-    //     },
-    //   ],
-    // }),
+    new rspack.CopyRspackPlugin({
+      patterns: [
+        {
+          from: path.resolve(ROOT, './node_modules/pdfjs-dist/build/pdf.worker.mjs'),
+          to: path.resolve(ROOT, './build/pdf.worker.mjs'),
+        },
+      ],
+    }),
     isDev ? new RefreshPlugin() : null,
   ].filter(Boolean),
 
