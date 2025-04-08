@@ -26,6 +26,8 @@ import {
   renameObject,
   ListAllObjectsParams,
   listAllObjects,
+  getSourceUrl,
+  GetSourceUrlParams,
 } from './api';
 import { IStorageHandler } from '../store';
 import { storeRemove } from '../../storeManage';
@@ -181,6 +183,16 @@ class S3Store implements IStorageHandler {
   async statistic(params: ListAllObjectsParams) {
     try {
       const result = await listAllObjects(this.client, params);
+      return sucessResponse(result);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
+
+  // 获取资源地址
+  async getSourceUrl(params: GetSourceUrlParams) {
+    try {
+      const result = await getSourceUrl(this.client, params);
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);

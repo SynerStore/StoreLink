@@ -15,12 +15,13 @@ export type TableContentProps = {
   onPrefixChange: (prefix: string) => void;
   onFileView: (data: any) => void;
   onDelete: (data: any) => Promise<void>;
+  onDownload: (data: any) => Promise<void>;
   onRename: (data: any, newName: string) => Promise<void>;
 };
 
 const TableContent = (props: TableContentProps) => {
   const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 196 - 55);
-  const { data, connectionId, onPrefixChange, onFileView, loading, onRename, onDelete } = props;
+  const { data, connectionId, onPrefixChange, onDownload, onFileView, loading, onRename, onDelete } = props;
 
   const handleFileClick = (record: TStoreObject) => {
     if (record.isDirectory) {
@@ -41,7 +42,13 @@ const TableContent = (props: TableContentProps) => {
           key: record.key,
         });
         return (
-          <FileContextMenu data={record} onDetail={(data: any) => {}} onRename={onRename} onDelete={onDelete}>
+          <FileContextMenu
+            data={record}
+            onDetail={(data: any) => {}}
+            onRename={onRename}
+            onDelete={onDelete}
+            onDownload={onDownload}
+          >
             <div
               draggable="true"
               className="file-item"

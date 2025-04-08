@@ -11,6 +11,7 @@ import {
   DeleteMultiFilesParams,
   rename,
   RenameParams,
+  GetSourceUrlParams,getSourceUrl
 } from './api';
 
 class LocalStore implements IStorageHandler {
@@ -76,6 +77,16 @@ class LocalStore implements IStorageHandler {
       return errorResponse(err.message);
     }
   }
+
+   // 获取资源地址
+    async getSourceUrl(params: GetSourceUrlParams) {
+      try {
+        const result = await getSourceUrl( params);
+        return sucessResponse(result);
+      } catch (err: any) {
+        return errorResponse(err.message);
+      }
+    }
 }
 
 export default LocalStore;

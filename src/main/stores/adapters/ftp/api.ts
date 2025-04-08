@@ -1,8 +1,9 @@
 import path from 'node:path';
 import mime from 'mime-types';
 import { Client, FileInfo, FileType } from 'basic-ftp';
+import fs from 'fs-extra';
 
-import { filesSort, runTasksSequentially } from '@/main/utils';
+import { filesSort, runTasksSequentially, getTempPath, getMd5ByString } from '@/main/utils';
 import { TStoreObject } from '@/types';
 
 export const formatObjects = async (prefix: string, file: FileInfo): Promise<TStoreObject | null> => {
@@ -27,6 +28,35 @@ export async function list(client: Client, params: ListParams) {
   const files = await client.list(params.prefix || '/');
   const filesObjects = await Promise.all(files.map((file: FileInfo) => formatObjects(params.prefix, file)));
   return filesSort(filesObjects as any[]);
+}
+
+export type GetFileParams = {
+  key: string;
+  localPath?: string;
+};
+export async function getFile(client: Client, params: GetFileParams) {
+  const { key, localPath } = params;
+  const targetFilePath = path.join(localPath as string, path.basename(key));
+  const writerStream = fs.createWriteStream(targetFilePath);
+  await client.downloadTo(writerStream, key);
+  client.trackProgress((info) => {
+    console.log('File', info.name);
+    console.log('Type', info.type);
+    console.log('Transferred', info.bytes);
+    console.log('Transferred Overall', info.bytesOverall);
+  });
+  return;
+}
+
+export type GetFolderParams = {
+  key: string;
+  localPath?: string;
+};
+export async function getFolder(client: Client, params: GetFolderParams) {
+  const { key, localPath } = params;
+  const targetFilePath = path.join(localPath as string, path.basename(key));
+  await client.downloadToDir(targetFilePath, key);
+  return;
 }
 
 export type DeleteFileParams = {
@@ -99,4 +129,26 @@ export async function putFolder(client: Client, params: PutFolderParams) {
   const remoteFolderPath = path.join(prefix, path.basename(localPath));
   const result = await client.ensureDir(remoteFolderPath);
   return result;
+}
+
+/**
+ * ftp 文件预览需要下载
+ */
+export type GetSourceUrlParams = {
+  key: string;
+  connectionId: string;
+  lastModified: number;
+};
+export async function getSourceUrl(client: Client, params: GetSourceUrlParams) {
+  const { key, connectionId, lastModified } = params;
+  const etag = getMd5ByString(`${connectionId}-${lastModified}-${key}`);
+  const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
+  const result = `file://${tmpFileName}`;
+  if (fs.existsSync(tmpFileName)) {
+    return result;
+  } else {
+    const writerStream = fs.createWriteStream(tmpFileName);
+    await client.downloadTo(writerStream, key);
+    return result;
+  }
 }

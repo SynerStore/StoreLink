@@ -40,6 +40,9 @@ export default class ViewerWindowManager {
     const store = getStoreInstance(viewer?.data?.connectionId || '');
     const viewerSource = await store.getSourceUrl({
       key: viewer?.data?.key || '',
+      bucketName: viewer?.data?.bucketName || '',
+      connectionId: viewer?.data?.connectionId || '',
+      lastModified: viewer?.data?.lastModified || 0,
     });
     // 获取显示的资源地址
     return {

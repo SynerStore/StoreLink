@@ -69,8 +69,6 @@ const OssViewer = (props: OssViewerProps) => {
   const handleFileView = (data: any) => {
     console.log('查看文件：', data.name);
     openViewer(connectionId, data);
-
-    // 打开一个新窗口显示文件内容
   };
 
   const handleDownload = async (record: any) => {

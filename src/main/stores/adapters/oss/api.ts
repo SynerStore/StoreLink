@@ -350,18 +350,16 @@ export async function getSourceUrl(client: OSS, params: GetSourceUrlParams) {
   const { key } = params;
   //   @ts-ignore
   const meta = await client.getObjectMeta(key);
-  const size = meta.res.headers['content-length'];
-  let result;
-  if (size < 1024 * 1024 * 8) {
-    // @ts-ignore
-    result = await client.signatureUrlV4('GET', 3600, undefined, key);
+  const etag = meta.res.headers['etag'].replaceAll('"', '');
+  // 基于 etag 生成临时文件名
+  const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
+  const result = `file://${tmpFileName}`;
+  if (fs.existsSync(tmpFileName)) {
+    return result;
   } else {
-    const targetFilePath = path.join(getTempPath(), path.basename(key));
     const readerStream = (await client.getStream(key)).stream;
-    const writerStream = fs.createWriteStream(targetFilePath);
+    const writerStream = fs.createWriteStream(tmpFileName);
     await streamToPromise(readerStream, writerStream);
-    result = `file://${targetFilePath}`;
+    return result;
   }
-
-  return result;
 }

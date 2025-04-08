@@ -3,7 +3,9 @@
   height: 100%;
   background-color: var(--color-fill-2);
   position: relative;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   .image-viewer-img {
     max-width: 100%;

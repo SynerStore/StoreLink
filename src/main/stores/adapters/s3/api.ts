@@ -1,12 +1,13 @@
 // docs ：https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/
 import * as S3 from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Upload } from '@aws-sdk/lib-storage';
 import path from 'node:path';
 import mime from 'mime-types';
 import fs from 'fs-extra';
 import { Buffer } from 'node:buffer';
 
-import { isDirectory, isObjectFolder, readDirectoryRecursive } from '@/main/utils';
+import { isDirectory, isObjectFolder, readDirectoryRecursive, getTempPath, streamToPromise } from '@/main/utils';
 import { TStoreObject } from '@/types';
 
 export const formatObjects = (objects: S3._Object[], prefix: string): TStoreObject[] => {
@@ -345,5 +346,31 @@ export async function renameFolder(s3Client: S3.S3Client, params: RenameFolderPa
   for (const key of keys) {
     const objectNewKey = key.replace(oldKey, newKeyPrefix);
     await renameObject(s3Client, { bucketName, oldKey: key, newKey: objectNewKey });
+  }
+}
+
+// 获取资源地址
+export type GetSourceUrlParams = {
+  key: string;
+  bucketName: string;
+};
+export async function getSourceUrl(s3Client: S3.S3Client, params: GetSourceUrlParams) {
+  const { key, bucketName } = params;
+  const commandParams = { Bucket: bucketName, Key: key };
+  //   @ts-ignore
+  const headObjectCommand = new S3.HeadObjectCommand(commandParams);
+  const response = await s3Client.send(headObjectCommand);
+  const etag = (response.ETag as string).replaceAll('"', '');
+  // 基于 etag 生成临时文件名
+  const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
+  const result = `file://${tmpFileName}`;
+  if (fs.existsSync(tmpFileName)) {
+    return result;
+  } else {
+    const getObjectcommand = new S3.GetObjectCommand(commandParams);
+    const response = await s3Client.send(getObjectcommand);
+    const writerStream = fs.createWriteStream(tmpFileName);
+    await streamToPromise(response.Body, writerStream);
+    return result;
   }
 }

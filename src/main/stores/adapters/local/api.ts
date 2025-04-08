@@ -69,3 +69,12 @@ export async function rename(params: RenameParams) {
   const result = await fs.rename(oldName, path.join(dirname, newName));
   return result;
 }
+
+export type GetSourceUrlParams = {
+  key: string;
+};
+export async function getSourceUrl(params: GetSourceUrlParams) {
+  const { key } = params;
+  const result = `file://${key}`;
+  return result;
+}

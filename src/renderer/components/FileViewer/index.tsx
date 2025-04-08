@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Spin } from '@arco-design/web-react';
 
 import MarkdownViewer from './MarkdownViewer';
@@ -7,8 +7,8 @@ import TxtViewer from './TxtViewer';
 import VideoViewer from './VideoViewer';
 import ImageViewer from './ImageViewer';
 import { getFiletype, getViewerSource } from '@/renderer/utils';
-import { useLoading } from '@/renderer/hooks';
-import "./index.css";
+import { useLoading, useEffectOnce } from '@/renderer/hooks';
+import './index.css';
 
 export type FileViewerProps = {
   mime: string;
@@ -26,7 +26,7 @@ const FileViewer = (props: FileViewerProps) => {
     setLoading(false);
   };
 
-  useEffect(() => {
+  useEffectOnce(() => {
     handleGetViewerSource();
   }, []);
 

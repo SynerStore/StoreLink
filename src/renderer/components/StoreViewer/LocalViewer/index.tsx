@@ -7,7 +7,7 @@ import CardContent from './CardContent';
 import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
 import ViewInput from '@/renderer/components/ViewInput';
 import FileDropWrap from '@/renderer/components/FileDropWrap';
-import { PathHistory, storeRequest } from '@/renderer/utils';
+import { PathHistory, storeRequest, openViewer } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import './index.css';
@@ -68,7 +68,7 @@ const LocalViewer = (props: LocalViewerProps) => {
   };
 
   const handleFileView = (data: any) => {
-    console.log('查看文件：', connection.name);
+    openViewer(connectionId, data);
   };
 
   const handlePutFolder = async (folderName: string) => {

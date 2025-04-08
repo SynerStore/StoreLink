@@ -45,6 +45,7 @@ const CardContent = (props: CardContentProps) => {
               onDetail={(data: any) => {}}
               onRename={onRename}
               onDelete={onDelete}
+              onDownload={onDownload}
             >
               <Tooltip
                 mini

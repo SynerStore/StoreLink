@@ -8,7 +8,7 @@ import CardContent from './CardContent';
 import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
 import ViewInput from '@/renderer/components/ViewInput';
 import FileDropWrap from '@/renderer/components/FileDropWrap';
-import { PathHistory, storeRequest, events } from '@/renderer/utils';
+import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import './index.css';
@@ -69,6 +69,18 @@ const FtpViewer = (props: FtpViewerProps) => {
 
   const handleFileView = (data: any) => {
     console.log('查看文件：', data.name);
+    openViewer(connectionId, data);
+  };
+
+  const handleDownload = async (record: any) => {
+    const localPath = await events.getSingleDirPath({});
+    if (localPath) {
+      storeRequest({
+        method: 'get',
+        id: connectionId,
+        params: { key: record.key, localPath: localPath },
+      });
+    }
   };
 
   // 上传文件
@@ -201,6 +213,7 @@ const FtpViewer = (props: FtpViewerProps) => {
               data={dataList}
               onPrefixChange={handlePrefixChange}
               onFileView={handleFileView}
+              onDownload={handleDownload}
               onDelete={handleDelete}
               onRename={handleRename}
             />
@@ -212,7 +225,7 @@ const FtpViewer = (props: FtpViewerProps) => {
               data={dataList}
               onPrefixChange={handlePrefixChange}
               onFileView={handleFileView}
-              // onDownload={handleDownload}
+              onDownload={handleDownload}
               onDelete={handleDelete}
               onRename={handleRename}
             />

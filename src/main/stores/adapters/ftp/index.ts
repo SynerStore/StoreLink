@@ -1,6 +1,6 @@
 import { Client } from 'basic-ftp';
 
-import { sucessResponse, errorResponse, sleep } from '@/main/utils';
+import { sucessResponse, errorResponse, sleep, isObjectFolder } from '@/main/utils';
 import { IStorageHandler } from '../store';
 import {
   list,
@@ -15,6 +15,12 @@ import {
   PutFileParams,
   putFolder,
   PutFolderParams,
+  GetSourceUrlParams,
+  getSourceUrl,
+  getFolder,
+  GetFileParams,
+  getFile,
+  GetFolderParams,
 } from './api';
 import { storeRemove } from '../../storeManage';
 
@@ -94,6 +100,21 @@ class FtpStore implements IStorageHandler {
     }
   }
 
+  // 下载
+  async get(params: GetFolderParams & GetFileParams) {
+    try {
+      let result;
+      if (isObjectFolder(params.key)) {
+        result = await getFolder(this.client, params);
+      } else {
+        result = await getFile(this.client, params);
+      }
+      return sucessResponse(result);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
+
   async put(params: PutFileParams) {
     try {
       await this.ensureClientIsOpen();
@@ -148,6 +169,16 @@ class FtpStore implements IStorageHandler {
       return sucessResponse(result);
     } catch (err: any) {
       console.error(err);
+      return errorResponse(err.message);
+    }
+  }
+
+  // 获取资源地址
+  async getSourceUrl(params: GetSourceUrlParams) {
+    try {
+      const result = await getSourceUrl(this.client, params);
+      return sucessResponse(result);
+    } catch (err: any) {
       return errorResponse(err.message);
     }
   }
