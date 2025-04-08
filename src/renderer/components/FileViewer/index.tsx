@@ -39,9 +39,10 @@ const FileViewer = (props: FileViewerProps) => {
       case 'video':
         return VideoViewer;
       case 'text':
-        return TxtViewer;
       case 'markdown':
-        return MarkdownViewer;
+        return TxtViewer;
+      //   case 'markdown':
+      //     return MarkdownViewer;
       default:
         return null;
     }
