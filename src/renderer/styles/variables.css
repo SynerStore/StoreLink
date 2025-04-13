@@ -1,7 +1,7 @@
 /* css 变量  */
 :root {
   --primary-color: #3c62cd;
-  --header-height: 40px;
+  --header-height: 36px;
   --sider-width: 48px;
   --store-sider-width: 230px;
   --viewer-content-height: calc(100vh - 185px);

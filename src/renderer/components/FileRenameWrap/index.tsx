@@ -31,11 +31,12 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
   return (
     <Fragment>
       <Modal
+        title="重命名"
+        simple={true}
         closable={false}
         maskClosable={false}
-        title="重命名"
         visible={isModalOpen}
-        getPopupContainer={() => document.body}
+        style={{ width: 520 }}
         onOk={handleOk}
         onCancel={handleCancel}
       >

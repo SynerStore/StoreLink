@@ -7,12 +7,9 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  color: var(--color-text-2);
 }
 
-.store-tabs-nav {
-  margin: 0 0 6px 0 !important;
-}
+/* arco-design 样式重置 */
 
 .arco-tabs-content {
   padding-top: 6px !important;
@@ -32,4 +29,10 @@ body {
 
 .arco-table-size-small .arco-table-td {
   padding: 5px 6px !important;
+}
+
+/* videojs 样式重置 */
+.vjs-paused .vjs-big-play-button,
+.vjs-paused.vjs-has-started .vjs-big-play-button {
+  display: block;
 }

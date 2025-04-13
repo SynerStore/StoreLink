@@ -75,6 +75,15 @@ export type GetSourceUrlParams = {
 };
 export async function getSourceUrl(params: GetSourceUrlParams) {
   const { key } = params;
-  const result = `file://${key}`;
-  return result;
+  const filePath = `file://${key}`;
+  const mimeValue = mime.lookup(filePath) || '';
+  let content = '';
+  if (/text\/.{0,}/.test(mimeValue)) {
+    content = await fs.readFile(key, { encoding: 'utf-8' });
+  }
+  return {
+    src: filePath,
+    mime: mimeValue,
+    content: content,
+  };
 }

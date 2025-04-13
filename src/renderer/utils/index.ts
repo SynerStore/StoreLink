@@ -8,3 +8,4 @@ export * from './env';
 export * from './style';
 export * from './viewer';
 export * from "./getScale"
+export * from "./copyToClipboard"

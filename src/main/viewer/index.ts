@@ -46,7 +46,9 @@ export default class ViewerWindowManager {
     });
     // 获取显示的资源地址
     return {
-      src: viewerSource?.data || '',
+      src: viewerSource?.data?.src || '',
+      content: viewerSource?.data?.content || '',
+      mime: viewer?.data?.mime || '',
     };
   }
 }

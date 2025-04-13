@@ -353,13 +353,20 @@ export async function getSourceUrl(client: OSS, params: GetSourceUrlParams) {
   const etag = meta.res.headers['etag'].replaceAll('"', '');
   // 基于 etag 生成临时文件名
   const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
-  const result = `file://${tmpFileName}`;
-  if (fs.existsSync(tmpFileName)) {
-    return result;
-  } else {
+  const filePath = `file://${tmpFileName}`;
+  if (!fs.existsSync(tmpFileName)) {
     const readerStream = (await client.getStream(key)).stream;
     const writerStream = fs.createWriteStream(tmpFileName);
     await streamToPromise(readerStream, writerStream);
-    return result;
   }
+  const mimeValue = mime.lookup(filePath) || '';
+  let content = '';
+  if (/text\/.{0,}/.test(mimeValue)) {
+    content = await fs.readFile(tmpFileName, { encoding: 'utf-8' });
+  }
+  return {
+    src: filePath,
+    mime: mimeValue,
+    content: content,
+  };
 }

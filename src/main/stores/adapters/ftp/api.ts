@@ -143,12 +143,19 @@ export async function getSourceUrl(client: Client, params: GetSourceUrlParams) {
   const { key, connectionId, lastModified } = params;
   const etag = getMd5ByString(`${connectionId}-${lastModified}-${key}`);
   const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
-  const result = `file://${tmpFileName}`;
-  if (fs.existsSync(tmpFileName)) {
-    return result;
-  } else {
+  const filePath = `file://${tmpFileName}`;
+  if (!fs.existsSync(tmpFileName)) {
     const writerStream = fs.createWriteStream(tmpFileName);
     await client.downloadTo(writerStream, key);
-    return result;
   }
+  const mimeValue = mime.lookup(filePath) || '';
+  let content = '';
+  if (/text\/.{0,}/.test(mimeValue)) {
+    content = await fs.readFile(tmpFileName, { encoding: 'utf-8' });
+  }
+  return {
+    src: filePath,
+    mime: mimeValue,
+    content: content,
+  };
 }

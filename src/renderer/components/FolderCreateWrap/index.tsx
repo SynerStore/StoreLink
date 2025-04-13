@@ -23,8 +23,10 @@ const FileRenameWrap = (props: FolderCreateWrapProps) => {
     <Fragment>
       <Modal
         title="新建目录"
+        simple={true}
         closable={false}
         maskClosable={false}
+        style={{ width: 520 }}
         visible={isModalOpen}
         onOk={handleOk}
         onCancel={() => setIsModalOpen(false)}

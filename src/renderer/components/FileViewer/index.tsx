@@ -17,12 +17,14 @@ export type FileViewerProps = {
 const FileViewer = (props: FileViewerProps) => {
   const { loading, setLoading } = useLoading();
   const [sourceUrl, setSourceUrl] = useState('');
+  const [content, setContent] = useState('');
   const type = getFiletype(props?.mime || '');
 
   const handleGetViewerSource = async () => {
     setLoading(true);
-    const { src } = await getViewerSource(props.id);
+    const { src, content } = await getViewerSource(props.id);
     setSourceUrl(src);
+    setContent(content);
     setLoading(false);
   };
 
@@ -39,18 +41,21 @@ const FileViewer = (props: FileViewerProps) => {
       case 'video':
         return VideoViewer;
       case 'text':
-      case 'markdown':
         return TxtViewer;
-      //   case 'markdown':
-      //     return MarkdownViewer;
+      case 'markdown':
+        return MarkdownViewer;
       default:
         return null;
     }
   }, [type]);
 
   return (
-    <Spin className="file-viewer-spin" dot loading={loading}>
-      {ViewerComponent ? React.createElement(ViewerComponent, { src: sourceUrl }) : <div> 该文档无法查看</div>}
+    <Spin className="file-viewer-spin" dot loading={loading} tip="资源加载中，请耐心等待...">
+      {ViewerComponent ? (
+        React.createElement(ViewerComponent, { src: sourceUrl, content: content, mime: props?.mime })
+      ) : (
+        <div> 该文档无法查看</div>
+      )}
     </Spin>
   );
 };

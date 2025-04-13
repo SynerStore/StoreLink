@@ -13,6 +13,8 @@ import './index.css';
 
 export type ImageViewerProps = {
   src: string;
+  content?: string;
+  mime?: string;
 };
 const ImageViewer = (props: ImageViewerProps) => {
   const { src } = props;

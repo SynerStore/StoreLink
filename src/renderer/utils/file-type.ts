@@ -16,6 +16,8 @@ export const getFiletype = (mine: string) => {
     case 'video/x-msvideo':
     case 'video/x-ms-wmv':
     case 'video/quicktime':
+    case 'video/x-flv':
+    case 'video/x-matroska':
       return 'video';
     case 'audio/mpeg':
     case 'audio/ogg':

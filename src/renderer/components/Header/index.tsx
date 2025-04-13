@@ -1,11 +1,18 @@
-import { IconMinus, IconExpand, IconShrink, IconClose } from '@arco-design/web-react/icon';
+import React, { useState, memo } from 'react';
+import { IconMinus, IconClose } from '@arco-design/web-react/icon';
 
 import { winClose, winFullScreen, winMinimize, isInMac } from '@/renderer/utils';
 import { IconFullScreen, IconUnFullScreen } from '@/renderer/components/Icons';
 import logo from '@/renderer/assets/logo.png';
 import './index.css';
-import { useState } from 'react';
-const Header = () => {
+
+// 顶部导航栏
+export type HeaderProps = {
+  icon?: React.ReactNode;
+  title?: string;
+};
+const Header = (props: HeaderProps) => {
+  const { icon, title } = props;
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   const handleFullScreen = () => {
@@ -20,25 +27,25 @@ const Header = () => {
   return (
     <header className="header">
       <div className="logo">
-        <img className="logo-img" src={logo} alt="logo" />
-        <span className="logo-text">SynerStore</span>
+        {icon ? icon : <img className="logo-img" src={logo} alt="logo" />}
+        <span className="logo-text">{title ? title : 'SynerStore'}</span>
       </div>
       {/* windows \linux 显示信号灯  */}
       {/* {isInMac() ? null : ( */}
-        <div className="win-linux-traffic">
-          <div className="traffic" onClick={winMinimize}>
-            <IconMinus />
-          </div>
-          <div className="traffic" onClick={handleFullScreen}>
-            {isFullScreen ? <IconUnFullScreen /> : <IconFullScreen />}
-          </div>
-          <div className="traffic traffic-close" onClick={winClose}>
-            <IconClose />
-          </div>
+      <div className="win-linux-traffic">
+        <div className="traffic" onClick={winMinimize}>
+          <IconMinus />
         </div>
+        <div className="traffic" onClick={handleFullScreen}>
+          {isFullScreen ? <IconUnFullScreen /> : <IconFullScreen />}
+        </div>
+        <div className="traffic traffic-close" onClick={winClose}>
+          <IconClose />
+        </div>
+      </div>
       {/* )} */}
     </header>
   );
 };
 
-export default Header;
+export default memo(Header);

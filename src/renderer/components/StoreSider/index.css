@@ -2,6 +2,7 @@
   width: var(--store-sider-width);
   overflow-x: hidden;
   border-right: 1px solid var(--border-color);
+  user-select: none;
 
   .store-sider-tip {
     height: 28px;

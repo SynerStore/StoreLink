@@ -6,6 +6,8 @@ import './index.css';
 
 export type VideoViewerProps = {
   src: string;
+  content?: string;
+  mime?: string;
 };
 const VideoViewer = (props: VideoViewerProps) => {
   const videoRef = useRef<any>(null);
@@ -13,32 +15,35 @@ const VideoViewer = (props: VideoViewerProps) => {
   const { src } = props;
 
   useEffect(() => {
-    const options = {
-      autoplay: true,
-      controls: true,
-      preload: 'auto',
-      sources: [
-        {
-          src: src,
-          type: 'video/mp4',
-        },
-      ],
-    };
-    if (!playerRef.current) {
-      const videoElement = document.createElement('video-js');
-      videoElement.classList.add('vjs-big-play-centered');
-      videoRef.current.appendChild(videoElement);
+    if (src) {
+      const options = {
+        autoplay: true,
+        controls: true,
+        preload: 'auto',
+        playbackRates: [0.5, 1, 1.5, 2, 4],
+        useActions: true,
+        sources: [
+          {
+            src: src,
+            type: 'video/mp4',
+          },
+        ],
+      };
+      if (!playerRef.current) {
+        const videoElement = document.createElement('video-js');
+        videoElement.classList.add('vjs-big-play-centered');
+        videoRef.current.appendChild(videoElement);
 
-      playerRef.current = videojs(videoElement, options, () => {
-        videojs.log('player is ready');
-      });
-    } else {
-      const player = playerRef.current;
-      player.autoplay(options.autoplay);
-      player.src(options.sources);
+        playerRef.current = videojs(videoElement, options, () => {
+          videojs.log('player is ready');
+        });
+      } else {
+        const player = playerRef.current;
+        player.autoplay(options.autoplay);
+        player.src(options.sources);
+      }
     }
   }, [src, videoRef]);
-
 
   useEffect(() => {
     const player = playerRef.current;

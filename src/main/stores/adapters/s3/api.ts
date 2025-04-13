@@ -1,6 +1,6 @@
 // docs ：https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/
 import * as S3 from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+// import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Upload } from '@aws-sdk/lib-storage';
 import path from 'node:path';
 import mime from 'mime-types';
@@ -363,14 +363,21 @@ export async function getSourceUrl(s3Client: S3.S3Client, params: GetSourceUrlPa
   const etag = (response.ETag as string).replaceAll('"', '');
   // 基于 etag 生成临时文件名
   const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
-  const result = `file://${tmpFileName}`;
-  if (fs.existsSync(tmpFileName)) {
-    return result;
-  } else {
+  const filePath = `file://${tmpFileName}`;
+  if (!fs.existsSync(tmpFileName)) {
     const getObjectcommand = new S3.GetObjectCommand(commandParams);
     const response = await s3Client.send(getObjectcommand);
     const writerStream = fs.createWriteStream(tmpFileName);
     await streamToPromise(response.Body, writerStream);
-    return result;
   }
+  const mimeValue = mime.lookup(filePath) || '';
+  let content = '';
+  if (/text\/.{0,}/.test(mimeValue)) {
+    content = await fs.readFile(tmpFileName, { encoding: 'utf-8' });
+  }
+  return {
+    src: filePath,
+    mime: mimeValue,
+    content: content,
+  };
 }
