@@ -55,7 +55,9 @@ export const getRcloneCMDPath = () => {
 
 // 应用程序相关路径
 export const getUserDataPath = () => {
-  return app.getPath('userData');
+  const userDataPath = app.getPath('userData');
+  console.log('userDataPath', userDataPath);
+  return userDataPath;
 };
 
 export const getHomePath = () => {

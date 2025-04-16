@@ -12,7 +12,7 @@ export type MarkdownViewerProps = {
 };
 const MarkdownViewer = (props: MarkdownViewerProps) => {
   const { content } = props;
-  const [isMd, setIsMd] = useState(false);
+  const [isMd, setIsMd] = useState(true);
 
   const handlePreview = () => {
     setIsMd(!isMd);

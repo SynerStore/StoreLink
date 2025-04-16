@@ -11,7 +11,12 @@ import {
   DeleteMultiFilesParams,
   rename,
   RenameParams,
-  GetSourceUrlParams,getSourceUrl
+  GetSourceUrlParams,
+  putFolder,
+  PutFolderParams,
+  getSourceUrl,
+  PutMultiObjectsParams,
+  putMultiObjects,
 } from './api';
 
 class LocalStore implements IStorageHandler {
@@ -78,15 +83,35 @@ class LocalStore implements IStorageHandler {
     }
   }
 
-   // 获取资源地址
-    async getSourceUrl(params: GetSourceUrlParams) {
-      try {
-        const result = await getSourceUrl( params);
-        return sucessResponse(result);
-      } catch (err: any) {
-        return errorResponse(err.message);
-      }
+  // 上传对象·
+  async put(params: PutMultiObjectsParams) {
+    try {
+      const result = await putMultiObjects(this.root, params);
+      return sucessResponse(result);
+    } catch (err: any) {
+      console.error(err);
+      return errorResponse(err.message);
     }
+  }
+  async putFolder(params: PutFolderParams) {
+    try {
+      const result = await putFolder(this.root, params);
+      return sucessResponse(result);
+    } catch (err: any) {
+      console.error(err);
+      return errorResponse(err.message);
+    }
+  }
+
+  // 获取资源地址
+  async getSourceUrl(params: GetSourceUrlParams) {
+    try {
+      const result = await getSourceUrl(params);
+      return sucessResponse(result);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
 }
 
 export default LocalStore;

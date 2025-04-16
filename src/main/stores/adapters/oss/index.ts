@@ -118,7 +118,7 @@ class OssStore implements IStorageHandler {
     }
   }
 
-  // 多选上传对象
+// 创建文件夹
   async putFolder(params: PutFolderParams) {
     try {
       const result = await putFolder(this.client, params);

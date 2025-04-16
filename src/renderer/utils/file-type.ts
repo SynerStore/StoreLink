@@ -37,6 +37,7 @@ export const getFiletype = (mine: string) => {
     case 'text/plain':
     case 'text/csv':
     case 'text/html':
+    case 'application/x-sql':
       return 'text';
     case 'text/markdown':
       return 'markdown';

@@ -5,8 +5,8 @@ import { EWindowSize, EPages } from '../../types';
 import { BaseWindow } from '../windows/base';
 export function getMainWindowOptions(): BrowserWindowConstructorOptions {
   return {
-    width: EWindowSize.width,
-    height: EWindowSize.height,
+    width: EWindowSize.width - 50,
+    height: EWindowSize.height - 50,
     minHeight: EWindowSize.minHeight,
     minWidth: EWindowSize.minWidth,
     titleBarStyle: 'hiddenInset',

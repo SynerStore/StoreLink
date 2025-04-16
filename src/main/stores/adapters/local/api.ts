@@ -70,6 +70,41 @@ export async function rename(params: RenameParams) {
   return result;
 }
 
+export type PutObjectParams = {
+  prefix: string;
+  localPath: string;
+};
+
+export async function putObject(root: string, params: PutObjectParams) {
+  const { prefix, localPath } = params;
+  const targetFilePath = path.join(root, prefix, path.basename(localPath));
+  if (targetFilePath === localPath) return; // 本地复制到本地忽略
+  const result = await fs.copyFile(localPath, targetFilePath);
+  return result;
+}
+
+export type PutMultiObjectsParams = {
+  prefix: string;
+  localPaths: string[];
+};
+
+export async function putMultiObjects(root: string, params: PutMultiObjectsParams) {
+  const { prefix, localPaths } = params;
+  const promises = localPaths.map((localPath) => putObject(root, { prefix, localPath }));
+  return Promise.all(promises);
+}
+
+export type PutFolderParams = {
+  prefix: string;
+  localPath: string;
+};
+export async function putFolder(root: string, params: PutFolderParams) {
+  const { prefix, localPath } = params;
+  const key = path.join(root, prefix, localPath);
+  const result = await fs.mkdir(key, { recursive: true });
+  return result;
+}
+
 export type GetSourceUrlParams = {
   key: string;
 };

@@ -71,6 +71,17 @@ const LocalViewer = (props: LocalViewerProps) => {
     openViewer(connectionId, data);
   };
 
+  const handlePut = async (paths: string[]) => {
+    return storeRequest({
+      method: 'put',
+      id: connectionId,
+      params: {
+        prefix: curPrefix,
+        localPaths: paths,
+      },
+    });
+  };
+
   const handlePutFolder = async (folderName: string) => {
     storeRequest({
       method: 'putFolder',
@@ -170,7 +181,7 @@ const LocalViewer = (props: LocalViewerProps) => {
         </Space>
       </div>
       <div className="viewer-content">
-        <FileDropWrap>
+        <FileDropWrap onDrop={handlePut}>
           {display === ETabDisplay.LIST ? (
             <TableContent
               connectionId={connectionId}
