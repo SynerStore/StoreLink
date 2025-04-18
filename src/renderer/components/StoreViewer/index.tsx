@@ -4,6 +4,8 @@ import S3Viewer from './S3Viewer';
 import LocalViewer from './LocalViewer';
 import FtpViewer from './FtpViewer';
 import OssViewer from './OssViewer';
+import WebDEVViewer from './WebDEVViewer';
+import SmbViewer from './SmbViewer';
 import { StoreTypes } from '@/types';
 import { useConfigStore } from '@/renderer/store';
 
@@ -41,6 +43,10 @@ const StoreViewer = (props: any) => {
       return <LocalViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     case StoreTypes.FTP:
       return <FtpViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
+    case StoreTypes.WEBDAV:
+      return <WebDEVViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
+    case StoreTypes.SMB:
+      return <SmbViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     default:
       return null;
   }

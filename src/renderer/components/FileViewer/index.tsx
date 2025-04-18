@@ -6,7 +6,9 @@ import PdfViewer from './PdfViewer';
 import TxtViewer from './TxtViewer';
 import VideoViewer from './VideoViewer';
 import ImageViewer from './ImageViewer';
-import { getFiletype, getViewerSource } from '@/renderer/utils';
+import SyntaxHighlightViewer from './SyntaxHighlightViewer';
+import { getViewerSource } from '@/renderer/utils';
+import { getFiletype } from '@/utils';
 import { useLoading, useEffectOnce } from '@/renderer/hooks';
 import './index.css';
 
@@ -42,6 +44,9 @@ const FileViewer = (props: FileViewerProps) => {
         return VideoViewer;
       case 'text':
         return TxtViewer;
+      case 'javascript':
+      case 'css':
+        return SyntaxHighlightViewer;
       case 'markdown':
         return MarkdownViewer;
       default:

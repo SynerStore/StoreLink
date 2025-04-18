@@ -4,6 +4,19 @@ export enum StoreTypes {
   FTP = 'ftp',
   SFTP = 'sftp',
   LOCAL = 'local',
+  WEBDAV = 'webdav',
+  SMB = 'smb',
+}
+
+export enum StoreBrands {
+  S3 = 's3',
+  aliyun = 'aliyun',
+  local = 'local',
+  ftp = 'ftp',
+  tencentcloud = 'tencentcloud',
+  huaweicloud = 'huaweicloud',
+  WebDAV = 'WebDAV',
+  SMB = 'SMB',
 }
 
 export enum StoreConnectStatus {
@@ -13,11 +26,11 @@ export enum StoreConnectStatus {
 }
 
 export interface TStoreObject {
-  key: string | undefined; // 文件路径
-  name: string | undefined; // 文件名
-  lastModified: Date | number | undefined; // 文件的修改时间
-  size: number | undefined; // 文件大小
-  etag: string | undefined; // 文件的MD5值
+  key: string | undefined | null; // 文件路径
+  name: string | undefined | null; // 文件名
+  lastModified: Date | string | number | undefined | null; // 文件的修改时间
+  size: number | undefined | null; // 文件大小
+  etag: string | undefined | null; // 文件的MD5值
   storageClass: string | undefined; // 文件存储类型
   isDirectory?: boolean; // 是否是文件夹
   mime?: string | false; // 文件类型

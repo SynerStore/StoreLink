@@ -30,7 +30,7 @@ export const getFiletype = (mine: string) => {
       return 'pdf';
     case 'application/json':
       return 'json';
-    case 'text/javascript':
+    case 'application/javascript':
       return 'javascript';
     case 'text/css':
       return 'css';
@@ -39,12 +39,39 @@ export const getFiletype = (mine: string) => {
     case 'text/html':
     case 'application/x-sql':
       return 'text';
+    case 'text/yaml':
+    case 'application/x-yaml':
+      return 'yaml';
     case 'text/markdown':
       return 'markdown';
     case 'application/zip':
     case 'application/x-bzip2':
+    case 'application/vnd.rar':
       return 'zip';
+    case 'application/x-rar-compressed':
+    case 'application/x-msdos-program':
+      return 'exe';
+    case 'application/x-apple-diskimage':
+      return 'dmg';
+    case 'application/vnd.android.package-archive':
+      return 'apk';
+    case 'application/octet-stream':
+      return 'binary';
     default:
       return 'misc';
   }
+};
+
+// 支持获取文本内容的预览
+export const isGetFileContent = (mime: string) => {
+  const fileType = getFiletype(mime);
+  const supportedTypes = ['text', 'javascript', 'css', 'markdown'];
+  return supportedTypes.includes(fileType);
+};
+
+// 支持打开的文件类型
+export const isCanOpenFile = (mime: string) => {
+  const fileType = getFiletype(mime);
+  const supportedTypes = ['text', 'javascript', 'css', 'markdown', 'image', 'pdf', 'video', 'audio'];
+  return supportedTypes.includes(fileType);
 };

@@ -3,6 +3,7 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { shell } from 'electron';
 
+import { isGetFileContent } from '@/utils';
 import { filesSort, isHiddenFile } from '@/main/utils';
 import { TStoreObject } from '@/types';
 
@@ -113,7 +114,7 @@ export async function getSourceUrl(params: GetSourceUrlParams) {
   const filePath = `file://${key}`;
   const mimeValue = mime.lookup(filePath) || '';
   let content = '';
-  if (/text\/.{0,}/.test(mimeValue)) {
+  if (isGetFileContent(mimeValue)) {
     content = await fs.readFile(key, { encoding: 'utf-8' });
   }
   return {

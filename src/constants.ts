@@ -1,24 +1,34 @@
 export const CHANNEL_NAME = `__CHANNEL_X__`;
 
-export const StoreBrands = [
+import { StoreBrands, StoreTypes } from '@/types';
+
+export const StoreDatas = [
   {
-    brand: 'aliyun',
-    type: 'oss',
+    brand: StoreBrands.aliyun,
+    type: StoreTypes.OSS,
   },
   {
-    brand: 'local',
-    type: 'local',
+    brand: StoreBrands.local,
+    type: StoreTypes.LOCAL,
   },
   {
-    brand: 'ftp',
-    type: 'ftp',
+    brand: StoreBrands.ftp,
+    type: StoreTypes.FTP,
   },
   {
-    brand: 'tencentcloud',
-    type: 's3',
+    brand: StoreBrands.tencentcloud,
+    type: StoreTypes.S3,
   },
   {
-    brand: 'huaweicloud',
-    type: 's3',
+    brand: StoreBrands.huaweicloud,
+    type: StoreTypes.S3,
+  },
+  {
+    brand: StoreBrands.WebDAV,
+    type: StoreTypes.WEBDAV,
+  },
+  {
+    brand: StoreBrands.SMB,
+    type: StoreTypes.SMB,
   },
 ];

@@ -1,11 +1,14 @@
 import React from 'react';
 
-import AliyunIcon from '../../assets/store-icons/aliyun.png';
-import S3Icon from '../../assets/store-icons/s3.png';
-import FtpIcon from '../../assets/store-icons/ftp.png';
-import DiskIcon from '../../assets/store-icons/disk.webp';
-import HuaweiIcon from '../../assets/store-icons/huaweicloud.png';
-import TencentIcon from '../../assets/store-icons/tencentcloud.png';
+import AliyunIcon from '@/renderer/assets/store-icons/aliyun.png';
+import S3Icon from '@/renderer/assets/store-icons/s3.png';
+import FtpIcon from '@/renderer/assets/store-icons/ftp.png';
+import DiskIcon from '@/renderer/assets/store-icons/disk.webp';
+import HuaweiIcon from '@/renderer/assets/store-icons/huaweicloud.png';
+import TencentIcon from '@/renderer/assets/store-icons/tencentcloud.png';
+import WebDAVIcon from '@/renderer/assets/store-icons/webdav.png';
+import SmbIcon from '@/renderer/assets/store-icons/smb.png';
+import { StoreBrands } from '@/types';
 
 export type FileIconProps = {
   size?: string | number;
@@ -18,18 +21,22 @@ const StoreIcon = (props: FileIconProps) => {
 
   const getFileIcon = (brand: string) => {
     switch (brand) {
-      case 'aliyun':
+      case StoreBrands.aliyun:
         return AliyunIcon;
-      case 's3':
+      case StoreBrands.S3:
         return S3Icon;
-      case 'ftp':
+      case StoreBrands.ftp:
         return FtpIcon;
-      case 'local':
+      case StoreBrands.local:
         return DiskIcon;
-      case 'huaweicloud':
+      case StoreBrands.huaweicloud:
         return HuaweiIcon;
-      case 'tencentcloud':
+      case StoreBrands.tencentcloud:
         return TencentIcon;
+      case StoreBrands.WebDAV:
+        return WebDAVIcon;
+      case StoreBrands.SMB:
+        return SmbIcon;
       default:
         return DiskIcon;
     }

@@ -2,6 +2,7 @@ import S3Store from './adapters/s3';
 import LocalStore from './adapters/local';
 import FtpStore from './adapters/ftp';
 import OssStore from './adapters/oss';
+import WebDAVStore from './adapters/webdev';
 import { getConnectionsData } from '../db';
 import { StoreTypes } from '@/types';
 
@@ -31,6 +32,9 @@ const createStoreClient = (data: any): any => {
       break;
     case StoreTypes.FTP:
       storeClient = new FtpStore(id, config);
+      break;
+    case StoreTypes.WEBDAV:
+      storeClient = new WebDAVStore(id, config);
       break;
     default:
       break;

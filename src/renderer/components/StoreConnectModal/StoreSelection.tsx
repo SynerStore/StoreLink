@@ -1,6 +1,6 @@
 import { Grid } from '@arco-design/web-react';
 
-import { StoreBrands } from '@/constants';
+import { StoreDatas } from '@/constants';
 import StoreBrand from './StoreBrand';
 
 const Row = Grid.Row;
@@ -15,7 +15,7 @@ const StoreSelection = (props: StoreSelectionProps) => {
   return (
     <div className="store-selection">
       <Row className="grid-gutter-demo" gutter={[24, 12]}>
-        {StoreBrands.map((item, index) => {
+        {StoreDatas.map((item, index) => {
           return (
             <Col span={8} key={index}>
               <StoreBrand onActive={onActive} brand={item.brand} active={item.brand === activeBrand} />

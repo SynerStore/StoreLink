@@ -1,4 +1,4 @@
-import { getFiletype } from '@/renderer/utils';
+import { getFiletype } from '@/utils';
 
 import ExeIcon from '@/renderer/assets/file-icons/exe.png';
 import Folder from '@/renderer/assets/file-icons/folder.png';
