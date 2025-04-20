@@ -32,7 +32,6 @@ class FtpStore implements IStorageHandler {
   constructor(id: string, config: any) {
     this.id = id;
     this.config = config;
-    this.config = config;
     this.client = new Client();
     this.connecting = false;
     this.init(this.config);

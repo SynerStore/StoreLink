@@ -30,7 +30,6 @@ const WebDAVForm = forwardRef((_props, ref) => {
         password: res.password,
       },
     });
-    debugger;
     console.log(result);
     setLoading(false);
   };

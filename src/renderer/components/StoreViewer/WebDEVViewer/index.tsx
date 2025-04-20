@@ -15,12 +15,12 @@ import './index.css';
 
 const RadioGroup = Radio.Group;
 
-export type WebDEVViewerProps = {
+export type WebDevViewerProps = {
   connectionId: string;
   tabData: Tab;
   connection: any;
 };
-const WebDEVViewer = (props: WebDEVViewerProps) => {
+const WebDevViewer = (props: WebDevViewerProps) => {
   const { connectionId, connection, tabData } = props;
   const { updateTab } = useTabsStore();
   const [dataList, setDataList] = useState([]);
@@ -78,7 +78,12 @@ const WebDEVViewer = (props: WebDEVViewerProps) => {
       storeRequest({
         method: 'get',
         id: connectionId,
-        params: { key: record.key, localPath: localPath },
+        params: {
+          prefix: curPrefix,
+          key: record.key,
+          isDirectory: record.isDirectory,
+          localPath: localPath,
+        },
       });
     }
   };
@@ -239,4 +244,4 @@ const WebDEVViewer = (props: WebDEVViewerProps) => {
   );
 };
 
-export default WebDEVViewer;
+export default WebDevViewer;

@@ -21,30 +21,30 @@ export const streamOnProgress = (readerStream: any, writerStream: any, size: num
 
     console.log(`进度: ${progress.toFixed(1)}%`);
     console.log(`实时速度: ${speed} MB/s`);
-    onProgress({
-      progress: progress,
-      speed: speed,
-      status: 'running',
-    });
+    // onProgress({
+    //   progress: progress,
+    //   speed: speed,
+    //   status: 'running',
+    // });
   });
   // 完成监听
-  writerStream.on('finish', () => {
-    onProgress({
-      progress: 100,
-      speed: 0,
-      status: 'finished',
-    });
-  });
+  // writerStream.on('finish', () => {
+  //   onProgress({
+  //     progress: 100,
+  //     speed: 0,
+  //     status: 'finished',
+  //   });
+  // });
 
-  // 错误处理
-  writerStream.on('error', (_err: any) => {
-    console.log('下载失败', _err.message);
-    onProgress({
-      progress: 100,
-      speed: 0,
-      status: 'failed',
-    });
-  });
+  // // 错误处理
+  // writerStream.on('error', (_err: any) => {
+  //   console.log('下载失败', _err.message);
+  //   onProgress({
+  //     progress: 100,
+  //     speed: 0,
+  //     status: 'failed',
+  //   });
+  // });
 };
 
 /**

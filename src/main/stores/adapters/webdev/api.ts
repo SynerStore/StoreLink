@@ -1,22 +1,25 @@
+// https://www.npmjs.com/package/webdav
 import path from 'node:path';
 import mime from 'mime-types';
 import fs from 'fs-extra';
 import { WebDAVClient, FileStat } from 'webdav';
 
-import { filesSort, runTasksSequentially, getTempPath, getMd5ByString } from '@/main/utils';
+import { filesSort, runTasksSequentially, isObjectFolder, readDirectoryRecursive } from '@/main/utils';
 import { TStoreObject } from '@/types';
 
-export const formatObjects = async (prefix: string, file: FileStat): Promise<TStoreObject | null> => {
-  const filePath = path.join(prefix, file.filename);
+export const formatObjects = async (file: FileStat): Promise<TStoreObject | null> => {
+  const { type, size, lastmod, basename, filename, etag } = file;
+  const isDirectory = type === 'directory';
+  const key = isDirectory ? `${filename}/` : filename; //  统一文件夹以/结尾
   return {
-    key: filePath,
-    name: file.basename,
-    lastModified: file.lastmod,
-    size: file.size,
-    etag: file.etag,
+    key: key,
+    name: basename,
+    lastModified: lastmod,
+    size: size,
+    etag: etag,
     storageClass: '',
-    isDirectory: file.type === 'directory',
-    mime: mime.lookup(filePath),
+    isDirectory: isDirectory,
+    mime: mime.lookup(basename),
     isSymbolicLink: undefined,
   };
 };
@@ -27,110 +30,165 @@ export type ListParams = {
 export async function list(client: WebDAVClient, params: ListParams) {
   const result = await client.getDirectoryContents(params.prefix || '/');
   const files = Array.isArray(result) ? result : Array.isArray(result.data) ? result.data : [];
-  const filesObjects = await Promise.all(files.map((file: FileStat) => formatObjects(params.prefix, file)));
+  const filesObjects = await Promise.all(files.map((file: FileStat) => formatObjects(file)));
   return filesSort(filesObjects as any[]);
 }
 
 export type GetFileParams = {
   key: string;
   localPath?: string;
+  localFilePath?: string;
 };
-// export async function getFile(client: Client, params: GetFileParams) {
-//   const { key, localPath } = params;
-//   const targetFilePath = path.join(localPath as string, path.basename(key));
-//   const writerStream = fs.createWriteStream(targetFilePath);
-//   await client.downloadTo(writerStream, key);
-//   client.trackProgress((info) => {
-//     console.log('File', info.name);
-//     console.log('Type', info.type);
-//     console.log('Transferred', info.bytes);
-//     console.log('Transferred Overall', info.bytesOverall);
-//   });
-//   return;
-// }
+export async function getFile(client: WebDAVClient, params: GetFileParams) {
+  const { key, localPath, localFilePath } = params;
+  const targetFilePath = localFilePath ? localFilePath : path.join(localPath as string, path.basename(key));
+  const writerStream = fs.createWriteStream(targetFilePath);
+  await client.createReadStream(key).pipe(writerStream);
+  return;
+}
 
-// export type GetFolderParams = {
-//   key: string;
-//   localPath?: string;
-// };
-// export async function getFolder(client: Client, params: GetFolderParams) {
-//   const { key, localPath } = params;
-//   const targetFilePath = path.join(localPath as string, path.basename(key));
-//   await client.downloadToDir(targetFilePath, key);
-//   return;
-// }
+// 获取文件夹下的所有文件和文件夹名称
+export type ListAllObjectsParams = {
+  prefix: string;
+};
+export async function listAllObjects(client: WebDAVClient, params: ListParams) {
+  const { prefix } = params;
+  const allKeys: Set<string> = new Set([prefix]);
+  const result = await list(client, { prefix });
+  for (const file of result) {
+    if (file.isDirectory) {
+      allKeys.add(file.key);
+      const subResult = await list(client, { prefix: file.key });
+      for (const subFile of subResult) {
+        allKeys.add(subFile.key);
+      }
+    } else {
+      allKeys.add(file.key);
+    }
+  }
+  return {
+    keys: Array.from(allKeys),
+  };
+}
 
-// export type DeleteFileParams = {
-//   file: string;
-//   isDirectory: boolean;
-// };
-// export async function deleteFile(client: Client, params: DeleteFileParams) {
-//   const { file } = params;
-//   return client.remove(file);
-// }
+// 多选下载对象
+export type GetMultiObjectsParams = {
+  prefix: string;
+  keys: string[];
+  localPath: string;
+};
+export async function getMultiObjects(client: WebDAVClient, params: GetMultiObjectsParams) {
+  const { prefix, keys, localPath } = params;
+  const allKeys = [];
 
-// export type DeleteFolderParams = {
-//   file: string;
-//   isDirectory: boolean;
-// };
-// export async function deleteFolder(client: Client, params: DeleteFolderParams) {
-//   const { file } = params;
-//   return client.removeDir(file);
-// }
+  for (const key of keys) {
+    if (isObjectFolder(key)) {
+      const { keys: allPrefixKeys } = await listAllObjects(client, { prefix: key });
+      allKeys.push(...allPrefixKeys);
+    } else {
+      allKeys.push(key);
+    }
+  }
+
+  for (const pathKey of allKeys) {
+    const realtivePath = pathKey.replace(prefix, '');
+    const localFilePath = path.join(localPath, realtivePath);
+    if (isObjectFolder(pathKey)) {
+      await fs.ensureDir(localFilePath);
+    } else {
+      await getFile(client, { key: pathKey, localFilePath: localFilePath });
+    }
+  }
+}
+
+export type GetFolderParams = {
+  key: string;
+  prefix: string;
+  localPath: string;
+  isDirectory?: boolean;
+};
+
+export async function getFolder(client: WebDAVClient, params: GetFolderParams) {
+  const { prefix, key, localPath } = params;
+  return await getMultiObjects(client, { prefix, keys: [key], localPath });
+}
+
+export type DeleteFileParams = {
+  file: string;
+};
+export async function deleteFile(client: WebDAVClient, params: DeleteFileParams) {
+  const { file } = params;
+  return client.deleteFile(file); // webdev 支持删除文件和文件夹以及递归删除文件夹下的所有文件
+}
 
 // // 批量删除
-// export type DeleteMultiFilesParams = {
-//   files: { file: string; isDirectory: boolean }[];
-// };
-// export async function deleteMultiObjects(client: Client, params: DeleteMultiFilesParams) {
-//   const { files } = params;
-//   const tasks = [];
-//   for (const file of files) {
-//     if (file.isDirectory) {
-//       tasks.push(deleteFolder(client, file));
-//     } else {
-//       tasks.push(deleteFile(client, file));
-//     }
-//   }
-//   return runTasksSequentially(tasks);
-// }
+export type DeleteMultiFilesParams = {
+  files: { file: string; isDirectory: boolean }[];
+};
+export async function deleteMultiFiles(client: WebDAVClient, params: DeleteMultiFilesParams) {
+  const { files } = params;
+  const tasks = [];
+  for (const file of files) {
+    tasks.push(deleteFile(client, file));
+  }
+  return runTasksSequentially(tasks);
+}
 
-// export type RenameParams = {
-//   oldName: string;
-//   newName: string;
-// };
-// export async function rename(client: Client, params: RenameParams) {
-//   const { oldName, newName } = params;
-//   const dirname = path.dirname(oldName);
-//   const result = await client.rename(oldName, path.join(dirname, newName));
-//   return result;
-// }
+export type RenameParams = {
+  oldName: string;
+  newName: string;
+};
+export async function rename(client: WebDAVClient, params: RenameParams) {
+  const { oldName, newName } = params;
+  const dirname = path.dirname(oldName);
+  const result = await client.moveFile(oldName, path.join(dirname, newName));
+  return result;
+}
 
-// export type PutFileParams = {
-//   localPaths: string[];
-//   prefix: string;
-// };
+export type PutFileParams = {
+  localPath: string;
+  prefix: string;
+};
 
-// export async function putFile(client: Client, params: PutFileParams) {
-//   const { localPaths, prefix } = params;
-//   const promises = localPaths.map(async (localPath) => {
-//     const remotePath = path.join(prefix || '/', path.basename(localPath));
-//     const result = await client.uploadFrom(localPath, remotePath);
-//     return result;
-//   });
-//   return runTasksSequentially(promises);
-// }
+export async function putFile(client: WebDAVClient, params: PutFileParams) {
+  const { localPath, prefix } = params;
+  const remotePath = path.join(prefix || '/', path.basename(localPath));
+  const fileBuffer = await fs.readFile(localPath);
+  const result = await client.putFileContents(remotePath, fileBuffer, { overwrite: false });
+  return result;
+}
 
-// export type PutFolderParams = {
-//   prefix: string;
-//   localPath: string;
-// };
-// export async function putFolder(client: Client, params: PutFolderParams) {
-//   const { localPath, prefix } = params;
-//   const remoteFolderPath = path.join(prefix, path.basename(localPath));
-//   const result = await client.ensureDir(remoteFolderPath);
-//   return result;
-// }
+export type PutFolderParams = {
+  prefix: string;
+  localPath: string;
+};
+export async function putFolder(client: WebDAVClient, params: PutFolderParams) {
+  const { localPath, prefix } = params;
+  const remoteFolderPath = path.join(prefix, path.basename(localPath));
+  const result = await client.createDirectory(remoteFolderPath);
+  return result;
+}
+
+// 多选上传对象
+export type PutMultiObjectsParams = {
+  prefix: string;
+  localPaths: string[];
+};
+export async function putMultiObjects(client: WebDAVClient, params: PutMultiObjectsParams) {
+  const { prefix, localPaths } = params;
+  const allLocalPaths = await readDirectoryRecursive(localPaths);
+  for (const localPath of allLocalPaths) {
+    const filePath = localPath.fullPath;
+    if (isObjectFolder(filePath)) {
+      await putFolder(client, { prefix: filePath, localPath: filePath });
+    } else {
+      await putFile(client, {
+        prefix: prefix,
+        localPath: filePath,
+      });
+    }
+  }
+}
 
 // /**
 //  * ftp 文件预览需要下载

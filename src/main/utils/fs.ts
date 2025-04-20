@@ -113,7 +113,7 @@ const fileNameSort = (a: string, b: string) => {
 };
 
 // 文件排名
-export const filesSort = (files: Array<{ name: string; isDirectory: boolean }>) => {
+export const filesSort = (files: Array<{ name: string; isDirectory: boolean; [key: string]: any }>) => {
   const foldersData = files.filter((file) => file.isDirectory).sort((a, b) => fileNameSort(a.name, b.name));
   const filesData = files.filter((file) => !file.isDirectory).sort((a, b) => fileNameSort(a.name, b.name));
   return [...foldersData, ...filesData];

@@ -5,7 +5,6 @@ import OssForm from './OssForm';
 import FtpForm from './FtpForm';
 import LocalForm from './LocalForm';
 import WebDAVForm from './WebDAVForm';
-import SmbForm from './SmbForm';
 import { StoreTypes } from '@/types';
 import { StoreDatas } from '@/constants';
 
@@ -30,8 +29,6 @@ const StoreConnectForm = forwardRef((props: StoreConnectFormProps, ref) => {
       return <LocalForm ref={ref} />;
     case StoreTypes.WEBDAV:
       return <WebDAVForm ref={ref} />;
-      case StoreTypes.SMB:
-        return <SmbForm ref={ref} />;
     default:
       return null;
   }
