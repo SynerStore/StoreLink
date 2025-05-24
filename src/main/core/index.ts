@@ -1,13 +1,11 @@
-import { app, session, protocol } from 'electron';
-import path from 'path';
-import os from 'os';
+import { app, protocol } from 'electron';
 
 import Windows from '../windows';
 import ViewerWindowManager from '../viewer';
 import { storeRequestRegistry } from '../stores';
 import eventsRegistry from '../events/registry';
 import { dbRegistory } from '../db';
-import { logger, isDev } from '../utils';
+import { logger, isDev, installDevtool } from '../utils';
 
 export default class Core {
   logger = logger.scope('Core');
@@ -55,11 +53,7 @@ export default class Core {
 
   private async installExtension() {
     if (isDev) {
-      const extendsionPath = path.join(os.homedir(), '/Library/Application Support/Google/Chrome/Default/Extensions');
-      const reactDevToolsPath = path.join(extendsionPath, '/fmkadmapgofadopljbjfkapdkoienihi/6.1.1_0');
-      const reduxDevToolsPath = path.join(extendsionPath, '/lmhkpmbekcpmknklioeibfkpmmfibljd/3.2.7_0');
-      await session.defaultSession.loadExtension(reactDevToolsPath);
-      await session.defaultSession.loadExtension(reduxDevToolsPath);
+      await installDevtool();
     }
   }
 
