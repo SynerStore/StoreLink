@@ -3,10 +3,8 @@ import { Menu, Input, Space } from '@arco-design/web-react';
 import { groupBy } from 'lodash';
 import { IconEdit, IconDelete, IconPlus } from '@arco-design/web-react/icon';
 
-import StoreConnectModal from '@/renderer/components/StoreConnectModal';
+import { StoreConnectModal, ConnectionDeleteWrap, ContextMenu } from '@/renderer/components';
 import MenuTitle from './MenuTitle';
-import ConnectionDeleteWrap from '@/renderer/components/ConnectionDeleteWrap';
-import ContextMenu from '@/renderer/components/ContextMenu';
 import { useConfigStore, useTabsStore, ETabDisplay } from '@/renderer/store';
 import './index.css';
 

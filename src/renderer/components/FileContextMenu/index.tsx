@@ -2,9 +2,7 @@ import React, { useMemo } from 'react';
 import { Space } from '@arco-design/web-react';
 
 import { IconDownload, IconInfoCircle, IconEdit, IconEye, IconDelete, IconCopy } from '@arco-design/web-react/icon';
-import ContextMenu, { MenuItem } from '@/renderer/components/ContextMenu';
-import FileRenameWrap from '@/renderer/components/FileRenameWrap';
-import FileDeteleWrap from '@/renderer/components/FileDeteleWrap';
+import { FileRenameWrap, FileDeteleWrap, ContextMenu, MenuItem } from '@/renderer/components';
 
 export type FileContextMenuProps = {
   data: any;

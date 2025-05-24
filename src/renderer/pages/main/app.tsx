@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import Header from '@/renderer/components/Header';
-import Sider from '@/renderer/components/Sider';
-import StoreSider from '@/renderer/components/StoreSider';
-import StoreViewerTabs from '@/renderer/components/StoreViewerTabs';
+import { StoreViewerTabs, Header, Sider, StoreSider } from '@/renderer/components';
 import { useConfigStore, useTabsStore } from '@/renderer/store';
 import { updateRootStyleProperty } from '@/renderer/utils';
 import './index.css';

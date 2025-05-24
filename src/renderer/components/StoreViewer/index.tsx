@@ -4,7 +4,7 @@ import S3Viewer from './S3Viewer';
 import LocalViewer from './LocalViewer';
 import FtpViewer from './FtpViewer';
 import OssViewer from './OssViewer';
-import WebDevViewer from './WebDevViewer';
+import WebDevViewer from './WebDEVViewer';
 import { StoreTypes } from '@/types';
 import { useConfigStore } from '@/renderer/store';
 

@@ -4,9 +4,7 @@ import { IconLeft, IconRight, IconDown, IconList, IconApps } from '@arco-design/
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
-import ViewInput from '@/renderer/components/ViewInput';
-import FileDropWrap from '@/renderer/components/FileDropWrap';
+import { FolderCreateWrap, ViewInput, FileDropWrap } from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';

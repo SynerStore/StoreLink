@@ -1,4 +1,4 @@
-import StoreIcon from '@/renderer/components/StoreIcon';
+import { StoreIcon } from '@/renderer/components';
 
 export type MenuTitleProps = {
   brand: string;
