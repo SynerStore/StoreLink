@@ -4,7 +4,6 @@ import Windows from '../windows';
 import ViewerWindowManager from '../viewer';
 import { storeRequestRegistry } from '../stores';
 import eventsRegistry from '../events/registry';
-// import { dbRegistory } from '../db';
 import { logger, isDev, installDevtool } from '../utils';
 
 export default class Core {
@@ -46,7 +45,6 @@ export default class Core {
   }
 
   private async resistry() {
-    // await dbRegistory();
     await storeRequestRegistry();
     await eventsRegistry();
   }
