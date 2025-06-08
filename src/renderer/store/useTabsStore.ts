@@ -52,7 +52,7 @@ export const useTabsStore = create<DataType>()(
           newTabs = [...curTabs, tab];
           newActiveTab = tab.id;
         }
-        await events.updateViewerData({ tabs: newTabs, activeTab: newActiveTab });
+        await events.setViewerData({ tabs: newTabs, activeTab: newActiveTab });
         return set((state: any) => {
           return {
             ...state,
@@ -62,7 +62,7 @@ export const useTabsStore = create<DataType>()(
         });
       },
       selectTab: async (id: string) => {
-        await events.updateViewerData({ activeTab: id });
+        await events.setViewerData({ activeTab: id });
         return set((state: any) => {
           return {
             ...state,
@@ -74,7 +74,7 @@ export const useTabsStore = create<DataType>()(
         const curTabs = get().tabs;
         let newTabs = curTabs.filter((c: any) => c.id !== id);
         let newActiveTab = 'home';
-        await events.updateViewerData({ tabs: newTabs, activeTab: newActiveTab });
+        await events.setViewerData({ tabs: newTabs, activeTab: newActiveTab });
         return set((state: any) => {
           return {
             ...state,
@@ -91,7 +91,7 @@ export const useTabsStore = create<DataType>()(
           }
           return c;
         });
-        await events.updateViewerData({ tabs: newTabs });
+        await events.setViewerData({ tabs: newTabs });
         return set((state: any) => ({
           ...state,
           tabs: newTabs,

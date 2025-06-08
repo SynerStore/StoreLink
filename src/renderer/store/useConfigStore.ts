@@ -50,7 +50,7 @@ export const useConfigStore = create<DataState>()(
         }));
         const currentConnections = get().connections;
         const cons = [...currentConnections, ...newConnections];
-        await events.updateConnectionsData({ connections: cons });
+        await events.setConnectionsData({ connections: cons });
         set(() => {
           return { connections: cons };
         });
@@ -59,7 +59,7 @@ export const useConfigStore = create<DataState>()(
       removeConnection: async (id: string) => {
         const currentConnections = get().connections;
         const cons = currentConnections.filter((c) => c.id !== id);
-        await events.updateConnectionsData({ connections: cons });
+        await events.setConnectionsData({ connections: cons });
         set(() => {
           return { connections: cons };
         });

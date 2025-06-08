@@ -71,6 +71,7 @@
     "electron-devtools-installer": "^4.0.0",
     "electron-is-dev": "^3.0.1",
     "electron-log": "^5.3.1",
+    "electron-store": "^10.0.1",
     "file-type": "^20.4.0",
     "fs-extra": "^11.3.0",
     "highlight.js": "^11.11.1",
