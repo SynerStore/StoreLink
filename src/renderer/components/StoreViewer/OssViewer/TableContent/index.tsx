@@ -3,8 +3,7 @@ import { Table } from '@arco-design/web-react';
 import dayjs from 'dayjs';
 
 import { EWindowSize, EOssStorageClass, TStoreObject } from '@/types';
-import FileIcon from '@/renderer/components/FileIcon';
-import FileContextMenu from '@/renderer/components/FileContextMenu';
+import { FileIcon, FileContextMenu } from '@/renderer/components';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 

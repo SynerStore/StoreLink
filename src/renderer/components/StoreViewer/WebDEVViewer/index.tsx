@@ -5,9 +5,7 @@ import { debounce } from 'lodash';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import FolderCreateWrap from '@/renderer/components/FolderCreateWrap';
-import ViewInput from '@/renderer/components/ViewInput';
-import FileDropWrap from '@/renderer/components/FileDropWrap';
+import { ViewInput, FileDropWrap, FolderCreateWrap } from '@/renderer/components';
 import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';

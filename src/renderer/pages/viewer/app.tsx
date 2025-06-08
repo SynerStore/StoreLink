@@ -1,8 +1,6 @@
 import qs from 'query-string';
 
-import Header from '@/renderer/components/Header';
-import FileViewer from '@/renderer/components/FileViewer';
-import FileIcon from '@/renderer/components/FileIcon';
+import {Header,FileViewer,FileIcon} from '@/renderer/components';
 import './index.css';
 
 const App = () => {

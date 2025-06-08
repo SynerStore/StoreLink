@@ -1,6 +1,6 @@
 import { Button } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
-import StoreConnectModal from '@/renderer/components/StoreConnectModal';
+import { StoreConnectModal } from '@/renderer/components';
 
 import './index.css';
 const HomeTab = () => {

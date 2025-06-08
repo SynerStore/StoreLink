@@ -1,8 +1,8 @@
 import React, { useState, memo } from 'react';
 import { IconMinus, IconClose } from '@arco-design/web-react/icon';
 
-import { winClose, winFullScreen, winMinimize, isInMac } from '@/renderer/utils';
-import { IconFullScreen, IconUnFullScreen } from '@/renderer/components/Icons';
+import { winClose, winFullScreen, winMinimize } from '@/renderer/utils';
+import { IconFullScreen, IconUnFullScreen } from '@/renderer/components';
 import logo from '@/renderer/assets/logo.png';
 import './index.css';
 
