@@ -27,8 +27,4 @@ export const StoreDatas = [
     brand: StoreBrands.WebDAV,
     type: StoreTypes.WEBDAV,
   },
-  {
-    brand: StoreBrands.SMB,
-    type: StoreTypes.SMB,
-  },
 ];
