@@ -1,0 +1,120 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "save": "Save",
+    "search": "Search",
+    "upload": "Upload",
+    "download": "Download",
+    "rename": "Rename",
+    "copy": "Copy",
+    "refresh": "Refresh",
+    "back": "Back",
+    "forward": "Forward",
+    "home": "Home",
+    "settings": "Settings",
+    "close": "Close",
+    "open": "Open",
+    "view": "View",
+    "detail": "Detail",
+    "name": "Name",
+    "size": "Size",
+    "type": "Type",
+    "modified": "Modified",
+    "created": "Created",
+    "folder": "Folder",
+    "file": "File"
+  },
+  "fileViewer": {
+    "loadingTip": "Loading resource, please wait...",
+    "unsupportedFile": "This document cannot be viewed",
+    "imageViewer": {
+      "rotateLeft": "Rotate Left",
+      "rotateRight": "Rotate Right",
+      "zoomIn": "Zoom In",
+      "zoomOut": "Zoom Out",
+      "originalSize": "Original Size"
+    }
+  },
+  "storeSider": {
+    "title": "Storage",
+    "searchPlaceholder": "Search connections...",
+    "addConnection": "Add Connection",
+    "editConnection": "Edit Connection",
+    "deleteConnection": "Delete Connection",
+    "confirmDelete": "Are you sure to delete this connection?"
+  },
+  "storeViewer": {
+    "listView": "List View",
+    "cardView": "Card View",
+    "createFolder": "Create Folder",
+    "uploadFile": "Upload File",
+    "refresh": "Refresh",
+    "pathNavigation": "Path Navigation",
+    "emptyFolder": "Folder is empty",
+    "loadingFiles": "Loading files..."
+  },
+  "contextMenu": {
+    "download": "Download",
+    "delete": "Delete",
+    "rename": "Rename",
+    "copy": "Copy",
+    "detail": "Detail",
+    "open": "Open"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "downloadPath": "Download Path",
+    "general": "General",
+    "appearance": "Appearance",
+    "storage": "Storage"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "upload": "Upload",
+    "download": "Download",
+    "pending": "Pending",
+    "running": "Running",
+    "completed": "Completed",
+    "failed": "Failed",
+    "canceled": "Canceled",
+    "pause": "Pause",
+    "resume": "Resume",
+    "cancel": "Cancel",
+    "retry": "Retry"
+  },
+  "connection": {
+    "title": "Connection Configuration",
+    "name": "Connection Name",
+    "type": "Storage Type",
+    "host": "Host",
+    "port": "Port",
+    "username": "Username",
+    "password": "Password",
+    "accessKey": "Access Key",
+    "secretKey": "Secret Key",
+    "bucket": "Bucket",
+    "region": "Region",
+    "endpoint": "Endpoint",
+    "testConnection": "Test Connection",
+    "saveConnection": "Save Connection",
+    "connectionSuccess": "Connection successful",
+    "connectionFailed": "Connection failed"
+  },
+  "errors": {
+    "networkError": "Network Error",
+    "fileNotFound": "File Not Found",
+    "accessDenied": "Access Denied",
+    "unknownError": "Unknown Error",
+    "uploadFailed": "Upload Failed",
+    "downloadFailed": "Download Failed",
+    "deleteFailed": "Delete Failed",
+    "renameFailed": "Rename Failed"
+  }
+}

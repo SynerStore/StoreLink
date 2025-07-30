@@ -5,7 +5,7 @@ import { ConfigProvider } from '@arco-design/web-react';
 import App from './app';
 import '@arco-design/web-react/dist/css/arco.css';
 import '@arco-themes/react-syner-store/css/arco.css';
-import '../../styles/index.css';
+import '@/renderer/styles/index.css';
 
 // @ts-ignore
 import { GlobalWorkerOptions } from 'pdfjs-dist/build/pdf.mjs';

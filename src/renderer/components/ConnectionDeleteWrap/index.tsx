@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { Modal } from '@arco-design/web-react';
+import { useTranslation } from 'react-i18next';
 
 export type FileRenameWrapProps = {
   connection: { key: string; label: string };
@@ -8,18 +9,18 @@ export type FileRenameWrapProps = {
 };
 const ConnectionDeleteWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProps) => {
   const { connection, children, onDelete } = props;
-
+  const { t } = useTranslation();
   const handleConfirm = () => {
     Modal.confirm({
-      title: '删除',
+      title: t('common.delete'),
       content: (
         <div>
           <h4> 删除操作不能恢复，确定删除选中的连接吗？</h4>
           <div> 删除链接：{connection.label}</div>
         </div>
       ),
-      okText: '确定',
-      cancelText: '取消',
+      okText: t('common.confirm'),
+      cancelText: t('common.cancel'),
       closable: false,
       maskClosable: false,
       onOk: () => {
