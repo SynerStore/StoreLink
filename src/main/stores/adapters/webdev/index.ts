@@ -77,11 +77,9 @@ class WebDAVStore implements IStorageHandler {
 
   async put(params: PutMultiObjectsParams) {
     try {
-      debugger
       const result = await putMultiObjects(this.client, params);
       return sucessResponse(result);
     } catch (err: any) {
-      debugger
       return errorResponse(err.message);
     }
   }

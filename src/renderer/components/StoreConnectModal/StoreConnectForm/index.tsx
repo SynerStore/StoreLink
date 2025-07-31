@@ -3,6 +3,7 @@ import { useMemo, forwardRef } from 'react';
 import S3Form from './S3Form';
 import OssForm from './OssForm';
 import FtpForm from './FtpForm';
+import SFtpForm from './SFtpForm';
 import LocalForm from './LocalForm';
 import WebDAVForm from './WebDAVForm';
 import { StoreTypes } from '@/types';
@@ -25,6 +26,8 @@ const StoreConnectForm = forwardRef((props: StoreConnectFormProps, ref) => {
       return <S3Form />;
     case StoreTypes.FTP:
       return <FtpForm />;
+    case StoreTypes.SFTP:
+      return <SFtpForm />;
     case StoreTypes.LOCAL:
       return <LocalForm ref={ref} />;
     case StoreTypes.WEBDAV:

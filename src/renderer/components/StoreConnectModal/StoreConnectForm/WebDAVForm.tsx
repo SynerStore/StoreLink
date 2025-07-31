@@ -51,7 +51,7 @@ const WebDAVForm = forwardRef((_props, ref) => {
     return newCons;
   };
   return (
-    <Form form={form} style={{ width: 600 }} autoComplete="off">
+    <Form form={form}  autoComplete="off">
       <FormItem label="服务器地址" field="address">
         <Input />
       </FormItem>

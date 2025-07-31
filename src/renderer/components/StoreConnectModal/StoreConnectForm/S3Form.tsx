@@ -3,7 +3,7 @@ const FormItem = Form.Item;
 
 const S3Form = () => {
   return (
-    <Form style={{ width: 600 }} autoComplete="off">
+    <Form autoComplete="off">
       <FormItem label="Access Key">
         <Input />
       </FormItem>

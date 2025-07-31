@@ -1,9 +1,9 @@
 import { Form, Input, Button } from '@arco-design/web-react';
 const FormItem = Form.Item;
 
-const FtpForm = () => {
+const SFtpForm = () => {
   return (
-    <Form  autoComplete="off">
+    <Form autoComplete="off">
       <FormItem label="主机">
         <Input />
       </FormItem>
@@ -29,4 +29,4 @@ const FtpForm = () => {
   );
 };
 
-export default FtpForm;
+export default SFtpForm;
