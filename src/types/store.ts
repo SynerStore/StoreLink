@@ -12,6 +12,7 @@ export enum StoreBrands {
   aliyun = 'aliyun',
   local = 'local',
   ftp = 'ftp',
+  sftp="sftp",
   tencentcloud = 'tencentcloud',
   huaweicloud = 'huaweicloud',
   WebDAV = 'WebDAV'

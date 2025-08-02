@@ -15,6 +15,10 @@ export const StoreDatas = [
     brand: StoreBrands.ftp,
     type: StoreTypes.FTP,
   },
+   {
+    brand: StoreBrands.sftp,
+    type: StoreTypes.SFTP,
+  },
   {
     brand: StoreBrands.tencentcloud,
     type: StoreTypes.S3,

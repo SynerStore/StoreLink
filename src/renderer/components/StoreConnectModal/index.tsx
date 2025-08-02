@@ -49,7 +49,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
         closable={false}
         maskClosable={false}
         visible={isModalOpen}
-        style={{ width: 720 }}
+        style={{ width: 620 }}
         onCancel={step === 0 ? handleCancel : handlePrev}
         onOk={step === 0 ? handleNext : handleOk}
         cancelText={step === 0 ? '取消' : '上一步'}

@@ -66,7 +66,7 @@ const OssForm = forwardRef((_props, ref) => {
   };
 
   return (
-    <Form form={form} style={{ width: 600 }} autoComplete="off">
+    <Form form={form} autoComplete="off">
       <FormItem label="Access Key" field="accessKeyId" rules={[{ required: true }]}>
         <Input />
       </FormItem>

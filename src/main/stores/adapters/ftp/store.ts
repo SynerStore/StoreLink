@@ -27,25 +27,18 @@ import { storeRemove, storePool } from '../../storeManage';
 class FtpStore implements IStorageHandler {
   public config: any;
   public client: any;
-  private connecting: boolean;
+  // private connecting: boolean;
   public id: string;
   constructor(id: string, config: any) {
     this.id = id;
     this.config = config;
     this.client = new Client();
-    this.connecting = false;
-    this.init(this.config);
   }
 
   async init(config: any) {
     const { host, port, user, password } = config;
     // 针对 basic-ftp 单线程模型处理
-    if (this.client && this.client.closed && this.connecting) {
-      await sleep(100, () => !this.client.closed);
-      this.connecting = false;
-      return;
-    } else {
-      this.connecting = true;
+    if (this.client && this.client.ftp.closed) {
       try {
         await this.client.access({
           host,
@@ -58,13 +51,14 @@ class FtpStore implements IStorageHandler {
       } catch (err) {
         console.log(err);
       }
+      return;
     }
   }
 
   // 销毁
   destroy() {
     this.client.close();
-    storeRemove(this.id);
+    // storeRemove(this.id);
   }
 
   async reConnect() {
@@ -73,7 +67,7 @@ class FtpStore implements IStorageHandler {
   }
 
   async ensureClientIsOpen() {
-    if (!this.client.closed) {
+    if (!this.client.ftp.closed) {
       return;
     }
     await this.init(this.config);
@@ -200,7 +194,7 @@ class FtpStore implements IStorageHandler {
 
   // 释放当前 ftp store
   release() {
-    storePool.get(this.id).releaseStore(this);
+    // storePool.get(this.id).releaseStore(this);
   }
 }
 

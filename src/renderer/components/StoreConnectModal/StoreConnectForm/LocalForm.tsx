@@ -40,7 +40,7 @@ const LocalForm = forwardRef((_props, ref) => {
   };
 
   return (
-    <Form form={form} style={{ width: 600 }} autoComplete="off">
+    <Form form={form} autoComplete="off">
       <FormItem label="连接名称" field="name">
         <Input />
       </FormItem>
