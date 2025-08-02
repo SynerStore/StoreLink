@@ -43,7 +43,7 @@
     "@types/react-syntax-highlighter": "^15.5.13",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
-    "electron": "^34.3.0",
+    "electron": "^34.5.8",
     "electron-builder": "^25.1.8",
     "less": "^4.2.2",
     "less-loader": "^12.2.0",
