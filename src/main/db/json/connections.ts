@@ -30,3 +30,23 @@ export async function setConnectionsData(data: Partial<IConnectionsData>) {
     ...data,
   };
 }
+
+
+// TODO: 这里处理加密逻辑
+export function addConnection(connection: any) {
+  const connections = getConnectionsData().connections;
+  connections.push(connection);
+  setConnectionsData({
+    connections,
+  });
+}
+export function removeConnection(id: string) {
+  const connections = getConnectionsData().connections;
+  const index = connections.findIndex((item: any) => item.id === id);
+  if (index > -1) {
+    connections.splice(index, 1);
+  }
+  setConnectionsData({
+    connections,
+  });
+}

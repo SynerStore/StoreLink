@@ -89,6 +89,9 @@ importers:
       mime-types:
         specifier: ^2.1.35
         version: 2.1.35
+      node-machine-id:
+        specifier: ^1.1.12
+        version: 1.1.12
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -3349,6 +3352,9 @@ packages:
   node-hex@1.0.1:
     resolution: {integrity: sha512-iwpZdvW6Umz12ICmu9IYPRxg0tOLGmU3Tq2tKetejCj3oZd7b2nUXwP3a7QA5M9glWy8wlPS1G3RwM/CdsUbdQ==}
     engines: {node: '>=8.0.0'}
+
+  node-machine-id@1.1.12:
+    resolution: {integrity: sha512-QNABxbrPa3qEIfrE6GOJ7BYIuignnJw7iQ2YPbc3Nla1HzRJjXzZOiikfF8m7eAMfichLt3M4VgLOetqgDmgGQ==}
 
   nopt@6.0.0:
     resolution: {integrity: sha512-ZwLpbTgdhuZUnZzjd7nb1ZV+4DoiC6/sfiVKok72ym/4Tlf+DFdlHYmT2JPmcNNWV6Pi3SDf1kT+A4r9RTuT9g==}
@@ -8854,6 +8860,8 @@ snapshots:
       - supports-color
 
   node-hex@1.0.1: {}
+
+  node-machine-id@1.1.12: {}
 
   nopt@6.0.0:
     dependencies:

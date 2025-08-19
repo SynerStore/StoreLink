@@ -79,6 +79,7 @@
     "lodash": "^4.17.21",
     "lowdb": "^7.0.1",
     "mime-types": "^2.1.35",
+    "node-machine-id": "^1.1.12",
     "normalize.css": "^8.0.1",
     "pdfjs-dist": "^5.1.91",
     "picocolors": "^1.1.1",

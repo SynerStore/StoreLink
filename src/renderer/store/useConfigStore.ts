@@ -48,21 +48,13 @@ export const useConfigStore = create<DataState>()(
           createDate: con.createDate || new Date().toLocaleString(),
           updateDate: new Date().toLocaleString(),
         }));
-        const currentConnections = get().connections;
-        const cons = [...currentConnections, ...newConnections];
-        await events.setConnectionsData({ connections: cons });
-        set(() => {
-          return { connections: cons };
-        });
+        await events.addConnection(newConnections);
+        await get().initializeData()
         return newConnections; // 返回新增 connect 用于创建 tab
       },
       removeConnection: async (id: string) => {
-        const currentConnections = get().connections;
-        const cons = currentConnections.filter((c) => c.id !== id);
-        await events.setConnectionsData({ connections: cons });
-        set(() => {
-          return { connections: cons };
-        });
+        await events.removeConnection(id);
+        await get().initializeData()
       },
       updateConnection: (connection: Connection) => {
         set((state) => ({
