@@ -61,16 +61,7 @@ const rspackConfig: Configuration = {
           },
         ],
       },
-      {
-        test: /\.less$/,
-        loader: require.resolve('less-loader'),
-        options: {
-          lessOptions: {
-            javascriptEnabled: true,
-          },
-        },
-        type: 'css/auto',
-      },
+  
       {
         test: /\.(png|svg|webp|jpe?g|gif)(\?.*)?$/i,
         type: 'asset',

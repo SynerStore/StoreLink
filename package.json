@@ -45,8 +45,6 @@
     "cross-env": "^7.0.3",
     "electron": "^34.5.8",
     "electron-builder": "^25.1.8",
-    "less": "^4.2.2",
-    "less-loader": "^12.2.0",
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
