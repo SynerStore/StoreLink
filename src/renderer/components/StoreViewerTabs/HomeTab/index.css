@@ -1,7 +1,8 @@
 .home-tab {
   width: 100%;
+  height: 100%;
 
-  .home-tab-header {
+  .home-tab-dashbord {
     display: flex;
     align-items: center;
     flex-direction: column;

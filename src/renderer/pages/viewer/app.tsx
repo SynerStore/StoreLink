@@ -5,8 +5,6 @@ import './index.css';
 
 const App = () => {
   const query = qs.parse(window.location.search);
-  console.log('query', query);
-
   return (
     <div className="container">
       <Header icon={<FileIcon mime={query.mime as string} />} title={query.name as string} />
