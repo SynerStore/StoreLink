@@ -191,30 +191,28 @@ export async function putMultiObjects(client: WebDAVClient, params: PutMultiObje
 }
 
 // /**
-//  * ftp 文件预览需要下载
+//  * webdav 文件预览需要下载
 //  */
-// export type GetSourceUrlParams = {
-//   key: string;
-//   connectionId: string;
-//   lastModified: number;
-// };
-// export async function getSourceUrl(client: Client, params: GetSourceUrlParams) {
-//   const { key, connectionId, lastModified } = params;
-//   const etag = getMd5ByString(`${connectionId}-${lastModified}-${key}`);
-//   const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
-//   const filePath = `file://${tmpFileName}`;
-//   if (!fs.existsSync(tmpFileName)) {
-//     const writerStream = fs.createWriteStream(tmpFileName);
-//     await client.downloadTo(writerStream, key);
-//   }
-//   const mimeValue = mime.lookup(filePath) || '';
-//   let content = '';
-//   if (/text\/.{0,}/.test(mimeValue)) {
-//     content = await fs.readFile(tmpFileName, { encoding: 'utf-8' });
-//   }
-//   return {
-//     src: filePath,
-//     mime: mimeValue,
-//     content: content,
-//   };
-// }
+export type GetSourceUrlParams = {
+  key: string;
+  connectionId: string;
+  lastModified: number;
+};
+export async function getSourceUrl(_client: WebDAVClient, config: any, params: GetSourceUrlParams) {
+  // 还是需要支持本地文件加载？？
+  const { address, username, password } = config;
+  const { key } = params;
+  const u = new URL(address);
+  u.username = username || '';
+  u.password = password || '';
+  const basePath = u.pathname.endsWith('/') ? u.pathname : `${u.pathname}/`;
+  const keyPath = key.startsWith('/') ? key.slice(1) : key;
+  u.pathname = key
+  const src = u.toString();
+  const mimeValue = mime.lookup(key) || '';
+  return {
+    src: src,
+    mime: mimeValue,
+    content: '',
+  };
+}

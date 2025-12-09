@@ -15,8 +15,8 @@ import {
   PutMultiObjectsParams,
   putFolder,
   PutFolderParams,
-  // GetSourceUrlParams,
-  // getSourceUrl,
+  GetSourceUrlParams,
+  getSourceUrl,
   getFolder,
   GetFileParams,
   getFile,
@@ -126,14 +126,14 @@ class WebDAVStore implements IStorageHandler {
   }
 
   // // 获取资源地址
-  // async getSourceUrl(params: GetSourceUrlParams) {
-  //   try {
-  //     const result = await getSourceUrl(this.client, params);
-  //     return sucessResponse(result);
-  //   } catch (err: any) {
-  //     return errorResponse(err.message);
-  //   }
-  // }
+  async getSourceUrl(params: GetSourceUrlParams) {
+    try {
+      const result = await getSourceUrl(this.client,this.config, params);
+      return sucessResponse(result);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
 }
 
 export default WebDAVStore;

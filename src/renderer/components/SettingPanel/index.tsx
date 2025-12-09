@@ -1,7 +1,8 @@
 import React, { Fragment, useState } from 'react';
-import { Modal, Form, Select, Radio } from '@arco-design/web-react';
+import { Modal, Form, Select, Radio, Space, Button, Message } from '@arco-design/web-react';
 
-import { useSettingStore, EnumTheme, EnumLang } from '@/renderer/store';
+import { useSettingStore, EnumTheme, EnumLang, useConfigStore } from '@/renderer/store';
+import { events } from '@/renderer/utils';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -14,6 +15,7 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
   const { children } = props;
 
   const settingStore = useSettingStore();
+  const configStore = useConfigStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSwitchTheme = (value: EnumTheme) => {
@@ -32,6 +34,21 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
     settingStore.update({
       lang: value,
     });
+  };
+
+  const handleExportConnections = async () => {
+    const dir = await events.getSingleDirPath({});
+    if (!dir) return;
+    const filePath = await events.exportConnections(dir);
+    if (filePath) Message.success('已导出到 ' + filePath);
+  };
+
+  const handleImportConnections = async () => {
+    const file = await events.getSingleFilePath({ properties: ['openFile'], filters: [{ name: 'JSON', extensions: ['json'] }] });
+    if (!file) return;
+    await events.importConnections(file);
+    await configStore.initializeData();
+    Message.success('已导入连接配置');
   };
 
   return (
@@ -65,6 +82,12 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
               <Option value="zh-CN">中文</Option>
               <Option value="en-US">英文</Option>
             </Select>
+          </FormItem>
+          <FormItem label="连接配置">
+            <Space>
+              <Button size="small" type="primary" onClick={handleExportConnections}>导出</Button>
+              <Button size="small" onClick={handleImportConnections}>导入</Button>
+            </Space>
           </FormItem>
         </Form>
       </Modal>

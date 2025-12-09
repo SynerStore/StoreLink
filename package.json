@@ -11,7 +11,7 @@
   "author": "chrissong1994 <chrissong1994@163.com> ",
   "license": "MIT",
   "scripts": {
-    "start": "cross-env NODE_ENV=development  electron ./build/main.js",
+    "start": "cross-env NODE_ENV=development electron --inspect=9229 ./build/main.js",
     "dev": "npm run clean:build && concurrently \"npm run dev:renderer\"  \"npm run dev:main\"",
     "dev:renderer": "cross-env NODE_ENV=development rspack serve -c ./scripts/rspack.render.config.ts",
     "build:renderer": "cross-env NODE_ENV=production rspack build -c ./scripts/rspack.render.config.ts",
@@ -48,6 +48,7 @@
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
+    "tslib": "^2.8.1",
     "typescript": "^5.7.3"
   },
   "dependencies": {
