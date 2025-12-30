@@ -9,7 +9,7 @@ const dist_dir = path.normalize(path.join(__dirname, '..', 'dist'));
 const macIcon = path.normalize(path.join(__dirname, './assets', 'mac.png'));
 const winIcon = path.normalize(path.join(__dirname, './assets', 'win.png'));
 
-const APP_NAME = 'SynerStore';
+const APP_NAME = 'StorLink';
 
 const TARGET_PLATFORMS_configs = {
   mac: {
@@ -85,7 +85,7 @@ const doMake = async () => {
     ...targets,
     config: {
       ...cfg_common,
-      appId: 'syner.store.app',
+      appId: 'stor.link.app',
       productName: APP_NAME,
       asarUnpack: ['**/*.node'],
       mac: {

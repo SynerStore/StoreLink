@@ -1,6 +1,6 @@
-# SynerStoreClient
+# StorLink
 
-SynerStoreClient 客户端，一个客户端挂载一切存储工具
+StorLink 客户端，一个客户端挂载一切存储工具
 
 ## todos
 
