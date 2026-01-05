@@ -11,10 +11,6 @@ export const StoreDatas = [
     brand: StoreBrands.local,
     type: StoreTypes.LOCAL,
   },
-  {
-    brand: StoreBrands.ftp,
-    type: StoreTypes.FTP,
-  },
    {
     brand: StoreBrands.sftp,
     type: StoreTypes.SFTP,

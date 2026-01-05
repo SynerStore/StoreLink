@@ -1,7 +1,6 @@
 export enum StoreTypes {
   S3 = 's3',
   OSS = 'oss',
-  FTP = 'ftp',
   SFTP = 'sftp',
   LOCAL = 'local',
   WEBDAV = 'webdav'
@@ -11,7 +10,6 @@ export enum StoreBrands {
   S3 = 's3',
   aliyun = 'aliyun',
   local = 'local',
-  ftp = 'ftp',
   sftp="sftp",
   tencentcloud = 'tencentcloud',
   huaweicloud = 'huaweicloud',
