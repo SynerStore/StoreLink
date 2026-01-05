@@ -33,7 +33,7 @@ class SftpStore implements IStorageHandler {
     this.config = config;
     this.client = new SftpClient();
     this.connected = false;
-    this.init(this.config);
+    // this.init(this.config);
   }
 
   async init(config: any) {
