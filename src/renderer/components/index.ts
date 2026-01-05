@@ -17,3 +17,4 @@ export * from './Icons';
 export { default as StoreIcon } from './StoreIcon';
 export { default as StoreConnectModal } from './StoreConnectModal';
 export { default as ConnectionDeleteWrap } from './ConnectionDeleteWrap';
+export { default as ResponsiveGrid } from './ResponsiveGrid';

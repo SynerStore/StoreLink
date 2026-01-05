@@ -1,9 +1,9 @@
 import { Fragment } from 'react';
-import { Tooltip, Space } from '@arco-design/web-react';
+import { Tooltip } from '@arco-design/web-react';
 import dayjs from 'dayjs';
 
 import { TStoreObject } from '@/types';
-import { FileIcon, FileContextMenu } from '@/renderer/components';
+import { FileIcon, FileContextMenu, ResponsiveGrid } from '@/renderer/components';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
@@ -35,7 +35,7 @@ const CardContent = (props: CardContentProps) => {
 
   return (
     <div className="cards-content">
-      <Space size={12} wrap>
+      <ResponsiveGrid minItemWidth={80} maxItemWidth={100} columnGap={12} rowGap={12}>
         {data.map((item) => {
           return (
             <FileContextMenu
@@ -82,7 +82,7 @@ const CardContent = (props: CardContentProps) => {
             </FileContextMenu>
           );
         })}
-      </Space>
+      </ResponsiveGrid>
     </div>
   );
 };
