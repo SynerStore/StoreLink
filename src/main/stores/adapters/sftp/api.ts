@@ -33,7 +33,9 @@ export type ListParams = {
   prefix: string;
 };
 export async function list(client: SftpClient, params: ListParams) {
+  debugger
   const files = await client.list(params.prefix || '/');
+debugger
   const filesObjects = await Promise.all(files.map((file: any) => formatObjects(params.prefix, file as SftpListFile)));
   return filesSort(filesObjects as any[]);
 }

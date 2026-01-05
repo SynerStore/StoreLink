@@ -45,11 +45,24 @@ class SftpStore implements IStorageHandler {
         port,
         username,
         password,
+        keepaliveInterval: 15000,
       } as any);
       this.connected = true;
     } catch (_err) {
       this.connected = false;
     }
+
+    this.client.on('end', () => {
+      this.connected = false;
+      console.log('Connection ended unexpectedly');
+    });
+    this.client.on('close', () => {
+      this.connected = false;
+      console.log('Connection closed');
+    });
+    this.client.on('error', (err: any) => {
+      console.error('SFTP 客户端错误:', err.message, err.stack);
+    });
   }
 
   destroy() {

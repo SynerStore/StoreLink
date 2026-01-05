@@ -3,6 +3,7 @@ import { useMemo, useEffect, useCallback } from 'react';
 import S3Viewer from './S3Viewer';
 import LocalViewer from './LocalViewer';
 import FtpViewer from './FtpViewer';
+import SftpViewer from './SftpViewer';
 import OssViewer from './OssViewer';
 import WebDevViewer from './WebDEVViewer';
 import { StoreTypes } from '@/types';
@@ -43,7 +44,7 @@ const StoreViewer = (props: any) => {
     case StoreTypes.FTP:
       return <FtpViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     case StoreTypes.SFTP:
-      return <FtpViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
+      return <SftpViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     case StoreTypes.WEBDAV:
       return <WebDevViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
 
