@@ -14,12 +14,14 @@ import {
   GetMultiObjectsParams,
   PutMultiObjectsParams,
   putMultiObjects,
-  DeleteObjectParams,
-  deleteObject,
+  DeleteObjectParams,deleteObject,
+  DeleteMultiObjectsParams,
   deleteMultiObjects,
   DeleteFolderParams,
   deleteFolder,
   DeleteMultiObjectsParams,
+  CopyObjectParams,
+  copyObject,
   RenameFolderParams,
   renameFolder,
   RenameObjectParams,
@@ -91,13 +93,13 @@ class S3Store implements IStorageHandler {
   }
 
   // 下载单个对象
-  async get(params: GetObjectParams & GetFolderParams) {
+  async get(params: GetObjectParams & GetFolderParams, onProgress?: any) {
     try {
       let result;
       if (isObjectFolder(params.key)) {
         result = await getFolder(this.client, params);
       } else {
-        result = await getObject(this.client, params);
+        result = await getObject(this.client, params, onProgress);
       }
       return sucessResponse(result);
     } catch (err: any) {
@@ -117,9 +119,9 @@ class S3Store implements IStorageHandler {
   }
 
   // 上传对象·
-  async put(params: PutMultiObjectsParams) {
+  async put(params: PutMultiObjectsParams, onProgress?: any) {
     try {
-      const result = await putMultiObjects(this.client, params);
+      const result = await putMultiObjects(this.client, params, onProgress);
       return sucessResponse(result);
     } catch (err: any) {
       console.error(err);
@@ -157,6 +159,16 @@ class S3Store implements IStorageHandler {
   async deleteMulti(params: DeleteMultiObjectsParams) {
     try {
       const result = await deleteMultiObjects(this.client, params);
+      return sucessResponse(result);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
+
+  // 复制
+  async copy(params: CopyObjectParams) {
+    try {
+      const result = await copyObject(this.client, params);
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);

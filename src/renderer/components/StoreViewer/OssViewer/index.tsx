@@ -5,9 +5,10 @@ import { IconLeft, IconRight, IconDown, IconList, IconApps } from '@arco-design/
 import TableContent from './TableContent';
 import CardContent from './CardContent';
 import { FolderCreateWrap, ViewInput, FileDropWrap } from '@/renderer/components';
-import { PathHistory, events, storeRequest, openViewer } from '@/renderer/utils';
+import { PathHistory, events, storeRequest, openViewer, createTask } from '@/renderer/utils';
 import { useLoading, useUnmount } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
+import { ETaskType } from '@/types';
 import './index.css';
 
 const RadioGroup = Radio.Group;
@@ -72,11 +73,13 @@ const OssViewer = (props: OssViewerProps) => {
   const handleDownload = async (record: any) => {
     const localPath = await events.getSingleDirPath({});
     if (localPath) {
-      storeRequest({
-        method: 'get',
-        id: connectionId,
-        params: { prefix: curPrefix, key: record.key, localPath: localPath },
-      });
+      createTask(
+        ETaskType.DOWNLOAD,
+        connectionId,
+        'get',
+        { prefix: curPrefix, key: record.key, localPath: localPath },
+        record.size
+      );
     }
   };
 
@@ -90,42 +93,36 @@ const OssViewer = (props: OssViewerProps) => {
   };
 
   const handlePut = async (paths: string[]) => {
-    return storeRequest({
-      method: 'put',
-      id: connectionId,
-      params: {
-        prefix: curPrefix,
-        localPaths: paths,
-      },
+    return createTask(ETaskType.UPLOAD, connectionId, 'put', {
+      prefix: curPrefix,
+      localPaths: paths,
     });
   };
 
   const handlePutFolder = async (folderName: string) => {
-    storeRequest({
-      method: 'putFolder',
-      id: connectionId,
-      params: {
-        prefix: curPrefix,
-        localPath: folderName,
-      },
+    createTask(ETaskType.CREATE_DIR, connectionId, 'putFolder', {
+      prefix: curPrefix,
+      localPath: folderName,
     });
   };
 
   const handleDelete = async (record: any) => {
-    storeRequest({
-      method: 'delete',
-      id: connectionId,
-      params: {
+    createTask(
+      ETaskType.DELETE,
+      connectionId,
+      'delete',
+      {
         key: record.key,
       },
-    });
+      record.size
+    );
   };
 
   const handleRename = async (record: any, newName: string) => {
-    storeRequest({
-      method: 'rename',
-      id: connectionId,
-      params: { prefix: curPrefix, oldKey: record.key, newKey: newName },
+    createTask(ETaskType.RENAME, connectionId, 'rename', {
+      prefix: curPrefix,
+      oldKey: record.key,
+      newKey: newName,
     });
   };
 

@@ -7,6 +7,8 @@ import TableContent from './TableContent';
 import CardContent from './CardContent';
 import { FileDropWrap, ViewInput, FolderCreateWrap } from '@/renderer/components';
 import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
+import { createTask } from '@/renderer/utils/task';
+import { ETaskType } from '@/types';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import './index.css';
@@ -73,11 +75,13 @@ const SftpViewer = (props: SftpViewerProps) => {
   const handleDownload = async (record: any) => {
     const localPath = await events.getSingleDirPath({});
     if (localPath) {
-      storeRequest({
-        method: 'get',
-        id: connectionId,
-        params: { key: record.key, localPath: localPath },
-      });
+      createTask(
+        ETaskType.DOWNLOAD,
+        connectionId,
+        'get',
+        { key: record.key, localPath: localPath },
+        record.size
+      );
     }
   };
 
@@ -91,43 +95,33 @@ const SftpViewer = (props: SftpViewerProps) => {
   };
 
   const handlePut = async (paths: string[]) => {
-    return storeRequest({
-      method: 'put',
-      id: connectionId,
-      params: {
-        prefix: curPrefix,
-        localPaths: paths,
-      },
+    return createTask(ETaskType.UPLOAD, connectionId, 'put', {
+      prefix: curPrefix,
+      localPaths: paths,
     });
   };
   const handlePutFolder = async (folderName: string) => {
-    storeRequest({
-      method: 'putFolder',
-      id: connectionId,
-      params: {
-        prefix: curPrefix,
-        localPath: folderName,
-      },
+    createTask(ETaskType.CREATE_DIR, connectionId, 'putFolder', {
+      prefix: curPrefix,
+      localPath: folderName,
     });
   };
 
   const handleDelete = async (record: any) => {
-    storeRequest({
-      method: 'delete',
-      id: connectionId,
-      params: {
+    createTask(
+      ETaskType.DELETE,
+      connectionId,
+      'delete',
+      {
         file: record.key,
         isDirectory: record.isDirectory,
       },
-    });
+      record.size
+    );
   };
 
   const handleRename = async (record: any, newName: string) => {
-    storeRequest({
-      method: 'rename',
-      id: connectionId,
-      params: { oldName: record.key, newName: newName },
-    });
+    createTask(ETaskType.RENAME, connectionId, 'rename', { oldName: record.key, newName: newName });
   };
 
   const handleDisplayChange = (value: ETabDisplay) => {

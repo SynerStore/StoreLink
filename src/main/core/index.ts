@@ -4,6 +4,7 @@ import Windows from '../windows';
 import ViewerWindowManager from '../viewer';
 import { storeRequestRegistry } from '../stores';
 import eventsRegistry from '../events/registry';
+import { taskRequestRegistry } from '../tasks/manage';
 import { logger, isDev, installDevtool } from '../utils';
 
 export default class Core {
@@ -47,6 +48,7 @@ export default class Core {
   private async resistry() {
     await storeRequestRegistry();
     await eventsRegistry();
+    await taskRequestRegistry();
   }
 
   private async installExtension() {

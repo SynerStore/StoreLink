@@ -1,80 +1,68 @@
 import { Button, Input, Space, Table } from '@arco-design/web-react';
-import { IconDelete, IconPause, IconPlayArrow } from '@arco-design/web-react/icon';
+import { IconDelete } from '@arco-design/web-react/icon';
+import { useTasks } from '@/renderer/hooks';
+import { ETaskStatus, ETaskType } from '@/types';
+import { calculateSize } from '@/renderer/utils';
 
 const InputSearch = Input.Search;
+
 const FinishedTaskTable = () => {
+  const { tasks, handleDelete } = useTasks(
+    [ETaskStatus.COMPLETED],
+    []
+  );
+
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
+      title: '类型',
+      dataIndex: 'type',
+      render: (type: ETaskType) => type,
     },
     {
-      title: 'Salary',
-      dataIndex: 'salary',
+      title: '文件',
+      dataIndex: 'params',
+      render: (params: any) => {
+        if (params?.localPaths) return params.localPaths.join(', ');
+        if (params?.keys) return params.keys.join(', ');
+        if (params?.files) return params.files.join(', ');
+        if (params?.localPath) return params.localPath;
+        if (params?.key) return params.key;
+        if (params?.oldKey) return `${params.oldKey} -> ${params.newKey}`;
+        if (params?.sourceKey && params?.targetKey) return `${params.sourceKey} -> ${params.targetKey}`;
+        return '-';
+      },
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
+      title: '大小',
+      dataIndex: 'size',
+      render: (size: number) => calculateSize(size),
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-    },
-  ];
-  const data = [
-    {
-      key: '1',
-      name: 'Jane Doe',
-      salary: 23000,
-      address: '32 Park Road, London',
-      email: 'jane.doe@example.com',
+      title: '完成时间',
+      dataIndex: 'endTime',
+      render: (endTime: string) => endTime ? new Date(endTime).toLocaleString() : '-',
     },
     {
-      key: '2',
-      name: 'Alisa Ross',
-      salary: 25000,
-      address: '35 Park Road, London',
-      email: 'alisa.ross@example.com',
-    },
-    {
-      key: '3',
-      name: 'Kevin Sandra',
-      salary: 22000,
-      address: '31 Park Road, London',
-      email: 'kevin.sandra@example.com',
-    },
-    {
-      key: '4',
-      name: 'Ed Hellen',
-      salary: 17000,
-      address: '42 Park Road, London',
-      email: 'ed.hellen@example.com',
-    },
-    {
-      key: '5',
-      name: 'William Smith',
-      salary: 27000,
-      address: '62 Park Road, London',
-      email: 'william.smith@example.com',
-    },
-  ];
-  return (
-    <div className="task-table">
-      <div className="task-table-options">
+      title: '操作',
+      dataIndex: 'actions',
+      render: (_: any, record: any) => (
         <Space>
-          <Button size="small" type="outline" icon={<IconPause />}>
-            暂停
-          </Button>
-          <Button size="small" type="primary" icon={<IconPlayArrow />}>
-            开始
-          </Button>
-          <Button size="small" type="outline" icon={<IconDelete />}>
+          <Button size="small" type="outline" status="danger" icon={<IconDelete />} onClick={() => handleDelete(record.taskId)}>
             删除
           </Button>
         </Space>
+      ),
+    },
+  ];
+
+  return (
+    <div className="task-table">
+      {/* <div className="task-table-options">
+        <Space>
+        </Space>
         <InputSearch size="small" allowClear placeholder="搜索" style={{ width: 280 }} />
-      </div>
-      <Table columns={columns} data={data} />
+      </div> */}
+      <Table columns={columns} data={tasks} rowKey="taskId" pagination={false} />
     </div>
   );
 };

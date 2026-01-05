@@ -9,3 +9,4 @@ export * from './viewer';
 export * from "./getScale"
 export * from "./copyToClipboard"
 export * from "./theme"
+export * from './task';

@@ -1,29 +1,21 @@
 import { v4 as uuidv4 } from 'uuid';
-
 import { getStoreInstance } from '@/main/stores';
 import { ProgressData } from '@/main/utils';
-
-export enum ETaskStatus {
-  PENDING = 'pending',
-  PAUSED = 'paused',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-  CANCELED = 'canceled',
-}
-
-export enum ETaskType {
-  UPLOAD = 'upload',
-  DOWNLOAD = 'download',
-  DELETE = 'delete',
-  RENAME = 'rename',
-}
+import { ETaskStatus, ETaskType } from '@/types';
 
 export type TaskEntityParams = {
+  taskId?: string;
   type: ETaskType;
   connectionId: string;
   method: string;
   params: any;
   size: number;
+  status?: ETaskStatus;
+  progress?: number;
+  createTime?: string;
+  startTime?: string;
+  endTime?: string;
+  errorMessage?: string;
 };
 
 export default class TaskEntity {
@@ -39,55 +31,97 @@ export default class TaskEntity {
   endTime: string | undefined;
   createTime: string;
   size: number;
+  errorMessage: string | undefined;
+
+  onProgress?: (data: ProgressData) => void;
+  onStatusChange?: (status: ETaskStatus, err?: string) => void;
+
   constructor(params: TaskEntityParams) {
-    this.taskId = uuidv4();
+    this.taskId = params.taskId || uuidv4();
     this.type = params.type;
-    this.status = ETaskStatus.PENDING;
+    this.status = params.status || ETaskStatus.PENDING;
     this.connectionId = params.connectionId;
     this.method = params.method;
-    this.progress = 0;
+    this.params = params.params;
+    this.progress = params.progress || 0;
     this.speed = 0;
     this.size = params.size;
-    this.createTime = new Date().toISOString();
+    this.createTime = params.createTime || new Date().toISOString();
+    this.startTime = params.startTime;
+    this.endTime = params.endTime;
+    this.errorMessage = params.errorMessage;
+  }
+
+  setCallbacks(onProgress: (data: ProgressData) => void, onStatusChange: (status: ETaskStatus, err?: string) => void) {
+    this.onProgress = onProgress;
+    this.onStatusChange = onStatusChange;
   }
 
   async run() {
+    if (this.status === ETaskStatus.COMPLETED || this.status === ETaskStatus.CANCELED) {
+      return;
+    }
+
+    this.status = ETaskStatus.RUNNING;
+    this.startTime = new Date().toISOString();
+    this.onStatusChange?.(this.status);
+
     const { connectionId, method, params } = this;
     const store = getStoreInstance(connectionId);
+
     try {
       await store[method](params, (data: ProgressData) => {
-        console.log('进度', data.progress);
+        this.progress = data.progress;
+        this.speed = data.speed || 0;
+        this.onProgress?.(data);
       });
-    } catch (err) {
-      console.log(err);
+      this.status = ETaskStatus.COMPLETED;
+      this.endTime = new Date().toISOString();
+      this.onStatusChange?.(this.status);
+    } catch (err: any) {
+      console.error('Task failed:', err);
       this.status = ETaskStatus.FAILED;
+      this.errorMessage = err.message || String(err);
+      this.endTime = new Date().toISOString();
+      this.onStatusChange?.(this.status, this.errorMessage);
     }
   }
 
-  async retry() {
-    this.status = ETaskStatus.PENDING;
-    await this.run();
+  async pause() {
+    if (this.status === ETaskStatus.RUNNING) {
+      this.status = ETaskStatus.PAUSED;
+      this.onStatusChange?.(this.status);
+      // Note: Actual interruption depends on store implementation support
+    }
+  }
+
+  async resume() {
+    if (this.status === ETaskStatus.PAUSED || this.status === ETaskStatus.FAILED) {
+      await this.run();
+    }
   }
 
   async cancel() {
     this.status = ETaskStatus.CANCELED;
+    this.endTime = new Date().toISOString();
+    this.onStatusChange?.(this.status);
   }
 
-  // 从持久化数据中恢复任务
-  // async recover() {
-  //   this.status = ETaskStatus.PENDING;
-  //   this.taskId =
-  // }
-
-  // 归档持久化存储
-  archive() {
+  toRow() {
     return {
       taskId: this.taskId,
+      type: this.type,
+      connectionId: this.connectionId,
+      method: this.method,
+      params: JSON.stringify(this.params),
       status: this.status,
       progress: this.progress,
       speed: this.speed,
       size: this.size,
-      type: this.type,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      createTime: this.createTime,
+      errorMessage: this.errorMessage
     };
   }
 }

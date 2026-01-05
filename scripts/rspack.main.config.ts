@@ -30,6 +30,7 @@ const config: Configuration = {
     'ssh2': 'commonjs ssh2',
     'cpu-features': 'commonjs cpu-features',
     'ssh2-sftp-client': 'commonjs ssh2-sftp-client',
+    'better-sqlite3': 'commonjs better-sqlite3',
   },
   module: {
     rules: [

@@ -1,82 +1,92 @@
-import { Button, Input, Space, Table } from '@arco-design/web-react';
+import { Button, Input, Space, Table, Progress, Tag } from '@arco-design/web-react';
 import { IconDelete, IconPause, IconPlayArrow } from '@arco-design/web-react/icon';
+import { useTasks } from '@/renderer/hooks';
+import { ETaskStatus, ETaskType } from '@/types';
+import { calculateSize } from '@/renderer/utils';
 
 const InputSearch = Input.Search;
-const DownloadingTaskTable = () => {
+
+const UploadingTaskTable = () => {
+  const { tasks, handlePause, handleResume, handleDelete } = useTasks(
+    [ETaskStatus.PENDING, ETaskStatus.RUNNING, ETaskStatus.PAUSED],
+    [ETaskType.UPLOAD, ETaskType.DELETE, ETaskType.RENAME, ETaskType.COPY, ETaskType.CREATE_DIR]
+  );
+
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
+      title: '类型',
+      dataIndex: 'type',
+      render: (type: ETaskType) => type,
     },
     {
-      title: 'Salary',
-      dataIndex: 'salary',
+      title: '文件',
+      dataIndex: 'params',
+      render: (params: any) => {
+        if (params?.localPaths) return params.localPaths.join(', ');
+        if (params?.keys) return params.keys.join(', ');
+        if (params?.files) return params.files.join(', ');
+        if (params?.localPath) return params.localPath;
+        if (params?.key) return params.key;
+        if (params?.oldKey) return `${params.oldKey} -> ${params.newKey}`;
+        if (params?.sourceKey && params?.targetKey) return `${params.sourceKey} -> ${params.targetKey}`;
+        return '-';
+      },
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
+      title: '大小',
+      dataIndex: 'size',
+      render: (size: number) => calculateSize(size),
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-    },
-  ];
-  const data = [
-    {
-      key: '1',
-      name: 'Jane Doe',
-      salary: 23000,
-      address: '32 Park Road, London',
-      email: 'jane.doe@example.com',
+      title: '进度',
+      dataIndex: 'progress',
+      render: (progress: number) => <Progress percent={progress} size="small" />,
     },
     {
-      key: '2',
-      name: 'Alisa Ross',
-      salary: 25000,
-      address: '35 Park Road, London',
-      email: 'alisa.ross@example.com',
+      title: '速度',
+      dataIndex: 'speed',
+      render: (speed: number) => `${calculateSize(speed)}/s`,
     },
     {
-      key: '3',
-      name: 'Kevin Sandra',
-      salary: 22000,
-      address: '31 Park Road, London',
-      email: 'kevin.sandra@example.com',
+      title: '状态',
+      dataIndex: 'status',
+      render: (status: ETaskStatus) => {
+        const color = status === ETaskStatus.RUNNING ? 'arcoblue' : status === ETaskStatus.PAUSED ? 'orange' : 'gray';
+        return <Tag color={color}>{status}</Tag>;
+      }
     },
     {
-      key: '4',
-      name: 'Ed Hellen',
-      salary: 17000,
-      address: '42 Park Road, London',
-      email: 'ed.hellen@example.com',
-    },
-    {
-      key: '5',
-      name: 'William Smith',
-      salary: 27000,
-      address: '62 Park Road, London',
-      email: 'william.smith@example.com',
-    },
-  ];
-  return (
-    <div className="task-table">
-      <div className="task-table-options">
+      title: '操作',
+      dataIndex: 'actions',
+      render: (_: any, record: any) => (
         <Space>
-          <Button size="small" type="outline" icon={<IconPause />}>
-            暂停
-          </Button>
-          <Button size="small" type="primary" icon={<IconPlayArrow />}>
-            开始
-          </Button>
-          <Button size="small" type="outline" icon={<IconDelete />}>
+          {record.status === ETaskStatus.RUNNING ? (
+            <Button size="small" type="outline" icon={<IconPause />} onClick={() => handlePause(record.taskId)}>
+              暂停
+            </Button>
+          ) : (
+            <Button size="small" type="primary" icon={<IconPlayArrow />} onClick={() => handleResume(record.taskId)}>
+              开始
+            </Button>
+          )}
+          <Button size="small" type="outline" status="danger" icon={<IconDelete />} onClick={() => handleDelete(record.taskId)}>
             删除
           </Button>
         </Space>
+      ),
+    },
+  ];
+
+  return (
+    <div className="task-table">
+      {/* <div className="task-table-options">
+        <Space>
+        </Space>
         <InputSearch size="small" allowClear placeholder="搜索" style={{ width: 280 }} />
-      </div>
-      <Table columns={columns} data={data} />
+      </div> */}
+      <Table columns={columns} data={tasks} rowKey="taskId" pagination={false} />
     </div>
   );
 };
 
-export default DownloadingTaskTable;
+export default UploadingTaskTable;

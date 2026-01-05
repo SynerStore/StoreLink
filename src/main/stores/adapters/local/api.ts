@@ -123,3 +123,30 @@ export async function getSourceUrl(params: GetSourceUrlParams) {
     content: content,
   };
 }
+
+export type CopyFileParams = {
+  sourceKey: string;
+  targetKey: string;
+};
+export async function copyFile(params: CopyFileParams) {
+  const { sourceKey, targetKey } = params;
+  // Local store keys are absolute paths usually, or relative to root?
+  // In list(), it joins root + prefix.
+  // The params.sourceKey and params.targetKey passed from FileManager usually are full keys (paths).
+  // But wait, LocalStore `list` returns full paths in `key`.
+  // So we can assume sourceKey and targetKey are absolute paths or relative to root?
+  // Let's assume they are consistent with what `list` returns.
+  // If `list` returns absolute paths, then `sourceKey` is absolute.
+  
+  // However, `copyObject` in S3/OSS takes keys relative to bucket.
+  // In LocalStore, `list` returns `key` as `filePath` (absolute path).
+  // So `sourceKey` is absolute path.
+  // `targetKey` is usually the destination path.
+  // Let's assume absolute paths for local store operations if they are local-to-local copy.
+  // But wait, `copy` action is usually within the same store.
+  
+  // If `targetKey` is just a filename or relative path, we might need to know the context.
+  // But usually `FileManager` passes `key` which is from `list`.
+  
+  await fs.copy(sourceKey, targetKey);
+}

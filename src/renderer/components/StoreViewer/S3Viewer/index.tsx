@@ -6,6 +6,8 @@ import TableContent from './TableContent';
 import CardContent from './CardContent';
 import { FolderCreateWrap, ViewInput, FileDropWrap } from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer } from '@/renderer/utils';
+import { createTask } from '@/renderer/utils/task';
+import { ETaskType } from '@/types';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import './index.css';
@@ -76,11 +78,13 @@ const S3Viewer = (props: S3ViwerProps) => {
   const handleDownload = async (record: any) => {
     const localPath = await events.getSingleDirPath({});
     if (localPath) {
-      storeRequest({
-        method: 'get',
-        id: connectionId,
-        params: { bucketName: bucketName, prefix: curPrefix, key: record.key, localPath: localPath },
-      });
+      createTask(
+        ETaskType.DOWNLOAD,
+        connectionId,
+        'get',
+        { bucketName: bucketName, prefix: curPrefix, key: record.key, localPath: localPath },
+        record.size
+      );
     }
   };
 
@@ -94,45 +98,40 @@ const S3Viewer = (props: S3ViwerProps) => {
   };
 
   const handlePut = async (paths: string[]) => {
-    return storeRequest({
-      method: 'put',
-      id: connectionId,
-      params: {
-        bucketName,
-        prefix: curPrefix,
-        localPaths: paths,
-      },
+    return createTask(ETaskType.UPLOAD, connectionId, 'put', {
+      bucketName,
+      prefix: curPrefix,
+      localPaths: paths,
     });
   };
 
   const handlePutFolder = async (folderName: string) => {
-    storeRequest({
-      method: 'putFolder',
-      id: connectionId,
-      params: {
-        bucketName,
-        prefix: curPrefix,
-        localPath: folderName,
-      },
+    createTask(ETaskType.CREATE_DIR, connectionId, 'putFolder', {
+      bucketName,
+      prefix: curPrefix,
+      localPath: folderName,
     });
   };
 
   const handleDelete = async (record: any) => {
-    storeRequest({
-      method: 'delete',
-      id: connectionId,
-      params: {
+    createTask(
+      ETaskType.DELETE,
+      connectionId,
+      'delete',
+      {
         bucketName,
         key: record.key,
       },
-    });
+      record.size
+    );
   };
 
   const handleRename = async (record: any, newName: string) => {
-    storeRequest({
-      method: 'rename',
-      id: connectionId,
-      params: { bucketName, prefix: curPrefix, oldKey: record.key, newKey: newName },
+    createTask(ETaskType.RENAME, connectionId, 'rename', {
+      bucketName,
+      prefix: curPrefix,
+      oldKey: record.key,
+      newKey: newName,
     });
   };
 

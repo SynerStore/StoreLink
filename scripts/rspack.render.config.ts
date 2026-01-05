@@ -11,6 +11,7 @@ const ROOT = path.resolve(__dirname, '..');
 const rspackConfig: Configuration = {
   name: 'renderer',
   mode: isDev ? 'development' : 'production',
+  target: 'electron-renderer',
   entry: {
     render_main: path.resolve(ROOT, './src/renderer/pages/main/index.tsx'),
     render_launch: path.resolve(ROOT, './src/renderer/pages/launch/index.tsx'),

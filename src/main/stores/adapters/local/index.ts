@@ -17,6 +17,8 @@ import {
   getSourceUrl,
   PutMultiObjectsParams,
   putMultiObjects,
+  CopyFileParams,
+  copyFile,
 } from './api';
 
 class LocalStore implements IStorageHandler {
@@ -76,6 +78,17 @@ class LocalStore implements IStorageHandler {
   async rename(params: RenameParams) {
     try {
       const result = await rename(params);
+      return sucessResponse(result);
+    } catch (err: any) {
+      console.error(err);
+      return errorResponse(err.message);
+    }
+  }
+
+  // 复制
+  async copy(params: CopyFileParams) {
+    try {
+      const result = await copyFile(params);
       return sucessResponse(result);
     } catch (err: any) {
       console.error(err);

@@ -7,7 +7,7 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { Buffer } from 'node:buffer';
 
-import { isDirectory, isObjectFolder, readDirectoryRecursive, getTempPath, streamToPromise } from '@/main/utils';
+import { isDirectory, isObjectFolder, readDirectoryRecursive, getTempPath, streamToPromise, streamOnProgress } from '@/main/utils';
 import { TStoreObject } from '@/types';
 
 export const formatObjects = (objects: S3._Object[], prefix: string): TStoreObject[] => {
@@ -128,7 +128,7 @@ export type GetObjectParams = {
   localPath?: string;
   localFilePath?: string;
 };
-export async function getObject(s3Client: S3.S3Client, params: GetObjectParams) {
+export async function getObject(s3Client: S3.S3Client, params: GetObjectParams, onProgress?: any) {
   const { bucketName, key, localPath, localFilePath } = params;
   // 假如传入了文件路径，则直接下载到指定路径
   const targetFilePath = localFilePath || path.join(localPath as string, path.basename(key));
@@ -137,7 +137,11 @@ export async function getObject(s3Client: S3.S3Client, params: GetObjectParams) 
     Key: key,
   });
   const response = await s3Client.send(command);
-  (response?.Body as any).pipe(fs.createWriteStream(targetFilePath));
+  const size = response.ContentLength || 0;
+  const readerStream = response.Body as any;
+  const writerStream = fs.createWriteStream(targetFilePath);
+  streamOnProgress(readerStream, writerStream, size, onProgress);
+  readerStream.pipe(writerStream);
 }
 
 // 多选下载对象
@@ -190,7 +194,7 @@ export type UploadObjectParams = {
   localPath: string;
 };
 
-export async function uploadObject(s3Client: S3.S3Client, params: UploadObjectParams) {
+export async function uploadObject(s3Client: S3.S3Client, params: UploadObjectParams, onProgress?: any) {
   const { bucketName, key, localPath } = params;
   const upload = new Upload({
     params: {
@@ -203,9 +207,24 @@ export async function uploadObject(s3Client: S3.S3Client, params: UploadObjectPa
   });
 
   upload.on('httpUploadProgress', (progress) => {
-    console.log('progress', progress);
+    // console.log('progress', progress);
+    if (onProgress) {
+      const loaded = progress.loaded || 0;
+      const total = progress.total || 0;
+      const percent = total > 0 ? (loaded / total) * 100 : 0;
+      onProgress({
+        progress: percent,
+        status: 'running',
+      });
+    }
   });
   const result = await upload.done();
+  if (onProgress) {
+    onProgress({
+      progress: 100,
+      status: 'finished',
+    });
+  }
   return result;
 }
 
@@ -215,14 +234,14 @@ export type PutObjectParams = {
   key?: string;
   localPath: string;
 };
-export async function putObject(s3Client: S3.S3Client, params: PutObjectParams) {
+export async function putObject(s3Client: S3.S3Client, params: PutObjectParams, onProgress?: any) {
   const { bucketName, prefix, key, localPath } = params;
   const objectKey = key || path.join(prefix as string, path.basename(localPath));
 
   if (await isDirectory(localPath)) {
     return await putFolder(s3Client, { bucketName, prefix: prefix as string, localPath });
   } else {
-    return await uploadObject(s3Client, { bucketName, key: objectKey, localPath });
+    return await uploadObject(s3Client, { bucketName, key: objectKey, localPath }, onProgress);
   }
 }
 
@@ -248,20 +267,55 @@ export type PutMultiObjectsParams = {
   prefix: string;
   localPaths: string[];
 };
-export async function putMultiObjects(s3Client: S3.S3Client, params: PutMultiObjectsParams) {
+export async function putMultiObjects(s3Client: S3.S3Client, params: PutMultiObjectsParams, onProgress?: any) {
   const { bucketName, prefix, localPaths } = params;
   const allLocalPaths = await readDirectoryRecursive(localPaths);
 
-  for (const localPath of allLocalPaths) {
-    const filePath = localPath.fullPath;
-    const remotePath = path.join(prefix, localPath.path);
+  // Calculate total size
+  let totalSize = 0;
+  const filesToUpload = [];
 
-    await putObject(s3Client, {
-      bucketName,
-      key: remotePath,
-      prefix: prefix,
-      localPath: filePath,
-    });
+  for (const item of allLocalPaths) {
+    if (await isDirectory(item.fullPath)) {
+      filesToUpload.push({ ...item, isDir: true, size: 0 });
+    } else {
+      const stat = await fs.stat(item.fullPath);
+      totalSize += stat.size;
+      filesToUpload.push({ ...item, isDir: false, size: stat.size });
+    }
+  }
+
+  let uploadedBytes = 0;
+
+  for (const item of filesToUpload) {
+    const filePath = item.fullPath;
+    const remotePath = path.join(prefix, item.path);
+
+    await putObject(
+      s3Client,
+      {
+        bucketName,
+        key: remotePath,
+        prefix: prefix,
+        localPath: filePath,
+      },
+      (progressData: any) => {
+        if (onProgress && totalSize > 0 && !item.isDir) {
+          const filePercent = progressData.progress || 0;
+          const currentFileLoaded = (filePercent / 100) * item.size;
+          const totalLoaded = uploadedBytes + currentFileLoaded;
+          const totalPercent = (totalLoaded / totalSize) * 100;
+          onProgress({
+            progress: totalPercent,
+            status: 'running',
+          });
+        }
+      },
+    );
+
+    if (!item.isDir) {
+      uploadedBytes += item.size;
+    }
   }
 }
 
@@ -294,6 +348,24 @@ export async function deleteObject(s3Client: S3.S3Client, params: DeleteObjectPa
   const command = new S3.DeleteObjectCommand({
     Bucket: bucketName,
     Key: key,
+  });
+  return await s3Client.send(command);
+}
+
+// 复制对象
+export type CopyObjectParams = {
+  bucketName: string;
+  sourceKey: string;
+  targetKey: string;
+};
+export async function copyObject(s3Client: S3.S3Client, params: CopyObjectParams) {
+  const { bucketName, sourceKey, targetKey } = params;
+  // encodeURIComponent implies we should handle special chars, but let's be careful with slashes
+  // Usually CopySource = bucket/key
+  const command = new S3.CopyObjectCommand({
+    Bucket: bucketName,
+    CopySource: `${bucketName}/${sourceKey}`,
+    Key: targetKey,
   });
   return await s3Client.send(command);
 }
