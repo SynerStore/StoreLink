@@ -42,6 +42,8 @@ const StoreViewer = (props: any) => {
       return <LocalViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     case StoreTypes.FTP:
       return <FtpViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
+    case StoreTypes.SFTP:
+      return <FtpViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     case StoreTypes.WEBDAV:
       return <WebDevViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
 

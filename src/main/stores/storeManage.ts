@@ -3,6 +3,7 @@ import LocalStore from './adapters/local';
 import { FtpStore } from './adapters/ftp';
 import OssStore from './adapters/oss';
 import WebDAVStore from './adapters/webdev';
+import SftpStore from './adapters/sftp';
 import { getConnectionsData } from '../db';
 import { StoreTypes } from '@/types';
 
@@ -32,6 +33,9 @@ const createStoreClient = (data: any): any => {
       break;
     case StoreTypes.FTP:
       storeClient = new FtpStore(id, config); // 不支持并行，需要创建实例池实现,为每个ftp创建一个实例池
+      break;
+    case StoreTypes.SFTP:
+      storeClient = new SftpStore(id, config);
       break;
     case StoreTypes.WEBDAV:
       storeClient = new WebDAVStore(id, config);

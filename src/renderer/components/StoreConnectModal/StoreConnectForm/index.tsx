@@ -27,7 +27,7 @@ const StoreConnectForm = forwardRef((props: StoreConnectFormProps, ref) => {
     case StoreTypes.FTP:
       return <FtpForm />;
     case StoreTypes.SFTP:
-      return <SFtpForm />;
+      return <SFtpForm ref={ref} />;
     case StoreTypes.LOCAL:
       return <LocalForm ref={ref} />;
     case StoreTypes.WEBDAV:

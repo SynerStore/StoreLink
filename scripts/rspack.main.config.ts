@@ -26,6 +26,11 @@ const config: Configuration = {
     },
   },
   devtool: isDev ? 'source-map' : false,
+  externals: {
+    'ssh2': 'commonjs ssh2',
+    'cpu-features': 'commonjs cpu-features',
+    'ssh2-sftp-client': 'commonjs ssh2-sftp-client',
+  },
   module: {
     rules: [
       {
@@ -33,7 +38,6 @@ const config: Configuration = {
         exclude: [/node_modules/],
         loader: 'builtin:swc-loader',
         options: {
-          transpileOnly: true,
           jsc: {
             parser: {
               syntax: 'typescript',

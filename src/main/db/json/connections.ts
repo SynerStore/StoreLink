@@ -33,13 +33,12 @@ export async function setConnectionsData(data: Partial<IConnectionsData>) {
   };
 }
 
-
 // TODO: 这里处理加密逻辑
-export function addConnection(connection: any) {
-  const connections = getConnectionsData().connections;
-  connections.push(connection);
+export function addConnection(connections: any[]) {
+  const curConnections = getConnectionsData().connections;
+  curConnections.push(...connections);
   setConnectionsData({
-    connections,
+    connections: curConnections,
   });
 }
 export function removeConnection(id: string) {
