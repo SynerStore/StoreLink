@@ -1,6 +1,6 @@
 import { Client } from 'basic-ftp';
 
-import { sucessResponse, errorResponse, sleep, isObjectFolder } from '@/main/utils';
+import { sucessResponse, errorResponse, isObjectFolder } from '@/main/utils';
 import { IStorageHandler } from '../store';
 import {
   list,
@@ -22,7 +22,6 @@ import {
   getFile,
   GetFolderParams,
 } from './api';
-import { storeRemove, storePool } from '../../storeManage';
 
 class FtpStore implements IStorageHandler {
   public config: any;
