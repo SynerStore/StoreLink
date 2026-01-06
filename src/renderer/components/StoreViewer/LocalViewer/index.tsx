@@ -117,7 +117,7 @@ const LocalViewer = (props: LocalViewerProps) => {
     if (connectionId) {
       handleGetObjects();
     }
-  }, [connectionId, curPrefix]);
+  }, [connectionId, curPrefix, tabData?.refreshTick]);
 
   useEffect(() => {
     const instance = new PathHistory({ path: curPrefix });

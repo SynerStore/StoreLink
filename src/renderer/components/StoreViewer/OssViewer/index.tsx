@@ -134,7 +134,7 @@ const OssViewer = (props: OssViewerProps) => {
     if (connectionId) {
       handleGetObjects();
     }
-  }, [connectionId, curPrefix]);
+  }, [connectionId, curPrefix, data?.refreshTick]);
 
   useEffect(() => {
     const instance = new PathHistory({ path: curPrefix });

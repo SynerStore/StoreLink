@@ -143,7 +143,7 @@ const S3Viewer = (props: S3ViwerProps) => {
     if (connectionId) {
       handleGetObjects();
     }
-  }, [connectionId, curPrefix]);
+  }, [connectionId, curPrefix, data?.refreshTick]);
 
   useEffect(() => {
     const instance = new PathHistory({ path: curPrefix });

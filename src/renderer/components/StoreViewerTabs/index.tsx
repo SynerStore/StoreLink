@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Tabs } from '@arco-design/web-react';
 import { IconHome } from '@arco-design/web-react/icon';
 
 // import { IconSplitColumn } from '@/renderer/components/Icons';
 import { useTabsStore } from '@/renderer/store';
+import { EChannels, ETaskStatus } from '@/types';
 import StoreViewer from '../StoreViewer';
 import HomeTab from './HomeTab';
 import './index.css';
@@ -11,7 +12,7 @@ import './index.css';
 const TabPane = Tabs.TabPane;
 
 const StoreViewerTabs = () => {
-  const { tabs, activeTab, removeTab, selectTab }: any = useTabsStore();
+  const { tabs, activeTab, removeTab, selectTab, updateTab }: any = useTabsStore();
 
   const items = useMemo(() => {
     const allTabs = tabs.map((tab: any) => {
@@ -24,6 +25,18 @@ const StoreViewerTabs = () => {
 
     return allTabs;
   }, [tabs]);
+
+  useEffect(() => {
+    const handler = (updatedTask: any) => {
+      if (updatedTask?.status === ETaskStatus.COMPLETED && updatedTask?.connectionId) {
+        updateTab({ id: updatedTask.connectionId, refreshTick: Date.now() });
+      }
+    };
+    window.electronBridge?.on(EChannels.taskUpdate, handler);
+    return () => {
+      window.electronBridge?.removeListener(EChannels.taskUpdate, handler);
+    };
+  }, []);
 
   const handleClick = (key: string) => {
     selectTab(key);

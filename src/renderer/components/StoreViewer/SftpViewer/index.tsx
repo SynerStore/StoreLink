@@ -132,7 +132,7 @@ const SftpViewer = (props: SftpViewerProps) => {
     if (connectionId) {
       handleGetObjects();
     }
-  }, [connectionId, curPrefix]);
+  }, [connectionId, curPrefix, tabData?.refreshTick]);
 
   useEffect(() => {
     const instance = new PathHistory({ path: curPrefix });
