@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const builder = require('electron-builder');
+const cp = require('child_process');
 const homedir = require('os').homedir();
 const pkg = require('../package.json');
 
@@ -53,9 +54,14 @@ const beforeMake = async () => {
     description: pkg.description,
     author: pkg.author,
     main: pkg.main,
+    dependencies: {
+      ssh2: (pkg.dependencies && pkg.dependencies['ssh2']) || '^1.16.0',
+      'ssh2-sftp-client': (pkg.dependencies && pkg.dependencies['ssh2-sftp-client']) || '^12.0.1',
+    },
   };
 
   fs.writeFileSync(path.join(root_dir, 'build', 'package.json'), JSON.stringify(app_pkg, null, 2), 'utf-8');
+  cp.execSync('npm install --omit=dev', { cwd: path.join(root_dir, 'build'), stdio: 'inherit' });
 };
 
 const afterMake = async () => {
@@ -85,9 +91,12 @@ const doMake = async () => {
     ...targets,
     config: {
       ...cfg_common,
-      appId: 'stor.link.app',
+      npmRebuild: false,
+      nodeGypRebuild: false,
+      appId: 'store.link.app',
       productName: APP_NAME,
-      asarUnpack: ['**/*.node'],
+      asarUnpack: ['**/*.node', 'node_modules/ssh2/**/*'],
+      files: ['**/*'],
       mac: {
         icon: macIcon,
         category: 'public.app-category.utilities',
@@ -106,11 +115,6 @@ const doMake = async () => {
         artifactName: '${productName}_linux_${arch}_${version}(${buildVersion}).${ext}',
         category: 'Utility',
         synopsis: 'An App for management your multiple storeage',
-        desktop: {
-          Name: APP_NAME,
-          Type: 'Application',
-          GenericName: 'An App for management your multiple storeage',
-        },
       },
     },
   });
