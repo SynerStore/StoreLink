@@ -33,7 +33,7 @@ const StoreViewer = (props: any) => {
     };
   });
 
-  switch (connection.type) {
+  switch (connection?.type) {
     case StoreTypes.OSS:
       return <OssViewer data={data} key={data.id} bucketName={data.name} connectionId={data.id} />;
     case StoreTypes.S3:

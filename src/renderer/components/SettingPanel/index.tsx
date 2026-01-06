@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { Modal, Form, Select, Radio, Space, Button, Message } from '@arco-design/web-react';
+import { Modal, Form, Select, Radio, Space, Button, message } from 'antd';
 
 import { useSettingStore, EnumTheme, EnumLang, useConfigStore } from '@/renderer/store';
 import { events } from '@/renderer/utils';
@@ -18,16 +18,11 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
   const configStore = useConfigStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSwitchTheme = (value: EnumTheme) => {
+  const handleSwitchTheme = (e: any) => {
+    const value = e.target.value;
     settingStore.update({
       theme: value,
     });
-    if (value === EnumTheme.DARK) {
-      document.body.setAttribute('arco-theme', 'dark');
-    }
-    if (value === EnumTheme.LIGHT) {
-      document.body.removeAttribute('arco-theme');
-    }
   };
 
   const handleSwitchLang = (value: EnumLang) => {
@@ -40,7 +35,7 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
     const dir = await events.getSingleDirPath({});
     if (!dir) return;
     const filePath = await events.exportConnections(dir);
-    if (filePath) Message.success('已导出到 ' + filePath);
+    if (filePath) message.success('已导出到 ' + filePath);
   };
 
   const handleImportConnections = async () => {
@@ -51,34 +46,30 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
     if (!file) return;
     await events.importConnections(file);
     await configStore.initializeData();
-    Message.success('已导入连接配置');
+    message.success('已导入连接配置');
   };
 
   return (
     <Fragment>
       <Modal
         title="设置"
-        simple={true}
-        closable={false}
+        closable={true}
         maskClosable={false}
-        visible={isModalOpen}
-        // onOk={handleOk}
-        cancelText={null}
-        onOk={() => setIsModalOpen(false)}
-        okText="确定"
+        open={isModalOpen}
+        cancelButtonProps={{ style: { display: 'none' } }}
+        okButtonProps={{ style: { display: 'none' } }}
+        onCancel={() => setIsModalOpen(false)}
       >
         <Form autoComplete="off" layout="horizontal">
           <FormItem label="主题样式">
             <RadioGroup
-              type="button"
               name="size"
               value={settingStore.settings.theme}
               onChange={handleSwitchTheme}
-              style={{ marginBottom: 20, borderRadius: 4 }}
             >
-              <Radio value="light">浅色</Radio>
-              <Radio value="dark">深色</Radio>
-              <Radio value="system">系统</Radio>
+              <Radio.Button value="light">浅色</Radio.Button>
+              <Radio.Button value="dark">深色</Radio.Button>
+              <Radio.Button value="system">系统</Radio.Button>
             </RadioGroup>
           </FormItem>
           <FormItem label="语言">

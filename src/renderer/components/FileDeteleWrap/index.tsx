@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Modal } from '@arco-design/web-react';
+import { Modal } from 'antd';
 
 export type FileRenameWrapProps = {
   fileInfo: any;

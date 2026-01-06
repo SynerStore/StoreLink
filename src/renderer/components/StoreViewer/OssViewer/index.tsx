@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Space, Input, Dropdown, Menu, Radio } from '@arco-design/web-react';
-import { IconLeft, IconRight, IconDown, IconList, IconApps, IconStar, IconStarFill } from '@arco-design/web-react/icon';
+import { Button, Space, Input, Dropdown, Radio } from 'antd';
+import { LeftOutlined, RightOutlined, DownOutlined, UnorderedListOutlined, AppstoreOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
@@ -148,6 +148,12 @@ const OssViewer = (props: OssViewerProps) => {
     setPathHistory(instance);
   }, []);
 
+  const menuItems = [
+    { key: 'copy', label: '复制到' },
+    { key: 'move', label: '移动到' },
+    { key: 'remove', label: '删除' },
+  ];
+
   useUnmount(() => {
     storeRequest({
       method: 'destroy',
@@ -159,10 +165,10 @@ const OssViewer = (props: OssViewerProps) => {
     <div className="viewer">
       <div className="viewer-path">
         <Space size={2}>
-          <Button disabled={!canBack} icon={<IconLeft style={{ fontSize: 'large' }} />} onClick={handlePathBack} />
+          <Button disabled={!canBack} icon={<LeftOutlined style={{ fontSize: 'large' }} />} onClick={handlePathBack} />
           <Button
             disabled={!canForward}
-            icon={<IconRight style={{ fontSize: 'large' }} />}
+            icon={<RightOutlined style={{ fontSize: 'large' }} />}
             onClick={handlePathForward}
           />
         </Space>
@@ -172,9 +178,9 @@ const OssViewer = (props: OssViewerProps) => {
             addAfter={
               <span onClick={handleToggleCollected}>
                 {isCollected ? (
-                  <IconStarFill style={{ fontSize: 'large', color: 'rgb(var(--primary-6))' }} />
+                  <StarFilled style={{ fontSize: 'large', color: 'rgb(var(--primary-6))' }} />
                 ) : (
-                  <IconStar style={{ fontSize: 'large' }} />
+                  <StarOutlined style={{ fontSize: 'large' }} />
                 )}
               </span>
             }
@@ -186,42 +192,36 @@ const OssViewer = (props: OssViewerProps) => {
       </div>
       <div className="viewer-actions">
         <Space size={4}>
-          <Button type="primary" onClick={handleUpload} size="small">
+          <Button type="primary" onClick={handleUpload} >
             上传
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button type="outline" size="small">
+            <Button >
               新建目录
             </Button>
           </FolderCreateWrap>
-          <Button type="outline" size="small">
+          <Button >
             下载
           </Button>
           <Dropdown
-            trigger="click"
-            droplist={
-              <Menu>
-                <Menu.Item key="copy">复制到</Menu.Item>
-                <Menu.Item key="move">移动到</Menu.Item>
-                <Menu.Item key="remove">删除</Menu.Item>
-              </Menu>
-            }
+            trigger={['click']}
+            menu={{ items: menuItems }}
           >
-            <Button type="outline" size="small">
-              更多 <IconDown style={{ fontSize: 'medium' }} />
+            <Button >
+              更多 <DownOutlined style={{ fontSize: 'medium' }} />
             </Button>
           </Dropdown>
         </Space>
         <Space size={4}>
           <Input.Search style={{ width: '240px' }} />
           <Button onClick={handleGetObjects}> 刷新 </Button>
-          <RadioGroup type="button" name="lang" value={display} onChange={handleDisplayChange}>
-            <Radio value="list" style={{ fontSize: 'medium' }}>
-              <IconList />
-            </Radio>
-            <Radio value="card" style={{ fontSize: 'medium' }}>
-              <IconApps />
-            </Radio>
+          <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)}>
+            <Radio.Button value="list" style={{ fontSize: 'medium' }}>
+              <UnorderedListOutlined />
+            </Radio.Button>
+            <Radio.Button value="card" style={{ fontSize: 'medium' }}>
+              <AppstoreOutlined />
+            </Radio.Button>
           </RadioGroup>
         </Space>
       </div>

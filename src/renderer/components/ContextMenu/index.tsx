@@ -1,4 +1,4 @@
-import { Dropdown, Menu, Space } from '@arco-design/web-react';
+import { Dropdown, Menu, Space } from 'antd';
 import './index.css';
 
 export type MenuItem = {
@@ -14,30 +14,24 @@ export type ContextMenuProps = {
 };
 function ContextMenu(props: ContextMenuProps) {
   const { children, menu = [] } = props;
+
+  const items = menu.map((item, index) => ({
+    key: `${index}`,
+    label: item.render ? (
+      item.render()
+    ) : (
+      <Space size={4}>
+        {item.icon} {item.text}
+      </Space>
+    ),
+    onClick: item.onClick,
+  }));
+
   return (
     <Dropdown
-      unmountOnExit={false}
-      trigger="contextMenu"
-      position="bl"
-      droplist={
-        <div className="context-menu">
-          <Menu>
-            {menu.map((item, index) => {
-              return (
-                <Menu.Item key={`${index}`} onClick={item.onClick}>
-                  {item.render ? (
-                    item.render()
-                  ) : (
-                    <Space size={1}>
-                      {item.icon} {item.text}
-                    </Space>
-                  )}
-                </Menu.Item>
-              );
-            })}
-          </Menu>
-        </div>
-      }
+      menu={{ items }}
+      trigger={['contextMenu']}
+      placement="bottomLeft"
     >
       {children}
     </Dropdown>

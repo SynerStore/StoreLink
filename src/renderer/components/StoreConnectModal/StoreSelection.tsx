@@ -1,10 +1,7 @@
-import { Grid } from '@arco-design/web-react';
+import { Row, Col } from 'antd';
 
 import { StoreDatas } from '@/constants';
 import StoreBrand from './StoreBrand';
-
-const Row = Grid.Row;
-const Col = Grid.Col;
 
 export type StoreSelectionProps = {
   activeBrand: string;

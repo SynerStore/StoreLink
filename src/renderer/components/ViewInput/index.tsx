@@ -1,5 +1,5 @@
 import { Fragment, useRef } from 'react';
-import { Input } from '@arco-design/web-react';
+import { Input } from 'antd';
 
 import { useEffect, useState } from 'react';
 
@@ -19,8 +19,8 @@ const ViewInput = (props: ViewInputProps) => {
     setInputValue(value);
   }, [value]);
 
-  const handleChange = (value: string) => {
-    setInputValue(value);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
   };
 
   const handlePressEnter = () => {
@@ -33,12 +33,13 @@ const ViewInput = (props: ViewInputProps) => {
     <Fragment>
       <Input
         ref={inputRef}
-        addBefore={prefix}
-        addAfter={addAfter}
+        prefix={prefix}
+        suffix={addAfter}
         value={inputValue}
         onChange={handleChange}
         onPressEnter={handlePressEnter}
         onBlur={handlePressEnter}
+        style={style}
       />
     </Fragment>
   );

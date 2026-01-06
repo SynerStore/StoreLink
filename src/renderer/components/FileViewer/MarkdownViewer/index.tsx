@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Tooltip } from '@arco-design/web-react';
-import { IconEye, IconEyeInvisible, IconCopy } from '@arco-design/web-react/icon';
+import { Tooltip } from 'antd';
+import { EyeOutlined, EyeInvisibleOutlined, CopyOutlined } from '@ant-design/icons';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 
 import './index.css';
@@ -27,21 +27,21 @@ const MarkdownViewer = (props: MarkdownViewerProps) => {
       <div className="markdown-viewer-toolbar">
         <div className="markdown-viewer-toolbar-item">
           {isMd ? (
-            <Tooltip content="源文本">
+            <Tooltip title="源文本">
               <div className="markdown-viewer-toolbar-item-btn" onClick={handlePreview}>
-                <IconEyeInvisible />
+                <EyeInvisibleOutlined />
               </div>
             </Tooltip>
           ) : (
-            <Tooltip content="预览">
+            <Tooltip title="预览">
               <div className="markdown-viewer-toolbar-item-btn" onClick={handlePreview}>
-                <IconEye />
+                <EyeOutlined />
               </div>
             </Tooltip>
           )}
-          <Tooltip content="复制">
+          <Tooltip title="复制">
             <div className="markdown-viewer-toolbar-item-btn" onClick={handleCopy}>
-              <IconCopy />
+              <CopyOutlined />
             </div>
           </Tooltip>
         </div>

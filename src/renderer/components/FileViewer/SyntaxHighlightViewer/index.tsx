@@ -1,7 +1,7 @@
 // 语法高亮
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { Tooltip } from '@arco-design/web-react';
-import { IconCopy } from '@arco-design/web-react/icon';
+import { Tooltip } from 'antd';
+import { CopyOutlined } from '@ant-design/icons';
 
 import './index.css';
 
@@ -22,9 +22,9 @@ const SyntaxHighlightViewer = (props: TxtViewerProps) => {
     <div className="syntax-highlight-viewer">
       <div className="syntax-highlight-viewer-toolbar">
         <div className="syntax-highlight-viewer-toolbar-item">
-          <Tooltip content="复制">
+          <Tooltip title="复制">
             <div className="syntax-highlight-viewer-toolbar-item-btn" onClick={handleCopy}>
-              <IconCopy />
+              <CopyOutlined />
             </div>
           </Tooltip>
         </div>

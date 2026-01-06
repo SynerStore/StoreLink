@@ -1,7 +1,14 @@
 import React, { useMemo } from 'react';
-import { Space } from '@arco-design/web-react';
+import { Space } from 'antd';
 
-import { IconDownload, IconInfoCircle, IconEdit, IconEye, IconDelete, IconCopy } from '@arco-design/web-react/icon';
+import {
+  DownloadOutlined,
+  InfoCircleOutlined,
+  EditOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  CopyOutlined,
+} from '@ant-design/icons';
 import { FileRenameWrap, FileDeteleWrap, ContextMenu, MenuItem } from '@/renderer/components';
 
 export type FileContextMenuProps = {
@@ -23,7 +30,7 @@ const FileContextMenu = (props: any) => {
 
     if (onDetail) {
       baseMenus.push({
-        icon: <IconInfoCircle />,
+        icon: <InfoCircleOutlined />,
         text: '详情',
         onClick: () => onDetail(data),
       });
@@ -31,7 +38,7 @@ const FileContextMenu = (props: any) => {
 
     if (onOpen && !data.isDirectory) {
       baseMenus.push({
-        icon: <IconEye />,
+        icon: <EyeOutlined />,
         text: '查看',
         onClick: () => onOpen(data),
       });
@@ -39,7 +46,7 @@ const FileContextMenu = (props: any) => {
 
     if (onDownload) {
       baseMenus.push({
-        icon: <IconDownload />,
+        icon: <DownloadOutlined />,
         text: '下载',
         onClick: () => onDownload(data),
       });
@@ -47,7 +54,7 @@ const FileContextMenu = (props: any) => {
 
     if (onCopy) {
       baseMenus.push({
-        icon: <IconCopy />,
+        icon: <CopyOutlined />,
         text: '复制',
         onClick: () => onCopy(data),
       });
@@ -57,8 +64,8 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         render: () => (
           <FileRenameWrap name={data.name as string} onRename={(newName: string) => onRename(data, newName)}>
-            <Space size={1}>
-              <IconEdit /> 重命名
+            <Space size={8}>
+              <EditOutlined /> 重命名
             </Space>
           </FileRenameWrap>
         ),
@@ -69,8 +76,8 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         render: () => (
           <FileDeteleWrap fileInfo={data} onDelete={onDelete}>
-            <Space size={1}>
-              <IconDelete /> 删除
+            <Space size={8}>
+              <DeleteOutlined /> 删除
             </Space>
           </FileDeteleWrap>
         ),

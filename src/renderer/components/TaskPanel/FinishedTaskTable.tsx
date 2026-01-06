@@ -1,5 +1,5 @@
-import { Button, Input, Space, Table } from '@arco-design/web-react';
-import { IconDelete } from '@arco-design/web-react/icon';
+import { Button, Input, Space, Table } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
@@ -47,7 +47,7 @@ const FinishedTaskTable = () => {
       dataIndex: 'actions',
       render: (_: any, record: any) => (
         <Space>
-          <Button size="small" type="outline" status="danger" icon={<IconDelete />} onClick={() => handleDelete(record.taskId)}>
+          <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.taskId)}>
             删除
           </Button>
         </Space>
@@ -62,7 +62,7 @@ const FinishedTaskTable = () => {
         </Space>
         <InputSearch size="small" allowClear placeholder="搜索" style={{ width: 280 }} />
       </div> */}
-      <Table columns={columns} data={tasks} rowKey="taskId" pagination={false} />
+      <Table columns={columns} dataSource={tasks} rowKey="taskId" pagination={false} />
     </div>
   );
 };

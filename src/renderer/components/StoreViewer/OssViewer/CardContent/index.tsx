@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Tooltip, Spin, Empty } from '@arco-design/web-react';
+import { Tooltip, Spin, Empty } from 'antd';
 import dayjs from 'dayjs';
 
 import { TStoreObject } from '@/types';
@@ -35,7 +35,7 @@ const CardContent = (props: CardContentProps) => {
 
   return (
     <div className="cards-content">
-      <Spin loading={loading} style={{ width: '100%', minHeight: 200, display: 'block' }}>
+      <Spin spinning={loading} style={{ width: '100%', minHeight: 200, display: 'block' }}>
         {data.length > 0 ? (
           <ResponsiveGrid minItemWidth={80} maxItemWidth={100} columnGap={12} rowGap={12}>
             {data.map((item) => {
@@ -51,10 +51,9 @@ const CardContent = (props: CardContentProps) => {
                 >
                   <Tooltip
                     key={item.key}
-                    mini
-                    position="bottom"
+                    placement="bottom"
                     trigger="click"
-                    content={
+                    title={
                       <div>
                         <div>名称: {item.name}</div>
                         <div>大小: {calculateSize(item.size as number)}</div>

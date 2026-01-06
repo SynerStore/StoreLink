@@ -1,5 +1,5 @@
-import { Button, Input, Space, Table, Tag } from '@arco-design/web-react';
-import { IconDelete, IconPlayArrow } from '@arco-design/web-react/icon';
+import { Button, Input, Space, Table, Tag } from 'antd';
+import { DeleteOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
@@ -52,10 +52,10 @@ const FailedTaskTable = () => {
       dataIndex: 'actions',
       render: (_: any, record: any) => (
         <Space>
-           <Button size="small" type="primary" icon={<IconPlayArrow />} onClick={() => handleResume(record.taskId)}>
+           <Button size="small" type="primary" icon={<PlayCircleOutlined />} onClick={() => handleResume(record.taskId)}>
               重试
             </Button>
-          <Button size="small" type="outline" status="danger" icon={<IconDelete />} onClick={() => handleDelete(record.taskId)}>
+          <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.taskId)}>
             删除
           </Button>
         </Space>
@@ -70,7 +70,7 @@ const FailedTaskTable = () => {
         </Space>
         <InputSearch size="small" allowClear placeholder="搜索" style={{ width: 280 }} />
       </div> */}
-      <Table columns={columns} data={tasks} rowKey="taskId" pagination={false} />
+      <Table columns={columns} dataSource={tasks} rowKey="taskId" pagination={false} />
     </div>
   );
 };

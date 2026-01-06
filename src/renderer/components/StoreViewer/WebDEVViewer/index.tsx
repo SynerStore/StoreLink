@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Space, Input, Dropdown, Menu, Radio } from '@arco-design/web-react';
-import { IconLeft, IconRight, IconDown, IconList, IconApps, IconStar, IconStarFill } from '@arco-design/web-react/icon';
+import { Button, Space, Input, Dropdown, Menu, Radio } from 'antd';
+import { LeftOutlined, RightOutlined, DownOutlined, UnorderedListOutlined, AppstoreOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
 import { debounce } from 'lodash';
 
 import TableContent from './TableContent';
@@ -136,8 +136,8 @@ const WebDevViewer = (props: WebDevViewerProps) => {
     });
   };
 
-  const handleDisplayChange = (value: ETabDisplay) => {
-    updateTab({ ...tabData, display: value });
+  const handleDisplayChange = (e: any) => {
+    updateTab({ ...tabData, display: e.target.value });
   };
 
   useEffect(() => {
@@ -151,12 +151,18 @@ const WebDevViewer = (props: WebDevViewerProps) => {
     setPathHistory(instance);
   }, []);
 
+  const menuItems = [
+    { key: 'copy', label: '复制到' },
+    { key: 'move', label: '移动到' },
+    { key: 'remove', label: '删除' },
+  ];
+
   return (
     <div className="viewer">
       <div className="viewer-path">
         <Space size={2}>
-          <Button disabled={!canBack} icon={<IconLeft />} onClick={handlePathBack} />
-          <Button disabled={!canForward} icon={<IconRight />} onClick={handlePathForward} />
+          <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
+          <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
         </Space>
         <div className="viewer-path-input">
           <ViewInput
@@ -169,9 +175,9 @@ const WebDevViewer = (props: WebDevViewerProps) => {
                 }}
               >
                 {connection?.isCollected ? (
-                  <IconStarFill style={{ fontSize: 'large', color: 'rgb(var(--primary-6))' }} />
+                  <StarFilled style={{ fontSize: 'large', color: 'rgb(var(--primary-6))' }} />
                 ) : (
-                  <IconStar style={{ fontSize: 'large' }} />
+                  <StarOutlined style={{ fontSize: 'large' }} />
                 )}
               </span>
             }
@@ -183,42 +189,36 @@ const WebDevViewer = (props: WebDevViewerProps) => {
       </div>
       <div className="viewer-actions">
         <Space size={4}>
-          <Button size="small" type="primary" onClick={handleUpload}>
+          <Button  type="primary" onClick={handleUpload}>
             上传
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button size="small" type="outline">
+            <Button >
               新建目录
             </Button>
           </FolderCreateWrap>
-          <Button size="small" type="outline">
+          <Button >
             下载
           </Button>
           <Dropdown
-            trigger="click"
-            droplist={
-              <Menu>
-                <Menu.Item key="copy">复制到</Menu.Item>
-                <Menu.Item key="move">移动到</Menu.Item>
-                <Menu.Item key="remove">删除</Menu.Item>
-              </Menu>
-            }
+            trigger={['click']}
+            menu={{ items: menuItems }}
           >
-            <Button size="small" type="outline">
-              更多 <IconDown />
+            <Button >
+              更多 <DownOutlined />
             </Button>
           </Dropdown>
         </Space>
         <Space size={4}>
           <Input.Search style={{ width: '240px' }} />
           <Button onClick={handleGetObjects}> 刷新 </Button>
-          <RadioGroup type="button" name="lang" value={display} onChange={handleDisplayChange}>
-            <Radio value="list" style={{ fontSize: 'medium' }}>
-              <IconList />
-            </Radio>
-            <Radio value="card" style={{ fontSize: 'medium' }}>
-              <IconApps />
-            </Radio>
+          <RadioGroup value={display} onChange={handleDisplayChange}>
+            <Radio.Button value="list" style={{ fontSize: 'medium' }}>
+              <UnorderedListOutlined />
+            </Radio.Button>
+            <Radio.Button value="card" style={{ fontSize: 'medium' }}>
+              <AppstoreOutlined />
+            </Radio.Button>
           </RadioGroup>
         </Space>
       </div>

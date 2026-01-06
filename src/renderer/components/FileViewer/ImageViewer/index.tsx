@@ -1,13 +1,13 @@
 import { useRef, useState, useMemo } from 'react';
-import { Tooltip, Message } from '@arco-design/web-react';
+import { Tooltip, message } from 'antd';
 import {
-  IconRotateLeft,
-  IconRotateRight,
-  IconZoomIn,
-  IconZoomOut,
-  IconOriginalSize,
-  IconDownload,
-} from '@arco-design/web-react/icon';
+  RotateLeftOutlined,
+  RotateRightOutlined,
+  ZoomInOutlined,
+  ZoomOutOutlined,
+  ExpandOutlined,
+  DownloadOutlined,
+} from '@ant-design/icons';
 
 import { events, downloadViewerSource } from '@/renderer/utils';
 import { PreviewScales, defaultScales } from '@/renderer/utils';
@@ -63,46 +63,46 @@ const ImageViewer = (props: ImageViewerProps) => {
     const localDir = await events.getSingleDirPath({});
     if (!localDir) return;
     await downloadViewerSource(id, { src, localPath: localDir });
-    Message.success('已开始下载');
+    message.success('已开始下载');
   };
 
   const defaultActions = [
     {
       key: 'rotateRight',
       name: '向右旋转',
-      content: <IconRotateRight />,
+      content: <RotateRightOutlined />,
       onClick: onRotateRight,
     },
     {
       key: 'rotateLeft',
       name: '向左旋转',
-      content: <IconRotateLeft />,
+      content: <RotateLeftOutlined />,
       onClick: onRotateLeft,
     },
     {
       key: 'zoomIn',
       name: '放大',
-      content: <IconZoomIn />,
+      content: <ZoomInOutlined />,
       onClick: onZoomIn,
       disabled: scale === previewScales.maxScale,
     },
     {
       key: 'zoomOut',
       name: '缩小',
-      content: <IconZoomOut />,
+      content: <ZoomOutOutlined />,
       onClick: onZoomOut,
       disabled: scale === previewScales.minScale,
     },
     {
       key: 'originalSize',
       name: '原始尺寸',
-      content: <IconOriginalSize />,
+      content: <ExpandOutlined />,
       onClick: onResetScale,
     },
     {
       key: 'download',
       name: '下载',
-      content: <IconDownload />,
+      content: <DownloadOutlined />,
       onClick: onDownload,
     },
   ];
@@ -120,7 +120,7 @@ const ImageViewer = (props: ImageViewerProps) => {
         <div className="image-viewer-toolbar-item">
           {defaultActions.map((item) => {
             return (
-              <Tooltip key={item.key} content={item.name}>
+              <Tooltip key={item.key} title={item.name}>
                 <div className="image-viewer-toolbar-item-btn" onClick={item.onClick}>
                   {item.content}
                 </div>

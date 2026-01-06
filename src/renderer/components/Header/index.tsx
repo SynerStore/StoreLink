@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react';
-import { IconMinus, IconClose } from '@arco-design/web-react/icon';
+import { MinusOutlined, CloseOutlined } from '@ant-design/icons';
 
 import { winClose, winFullScreen, winMinimize } from '@/renderer/utils';
 import { IconFullScreen, IconUnFullScreen } from '@/renderer/components';
@@ -34,13 +34,13 @@ const Header = (props: HeaderProps) => {
       {/* {isInMac() ? null : ( */}
       <div className="win-linux-traffic">
         <div className="traffic" onClick={winMinimize}>
-          <IconMinus />
+          <MinusOutlined />
         </div>
         <div className="traffic" onClick={handleFullScreen}>
           {isFullScreen ? <IconUnFullScreen /> : <IconFullScreen />}
         </div>
         <div className="traffic traffic-close" onClick={winClose}>
-          <IconClose />
+          <CloseOutlined />
         </div>
       </div>
       {/* )} */}

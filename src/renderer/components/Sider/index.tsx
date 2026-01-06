@@ -1,13 +1,13 @@
-import { Space, Divider } from '@arco-design/web-react';
+import { Space, Divider } from 'antd';
 import {
-  IconSettings,
-  IconMenuFold,
-  IconHome,
-  IconSwap,
-  IconMessage,
-  IconTool,
-  IconMenuUnfold,
-} from '@arco-design/web-react/icon';
+  SettingOutlined,
+  MenuFoldOutlined,
+  HomeOutlined,
+  SwapOutlined,
+  MessageOutlined,
+  ToolOutlined,
+  MenuUnfoldOutlined,
+} from '@ant-design/icons';
 
 import SettingPanel from '../SettingPanel';
 import TaskPanel from '../TaskPanel';
@@ -23,20 +23,20 @@ const Sider = (props: SiderProps) => {
   return (
     <aside className="sider">
       <div className="sider-top">
-        {fold ? <IconMenuUnfold onClick={onFold} /> : <IconMenuFold onClick={onFold} />}
+        {fold ? <MenuUnfoldOutlined onClick={onFold} /> : <MenuFoldOutlined onClick={onFold} />}
         <Divider style={{ margin: '8px 0px' }} />
-        <IconHome style={{ color: 'var(--primary-color)' }} />
+        <HomeOutlined style={{ color: 'var(--primary-color)' }} />
       </div>
       <div className="sider-bottom">
         <Divider style={{ margin: '8px 0px' }} />
-        <Space direction="vertical">
+        <Space vertical size={16}>
           <TaskPanel>
-            <IconSwap />
+            <SwapOutlined />
           </TaskPanel>
-          {/* <IconMessage /> */}
-          {/* <IconTool /> */}
+          {/* <MessageOutlined /> */}
+          {/* <ToolOutlined /> */}
           <SettingPanel>
-            <IconSettings />
+            <SettingOutlined />
           </SettingPanel>
         </Space>
       </div>

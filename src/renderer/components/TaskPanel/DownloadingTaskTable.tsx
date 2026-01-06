@@ -1,5 +1,5 @@
-import { Button, Input, Space, Table, Progress, Tag } from '@arco-design/web-react';
-import { IconDelete, IconPause, IconPlayArrow } from '@arco-design/web-react/icon';
+import { Button, Input, Space, Table, Progress, Tag } from 'antd';
+import { DeleteOutlined, PauseOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
@@ -37,7 +37,7 @@ const DownloadingTaskTable = () => {
       title: '状态',
       dataIndex: 'status',
       render: (status: ETaskStatus) => {
-        const color = status === ETaskStatus.RUNNING ? 'arcoblue' : status === ETaskStatus.PAUSED ? 'orange' : 'gray';
+        const color = status === ETaskStatus.RUNNING ? 'blue' : status === ETaskStatus.PAUSED ? 'orange' : 'default';
         return <Tag color={color}>{status}</Tag>;
       }
     },
@@ -47,15 +47,15 @@ const DownloadingTaskTable = () => {
       render: (_: any, record: any) => (
         <Space>
           {record.status === ETaskStatus.RUNNING ? (
-            <Button size="small" type="outline" icon={<IconPause />} onClick={() => handlePause(record.taskId)}>
+            <Button size="small" icon={<PauseOutlined />} onClick={() => handlePause(record.taskId)}>
               暂停
             </Button>
           ) : (
-            <Button size="small" type="primary" icon={<IconPlayArrow />} onClick={() => handleResume(record.taskId)}>
+            <Button size="small" type="primary" icon={<PlayCircleOutlined />} onClick={() => handleResume(record.taskId)}>
               开始
             </Button>
           )}
-          <Button size="small" type="outline" status="danger" icon={<IconDelete />} onClick={() => handleDelete(record.taskId)}>
+          <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.taskId)}>
             删除
           </Button>
         </Space>
@@ -70,7 +70,7 @@ const DownloadingTaskTable = () => {
         </Space>
         <InputSearch size="small" allowClear placeholder="搜索" style={{ width: 280 }} />
       </div> */}
-      <Table columns={columns} data={tasks} rowKey="taskId" pagination={false} />
+      <Table columns={columns} dataSource={tasks} rowKey="taskId" pagination={false} />
     </div>
   );
 };

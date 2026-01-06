@@ -10,6 +10,14 @@
   ],
   "author": "chrissong1994 <chrissong1994@163.com> ",
   "license": "MIT",
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "better-sqlite3",
+      "cpu-features",
+      "electron",
+      "ssh2"
+    ]
+  },
   "scripts": {
     "start": "cross-env NODE_ENV=development electron --inspect=9229 ./build/main.js",
     "dev": "npm run clean:build && concurrently \"npm run dev:renderer\"  \"npm run dev:main\"",
@@ -56,8 +64,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@arco-design/web-react": "^2.66.8",
-    "@arco-themes/react-syner-store": "^0.0.1",
+    "@ant-design/icons": "^6.1.0",
     "@aws-sdk/client-s3": "^3.600.0",
     "@aws-sdk/lib-storage": "^3.600.0",
     "@aws-sdk/s3-request-presigner": "^3.782.0",
@@ -67,6 +74,7 @@
     "@fontsource/roboto": "^5.2.5",
     "@uiw/react-markdown-preview": "^5.1.3",
     "ali-oss": "^6.22.0",
+    "antd": "^6.1.4",
     "cos-nodejs-sdk-v5": "^2.14.6",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",

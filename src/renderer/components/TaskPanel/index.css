@@ -1,7 +1,7 @@
 .task-modal {
   padding: 16px !important;
   
-  .arco-modal-header {
+  .ant-modal-header {
     margin-bottom: 4px !important;
   }
 }

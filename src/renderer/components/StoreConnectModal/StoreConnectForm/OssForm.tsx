@@ -1,5 +1,5 @@
 import { useState, useImperativeHandle, forwardRef } from 'react';
-import { Form, Input, Button, Select } from '@arco-design/web-react';
+import { Form, Input, Button, Select } from 'antd';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
@@ -24,7 +24,7 @@ const OssForm = forwardRef((_props, ref) => {
 
   const handleTest = async () => {
     setLoading(true);
-    const res = await form.validate();
+    const res = await form.validateFields();
     const result = await storeConnect({
       type: StoreTypes.OSS,
       config: {
@@ -37,26 +37,25 @@ const OssForm = forwardRef((_props, ref) => {
     setLoading(false);
 
     if (bucketsData.length) {
-      form.setFieldValue(
-        'bucketName',
-        bucketsData.map((item: any) => item.name),
-      );
+      form.setFieldsValue({
+        bucketName: bucketsData.map((item: any) => item.name),
+      });
     }
   };
   // 确认
   const handleConfirm = async () => {
-    const res = await form.validate();
+    const res = await form.validateFields();
     const connections = res.bucketName.map((item: any) => {
       const bucket: any = buckets.find((bucket: any) => bucket.name === item);
       return {
         type: StoreTypes.OSS,
         brand: 'aliyun',
-        name: bucket.name,
+        name: bucket?.name || item,
         config: {
           accessKeyId: res.accessKeyId,
           secretAccessKey: res.secretAccessKey,
-          bucketName: bucket.name,
-          region: bucket.region,
+          bucketName: bucket?.name || item,
+          region: bucket?.region,
         },
       };
     });
@@ -67,19 +66,19 @@ const OssForm = forwardRef((_props, ref) => {
 
   return (
     <Form form={form} autoComplete="off">
-      <FormItem label="Access Key" field="accessKeyId" rules={[{ required: true }]}>
+      <FormItem label="Access Key" name="accessKeyId" rules={[{ required: true }]}>
         <Input />
       </FormItem>
-      <FormItem label="Secret Key" field="secretAccessKey" rules={[{ required: true }]}>
+      <FormItem label="Secret Key" name="secretAccessKey" rules={[{ required: true }]}>
         <Input />
       </FormItem>
       <FormItem
         label="Bucket Name"
-        field="bucketName"
+        name="bucketName"
         extra="点击连接测试自动填充账号下的 Bucket"
         tooltip="可以输入多个Bucket"
       >
-        <Select allowClear allowCreate mode="multiple">
+        <Select allowClear mode="tags">
           {buckets.map((bucket: any) => (
             <Option key={bucket.name} value={bucket.name}>
               {bucket.name}

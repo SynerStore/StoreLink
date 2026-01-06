@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Space, Card, Statistic, List, Tag, DatePicker, Select } from '@arco-design/web-react';
-import { IconPlus } from '@arco-design/web-react/icon';
+import { Button, Space, Card, Statistic, List, Tag, DatePicker, Select } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { StoreConnectModal, StoreIcon } from '@/renderer/components';
 import { useConfigStore, useTabsStore } from '@/renderer/store';
 import { useTasks } from '@/renderer/hooks';
@@ -85,7 +85,7 @@ const HomeTab = () => {
       <div className="home-tab-header">
         <h2>StoreLink</h2>
         <StoreConnectModal>
-          <Button type="primary" icon={<IconPlus style={{ fontSize: 'medium' }} />}>
+          <Button type="primary" icon={<PlusOutlined style={{ fontSize: 'medium' }} />}>
             添加连接
           </Button>
         </StoreConnectModal>
@@ -111,12 +111,12 @@ const HomeTab = () => {
               <List
                 bordered={false}
                 dataSource={favoriteConnections}
-                render={(item: any) => (
+                renderItem={(item: any) => (
                   <List.Item key={item.id} className="home-tab-content-list-item">
                     <Space size={8}>
                       <StoreIcon brand={item.brand} size={24} styles={{}} />
                       <span className="home-tab-content-list-item-name" style={{ fontWeight: 500 }}>{item.name}</span>
-                      <Tag color="arcoblue">{item.brand}</Tag>
+                      <Tag color="blue">{item.brand}</Tag>
                       <Button type="text" onClick={() => toggleFavorite(item.id)}>
                         ★ 取消收藏
                       </Button>
@@ -166,7 +166,7 @@ const HomeTab = () => {
               size="small"
               bordered
               dataSource={logs}
-              render={(line: string, index: number) => <List.Item key={index}>{line}</List.Item>}
+              renderItem={(line: string, index: number) => <List.Item key={index}>{line}</List.Item>}
             />
           </Card>
         </div>

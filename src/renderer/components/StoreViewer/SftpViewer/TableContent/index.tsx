@@ -1,5 +1,5 @@
 import { Fragment, useLayoutEffect, useState } from 'react';
-import { Table } from '@arco-design/web-react';
+import { Table } from 'antd';
 import dayjs from 'dayjs';
 
 import { EWindowSize, TStoreObject } from '@/types';
@@ -101,12 +101,11 @@ const TableContent = (props: TableContentProps) => {
       <Table
         rowKey={'key'}
         size="small"
-        borderCell={false}
-        border={false}
+        bordered={false}
         loading={loading}
         rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
         scroll={{ y: tableScrollHight }}
-        data={data}
+        dataSource={data}
         pagination={false}
         columns={columns}
       />

@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ConfigProvider } from '@arco-design/web-react';
-import zhCN from '@arco-design/web-react/es/locale/zh-CN';
-import enUS from '@arco-design/web-react/es/locale/en-US';
-import '@arco-design/web-react/dist/css/arco.css';
-import '@arco-themes/react-syner-store/css/arco.css';
+import { ConfigProvider, theme } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import enUS from 'antd/locale/en_US';
+import 'antd/dist/reset.css';
 
 import '@/renderer/i18n';
 import { StoreViewerTabs, Header, Sider, StoreSider } from '@/renderer/components';
-import { useConfigStore, useTabsStore, useSettingStore } from '@/renderer/store';
+import { useConfigStore, useTabsStore, useSettingStore, EnumTheme } from '@/renderer/store';
 import { updateRootStyleProperty } from '@/renderer/utils';
 import '@/renderer/styles/index.css';
 import './index.css';
@@ -21,6 +20,24 @@ const App = () => {
   const locale = useMemo(() => {
     return settingStore.settings.lang === 'zh-CN' ? zhCN : enUS;
   }, [settingStore]);
+
+  const antdTheme = useMemo(() => {
+    return {
+      algorithm: settingStore.settings.theme === EnumTheme.DARK ? theme.darkAlgorithm : theme.defaultAlgorithm,
+      token: {
+        colorPrimary: '#3c62cd',
+      },
+    };
+  }, [settingStore.settings.theme]);
+
+  useEffect(() => {
+    if (settingStore.settings.theme === EnumTheme.DARK) {
+      document.body.setAttribute('data-theme', 'dark');
+    } else {
+      document.body.removeAttribute('data-theme');
+    }
+  }, [settingStore.settings.theme]);
+
   const handleOnready = () => {
     configStore.initializeData();
     tabsStore.initializeData();
@@ -39,7 +56,7 @@ const App = () => {
 
   return (
     <React.StrictMode>
-      <ConfigProvider locale={locale}>
+      <ConfigProvider locale={locale} theme={antdTheme}>
         <div className="container">
           <Header />
           <main className="main">

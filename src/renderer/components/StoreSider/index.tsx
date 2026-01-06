@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
-import { Menu, Input, Space } from '@arco-design/web-react';
+import { useMemo, useState, useEffect } from 'react';
+import { Menu, Input, Space } from 'antd';
 import { groupBy } from 'lodash';
-import { IconEdit, IconDelete, IconPlus } from '@arco-design/web-react/icon';
+import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { StoreConnectModal, ConnectionDeleteWrap, ContextMenu } from '@/renderer/components';
 import MenuTitle from './MenuTitle';
@@ -19,6 +19,18 @@ const StoreSider = (props: StoreSiderProps) => {
   const { fold } = props;
   const { connections, removeConnection } = useConfigStore();
   const { activeTab, addTab, removeTab } = useTabsStore();
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    const connection: any = connections.find((item: any) => item.id === activeTab);
+    if (connection) {
+      const key = connection.brand;
+      setOpenKeys((prev) => {
+        if (prev.includes(key)) return prev;
+        return [...prev, key];
+      });
+    }
+  }, [activeTab, connections]);
 
   const items = useMemo(() => {
     const groups = groupBy(connections, 'brand');
@@ -64,7 +76,7 @@ const StoreSider = (props: StoreSiderProps) => {
         <span>存储库</span>
         <StoreConnectModal>
           <div className="store-sider-tip-add">
-            <IconPlus style={{ fontSize: 'medium' }} />
+            <PlusOutlined style={{ fontSize: 'medium' }} />
           </div>
         </StoreConnectModal>
       </div>
@@ -74,10 +86,9 @@ const StoreSider = (props: StoreSiderProps) => {
 
       <div className="store-sider-content">
         <Menu
-          autoOpen
-          autoScrollIntoView
-          selectable
-          onClickMenuItem={handleClick}
+          mode="inline"
+          openKeys={openKeys}
+          onOpenChange={(keys) => setOpenKeys(keys as string[])}
           style={{ width: '100%' }}
           selectedKeys={[activeTab]}
         >
@@ -86,27 +97,28 @@ const StoreSider = (props: StoreSiderProps) => {
               <SubMenu key={item.key} title={item.label}>
                 {item.children.map((child: any) => {
                   return (
-                    <ContextMenu
-                      key={child.key}
-                      menu={[
-                        {
-                          icon: <IconEdit />,
-                          text: '编辑',
-                          onClick: () => {},
-                        },
-                        {
-                          render: () => (
-                            <ConnectionDeleteWrap onDelete={handleDelete} connection={child}>
-                              <Space size={2}>
-                                <IconDelete /> 删除
-                              </Space>
-                            </ConnectionDeleteWrap>
-                          ),
-                        },
-                      ]}
-                    >
-                      <MenuItem key={child.key}>{child.label}</MenuItem>
-                    </ContextMenu>
+                    <MenuItem onClick={() => handleClick(child.key)} key={child.key}>
+                      <ContextMenu
+                        menu={[
+                          {
+                            icon: <EditOutlined />,
+                            text: '编辑',
+                            onClick: () => {},
+                          },
+                          {
+                            render: () => (
+                              <ConnectionDeleteWrap onDelete={handleDelete} connection={child}>
+                                <Space size={2}>
+                                  <DeleteOutlined /> 删除
+                                </Space>
+                              </ConnectionDeleteWrap>
+                            ),
+                          },
+                        ]}
+                      >
+                        <span style={{ width: '100%', display: 'inline-block' }}>{child.label}</span>
+                      </ContextMenu>
+                    </MenuItem>
                   );
                 })}
               </SubMenu>

@@ -1,5 +1,5 @@
 import { Fragment, useState, useRef } from 'react';
-import { Modal } from '@arco-design/web-react';
+import { Modal } from 'antd';
 
 import StoreSelection from './StoreSelection';
 import StoreConnectForm from './StoreConnectForm';
@@ -10,7 +10,6 @@ export type StoreConnectModalProps = {
   children?: React.ReactNode;
   onAddConnection?: (v: any) => void;
 };
-
 const StoreConnectModal = (props: StoreConnectModalProps) => {
   const { children, onAddConnection } = props;
   const formRef = useRef<any>(null);
@@ -48,8 +47,8 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
         title="添加连接"
         closable={false}
         maskClosable={false}
-        visible={isModalOpen}
-        style={{ width: 620 }}
+        open={isModalOpen}
+        width={620}
         onCancel={step === 0 ? handleCancel : handlePrev}
         onOk={step === 0 ? handleNext : handleOk}
         cancelText={step === 0 ? '取消' : '上一步'}

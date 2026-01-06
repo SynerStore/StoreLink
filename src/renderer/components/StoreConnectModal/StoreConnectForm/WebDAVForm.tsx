@@ -1,5 +1,5 @@
 import { useImperativeHandle, forwardRef } from 'react';
-import { Form, Input, Button } from '@arco-design/web-react';
+import { Form, Input, Button } from 'antd';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
@@ -21,7 +21,7 @@ const WebDAVForm = forwardRef((_props, ref) => {
 
   const handleTest = async () => {
     setLoading(true);
-    const res = await form.validate();
+    const res = await form.validateFields();
     const result = await storeConnect({
       type: StoreTypes.WEBDAV,
       config: {
@@ -35,7 +35,7 @@ const WebDAVForm = forwardRef((_props, ref) => {
   };
 
   const handleConfirm = async () => {
-    const res = await form.validate();
+    const res = await form.validateFields();
     const connection = {
       type: StoreTypes.WEBDAV,
       brand: StoreBrands.WebDAV,
@@ -52,14 +52,14 @@ const WebDAVForm = forwardRef((_props, ref) => {
   };
   return (
     <Form form={form}  autoComplete="off">
-      <FormItem label="服务器地址" field="address">
+      <FormItem label="服务器地址" name="address">
         <Input />
       </FormItem>
-      <FormItem label="账号" field="username">
+      <FormItem label="账号" name="username">
         <Input />
       </FormItem>
-      <FormItem label="密码" field="password">
-        <Input />
+      <FormItem label="密码" name="password">
+        <Input.Password />
       </FormItem>
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>

@@ -4,9 +4,9 @@ export const initTheme = () => {
   const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
   darkThemeMq.addEventListener('change', (e) => {
     if (e.matches) {
-      document.body.setAttribute('arco-theme', 'dark');
+      document.body.setAttribute('data-theme', 'dark');
     } else {
-      document.body.removeAttribute('arco-theme');
+      document.body.removeAttribute('data-theme');
     }
   });
 };
@@ -14,18 +14,18 @@ export const initTheme = () => {
 // 切换主题
 export const toggleTheme = (theme: EnumTheme) => {
   if (theme === EnumTheme.DARK) {
-    document.body.setAttribute('arco-theme', 'dark');
+    document.body.setAttribute('data-theme', 'dark');
   }
   if (theme === EnumTheme.LIGHT) {
-    document.body.removeAttribute('arco-theme');
+    document.body.removeAttribute('data-theme');
   }
 
   if (theme === EnumTheme.AUTO) {
     const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (isDarkMode) {
-      document.body.setAttribute('arco-theme', 'dark');
+      document.body.setAttribute('data-theme', 'dark');
     } else {
-      document.body.removeAttribute('arco-theme');
+      document.body.removeAttribute('data-theme');
     }
   }
 };
