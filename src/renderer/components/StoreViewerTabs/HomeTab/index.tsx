@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Space, Card, Statistic, List, Tag, DatePicker } from '@arco-design/web-react';
+import { Button, Space, Card, Statistic, List, Tag, DatePicker, Select } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import { StoreConnectModal, StoreIcon } from '@/renderer/components';
 import { useConfigStore } from '@/renderer/store';
@@ -56,13 +56,14 @@ const HomeTab = () => {
 
   const [logs, setLogs] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const fetchLogs = async (date?: string) => {
-    const res = await events.getLogs({ date, limit: 300 });
+  const [logsLimit, setLogsLimit] = useState<number>(10);
+  const fetchLogs = async (date?: string, limit?: number) => {
+    const res = await events.getLogs({ date, limit: limit ?? logsLimit });
     setLogs(res || []);
   };
   useEffect(() => {
     fetchLogs();
-  }, []);
+  }, [logsLimit]);
 
   return (
     <div className="home-tab">
@@ -125,6 +126,19 @@ const HomeTab = () => {
                     setSelectedDate(d);
                     fetchLogs(d || undefined);
                   }}
+                />
+                <Select
+                  style={{ width: 100 }}
+                  value={String(logsLimit)}
+                  onChange={(val) => {
+                    const n = Number(val);
+                    setLogsLimit(n);
+                  }}
+                  options={[
+                    { label: '10条', value: '10' },
+                    { label: '50条', value: '50' },
+                    { label: '100条', value: '100' },
+                  ]}
                 />
                 <Button onClick={() => fetchLogs(selectedDate || undefined)}>刷新</Button>
               </Space>

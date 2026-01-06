@@ -3,6 +3,7 @@ import path from 'node:path';
 import fs from 'fs-extra';
 
 import { getUserDataPath } from '@/main/utils';
+import { logAction } from '@/main/events/log';
 
 export interface IConnectionsData {
   connections: any[];
@@ -75,5 +76,10 @@ export async function updateConnectionCollected(params: { id: string; isCollecte
     c.id === params.id ? { ...c, isCollected: params.isCollected } : c
   );
   await setConnectionsData({ connections: next });
+  logAction({
+    action: 'toggle_favorite',
+    message: params.isCollected ? 'favorite' : 'unfavorite',
+    meta: { connectionId: params.id },
+  });
   return params;
 }

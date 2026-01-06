@@ -8,7 +8,7 @@ import CardContent from './CardContent';
 import { ViewInput, FileDropWrap, FolderCreateWrap } from '@/renderer/components';
 import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
-import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
+import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 import './index.css';
 
 const RadioGroup = Radio.Group;
@@ -21,6 +21,7 @@ export type WebDevViewerProps = {
 const WebDevViewer = (props: WebDevViewerProps) => {
   const { connectionId, connection, tabData } = props;
   const { updateTab } = useTabsStore();
+  const { initializeData } = useConfigStore();
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
   const [curPrefix, setCurPrefix] = useState<string>('');
@@ -164,11 +165,7 @@ const WebDevViewer = (props: WebDevViewerProps) => {
               <span
                 onClick={async () => {
                   await events.updateConnectionCollected({ id: connectionId, isCollected: !connection?.isCollected });
-                  await events.logAction({
-                    action: 'toggle_favorite',
-                    message: connection?.isCollected ? 'unfavorite' : 'favorite',
-                    meta: { connectionId },
-                  });
+                  await initializeData();
                 }}
               >
                 {connection?.isCollected ? (

@@ -3,6 +3,7 @@ import db from '@/main/db/sqlite';
 import TaskEntity, { TaskEntityParams } from './entity';
 import { EChannels, ETaskStatus } from '@/types';
 import { MainWindow } from '@/main/windows/main';
+import { logAction } from '@/main/events/log';
 
 class TaskManager {
   private static instance: TaskManager;
@@ -65,6 +66,17 @@ class TaskManager {
         if (status === ETaskStatus.COMPLETED || status === ETaskStatus.FAILED || status === ETaskStatus.CANCELED) {
           // Maybe remove from memory map if we don't want to keep history in memory?
           // But user might want to see history.
+          const msg =
+            status === ETaskStatus.COMPLETED
+              ? 'completed'
+              : status === ETaskStatus.FAILED
+              ? `failed: ${err || ''}`
+              : 'canceled';
+          logAction({
+            action: 'task_status',
+            message: `${task.method} ${msg}`,
+            meta: { connectionId: task.connectionId, taskId: task.taskId },
+          });
         }
       }
     );

@@ -34,14 +34,6 @@ const StoreViewerTabs = () => {
         updatedTask?.connectionId
       ) {
         updateTab({ id: updatedTask.connectionId, refreshTick: Date.now() });
-        window.electronBridge?.dispatch(EChannels.eventsX, {
-          eventName: 'logAction',
-          data: {
-            action: 'task_completed',
-            message: `${updatedTask.method} done`,
-            meta: { connectionId: updatedTask.connectionId, key: updatedTask?.params?.key },
-          },
-        });
       }
     };
     window.electronBridge?.on(EChannels.taskUpdate, handler);
