@@ -4,7 +4,15 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { WebDAVClient, FileStat } from 'webdav';
 
-import { filesSort, runTasksSequentially, isObjectFolder, readDirectoryRecursive } from '@/main/utils';
+import {
+  filesSort,
+  runTasksSequentially,
+  isObjectFolder,
+  readDirectoryRecursive,
+  getTempPath,
+  streamToPromise,
+  getMd5ByString,
+} from '@/main/utils';
 import { TStoreObject } from '@/types';
 
 export const formatObjects = async (file: FileStat): Promise<TStoreObject | null> => {
@@ -190,29 +198,28 @@ export async function putMultiObjects(client: WebDAVClient, params: PutMultiObje
   }
 }
 
-// /**
-//  * webdav 文件预览需要下载
-//  */
+/**
+ * webdav 文件预览需要下载
+ */
 export type GetSourceUrlParams = {
   key: string;
   connectionId: string;
   lastModified: number;
 };
-export async function getSourceUrl(_client: WebDAVClient, config: any, params: GetSourceUrlParams) {
-  // 还是需要支持本地文件加载？？
-  const { address, username, password } = config;
-  const { key } = params;
-  const u = new URL(address);
-  u.username = username || '';
-  u.password = password || '';
-  const basePath = u.pathname.endsWith('/') ? u.pathname : `${u.pathname}/`;
-  const keyPath = key.startsWith('/') ? key.slice(1) : key;
-  u.pathname = key
-  const src = u.toString();
-  const mimeValue = mime.lookup(key) || '';
+export async function getSourceUrl(client: WebDAVClient, _config: any, params: GetSourceUrlParams) {
+  const { key, connectionId, lastModified } = params;
+  const etag = getMd5ByString(`${connectionId}-${lastModified}-${key}`);
+  const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
+  const filePath = `file://${tmpFileName}`;
+  if (!fs.existsSync(tmpFileName)) {
+    const readerStream = client.createReadStream(key);
+    const writerStream = fs.createWriteStream(tmpFileName);
+    await streamToPromise(readerStream, writerStream);
+  }
+  const mimeValue = mime.lookup(filePath) || '';
   return {
-    src: src,
+    src: filePath,
     mime: mimeValue,
-    content: '',
+    content: /text\/.{0,}/.test(mimeValue) ? await fs.readFile(tmpFileName, { encoding: 'utf-8' }) : '',
   };
 }

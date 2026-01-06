@@ -17,3 +17,7 @@ export const openViewer = (connectionId: string, data: any) => {
 export const getViewerSource = (id: string) => {
   return dispatch(EChannels.getViewerSource, id);
 };
+
+export const downloadViewerSource = (id: string, data: { src: string; localPath: string }) => {
+  return dispatch(EChannels.downloadViewerSource, { id, ...data });
+};

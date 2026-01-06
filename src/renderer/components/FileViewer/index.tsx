@@ -57,7 +57,7 @@ const FileViewer = (props: FileViewerProps) => {
   return (
     <Spin className="file-viewer-spin" dot loading={loading} tip="资源加载中，请耐心等待...">
       {ViewerComponent ? (
-        React.createElement(ViewerComponent, { src: sourceUrl, content: content, mime: props?.mime })
+        React.createElement(ViewerComponent as any, { id: props.id, src: sourceUrl, content: content, mime: props?.mime })
       ) : (
         <div> 该文档无法查看</div>
       )}

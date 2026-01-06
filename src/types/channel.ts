@@ -19,6 +19,7 @@ export enum EChannels {
   // viewer
   openViewer = 'openViewer',
   getViewerSource = 'getViewerSource',
+  downloadViewerSource = 'downloadViewerSource',
 }
 
 export type ChannelData = {

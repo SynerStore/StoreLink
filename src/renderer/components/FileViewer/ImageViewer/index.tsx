@@ -1,23 +1,26 @@
 import { useRef, useState, useMemo } from 'react';
-import { Tooltip } from '@arco-design/web-react';
+import { Tooltip, Message } from '@arco-design/web-react';
 import {
   IconRotateLeft,
   IconRotateRight,
   IconZoomIn,
   IconZoomOut,
   IconOriginalSize,
+  IconDownload,
 } from '@arco-design/web-react/icon';
 
+import { events, downloadViewerSource } from '@/renderer/utils';
 import { PreviewScales, defaultScales } from '@/renderer/utils';
 import './index.css';
 
 export type ImageViewerProps = {
+  id: string;
   src: string;
   content?: string;
   mime?: string;
 };
 const ImageViewer = (props: ImageViewerProps) => {
-  const { src } = props;
+  const { id, src } = props;
   const refImage = useRef<any>();
   const [rotate, setRotate] = useState(0);
   const [scale, setScale] = useState(1);
@@ -54,6 +57,14 @@ const ImageViewer = (props: ImageViewerProps) => {
       setScale(newScale);
     }
   };
+  
+  const onDownload = async () => {
+    if (!src) return;
+    const localDir = await events.getSingleDirPath({});
+    if (!localDir) return;
+    await downloadViewerSource(id, { src, localPath: localDir });
+    Message.success('已开始下载');
+  };
 
   const defaultActions = [
     {
@@ -87,6 +98,12 @@ const ImageViewer = (props: ImageViewerProps) => {
       name: '原始尺寸',
       content: <IconOriginalSize />,
       onClick: onResetScale,
+    },
+    {
+      key: 'download',
+      name: '下载',
+      content: <IconDownload />,
+      onClick: onDownload,
     },
   ];
   return (

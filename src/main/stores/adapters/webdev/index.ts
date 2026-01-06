@@ -93,7 +93,7 @@ class WebDAVStore implements IStorageHandler {
     }
   }
 
-  // // 删除
+  // 删除
   async delete(params: DeleteFileParams) {
     try {
       let result = await deleteFile(this.client, params);

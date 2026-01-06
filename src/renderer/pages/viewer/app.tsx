@@ -1,5 +1,4 @@
 import qs from 'query-string';
-
 import {Header,FileViewer,FileIcon} from '@/renderer/components';
 import './index.css';
 

@@ -39,7 +39,7 @@ const TaskPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => {
         onCancel={() => setIsModalOpen(false)}
       >
         {/* 任务的上传下载同步等 */}
-        <Tabs activeTab={activeTab} onChange={(key: string) => setActiveTab(key as ESettingPanelTab)}>
+        <Tabs type="capsule" activeTab={activeTab} onChange={(key: string) => setActiveTab(key as ESettingPanelTab)}>
           <TabPane key={ESettingPanelTab.Downloading} title="下载中">
             <DownloadingTaskTable />
           </TabPane>
