@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConfigProvider, theme } from 'antd';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
 import 'antd/dist/reset.css';
 
 import '@/renderer/i18n';
-import { StoreViewerTabs, Header, Sider, StoreSider } from '@/renderer/components';
+import { StoreViewerTabs, Header, Sider, StoreSider, TaskPanel } from '@/renderer/components';
 import { useConfigStore, useTabsStore, useSettingStore, EnumTheme } from '@/renderer/store';
 import { updateRootStyleProperty } from '@/renderer/utils';
 import '@/renderer/styles/index.css';
+import TaskManage from './task-manage';
 import './index.css';
 
 const App = () => {
@@ -57,14 +59,27 @@ const App = () => {
   return (
     <React.StrictMode>
       <ConfigProvider locale={locale} theme={antdTheme}>
-        <div className="container">
-          <Header />
-          <main className="main">
-            <Sider fold={storeSiderfold} onFold={handleFold} />
-            <StoreSider fold={storeSiderfold} />
-            <StoreViewerTabs />
-          </main>
-        </div>
+        <HashRouter>
+          <div className="container">
+            <Header />
+            <main className="main">
+              <Sider fold={storeSiderfold} onFold={handleFold} />
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <>
+                      <StoreSider fold={storeSiderfold} />
+                      <StoreViewerTabs />
+                    </>
+                  }
+                />
+                <Route path="/task-manage" element={<TaskManage />} />
+                <Route path="/tasks" element={<TaskPanel />} />
+              </Routes>
+            </main>
+          </div>
+        </HashRouter>
       </ConfigProvider>
     </React.StrictMode>
   );

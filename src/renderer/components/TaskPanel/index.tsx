@@ -1,5 +1,5 @@
-import React, { Fragment, useState } from 'react';
-import { Modal, Tabs } from 'antd';
+import React, { useState } from 'react';
+import { Tabs } from 'antd';
 
 import DownloadingTaskTable from './DownloadingTaskTable';
 import FinishedTaskTable from './FinishedTaskTable';
@@ -8,19 +8,13 @@ import UploadingTaskTable from './UploadingTaskTable';
 
 import './index.css';
 
-export type SettingPanelProps = {
-  children?: React.ReactNode;
-};
-
 export enum ESettingPanelTab {
   Downloading = 'downloading',
   Uploading = 'uploading',
   Finished = 'finished',
   Failed = 'failed',
 }
-const TaskPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => {
-  const { children } = props;
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const TaskPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ESettingPanelTab>(ESettingPanelTab.Downloading);
 
   const items = [
@@ -47,23 +41,9 @@ const TaskPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => {
   ];
 
   return (
-    <Fragment>
-      <Modal
-        className="task-modal"
-        title="任务管理"
-        closable={true}
-        maskClosable={false}
-        footer={null}
-        open={isModalOpen}
-        width={900}
-        onCancel={() => setIsModalOpen(false)}
-        bodyStyle={{ height: 500, overflow: 'auto' }}
-      >
-        {/* 任务的上传下载同步等 */}
-        <Tabs type="card" activeKey={activeTab} onChange={(key: string) => setActiveTab(key as ESettingPanelTab)} items={items} />
-      </Modal>
-      <span onClick={() => setIsModalOpen(true)}>{children}</span>
-    </Fragment>
+    <div className="task-panel" style={{ width: '100%', height: '100%', padding: '20px' }}>
+      <Tabs type="card" activeKey={activeTab} onChange={(key: string) => setActiveTab(key as ESettingPanelTab)} items={items} />
+    </div>
   );
 };
 
