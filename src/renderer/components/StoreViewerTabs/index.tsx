@@ -28,7 +28,11 @@ const StoreViewerTabs = () => {
 
   useEffect(() => {
     const handler = (updatedTask: any) => {
-      if (updatedTask?.status === ETaskStatus.COMPLETED && updatedTask?.connectionId) {
+      if (
+        updatedTask?.status === ETaskStatus.COMPLETED &&
+        ['delete', 'rename'].includes(updatedTask?.method) &&
+        updatedTask?.connectionId
+      ) {
         updateTab({ id: updatedTask.connectionId, refreshTick: Date.now() });
       }
     };
