@@ -112,15 +112,15 @@ const HomeTab = () => {
                 bordered={false}
                 dataSource={favoriteConnections}
                 render={(item: any) => (
-                  <List.Item key={item.id} style={{ padding: 12, cursor: 'pointer' }}>
+                  <List.Item key={item.id} className="home-tab-content-list-item">
                     <Space size={8}>
                       <StoreIcon brand={item.brand} size={24} styles={{}} />
-                      <span style={{ fontWeight: 500 }}>{item.name}</span>
+                      <span className="home-tab-content-list-item-name" style={{ fontWeight: 500 }}>{item.name}</span>
                       <Tag color="arcoblue">{item.brand}</Tag>
+                      <Button type="text" onClick={() => toggleFavorite(item.id)}>
+                        ★ 取消收藏
+                      </Button>
                     </Space>
-                    <Button type="text" onClick={() => toggleFavorite(item.id)}>
-                      ★ 取消收藏
-                    </Button>
                   </List.Item>
                 )}
               />

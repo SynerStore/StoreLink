@@ -27,5 +27,12 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+
+    .home-tab-content-list-item-name {
+      font-size: 14px;
+    }
+    .home-tab-content-list-item-name:hover {
+      color: var(--primary-color);
+    }
   }
 }
