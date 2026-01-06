@@ -44,7 +44,10 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
   };
 
   const handleImportConnections = async () => {
-    const file = await events.getSingleFilePath({ properties: ['openFile'], filters: [{ name: 'JSON', extensions: ['json'] }] });
+    const file = await events.getSingleFilePath({
+      properties: ['openFile'],
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+    });
     if (!file) return;
     await events.importConnections(file);
     await configStore.initializeData();
@@ -60,8 +63,9 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
         maskClosable={false}
         visible={isModalOpen}
         // onOk={handleOk}
-        onCancel={() => setIsModalOpen(false)}
-        okText="关闭"
+        cancelText={null}
+        onOk={() => setIsModalOpen(false)}
+        okText="确定"
       >
         <Form autoComplete="off" layout="horizontal">
           <FormItem label="主题样式">
@@ -85,8 +89,12 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
           </FormItem>
           <FormItem label="连接配置">
             <Space>
-              <Button size="small" type="primary" onClick={handleExportConnections}>导出</Button>
-              <Button size="small" onClick={handleImportConnections}>导入</Button>
+              <Button size="small" type="primary" onClick={handleExportConnections}>
+                导出
+              </Button>
+              <Button size="small" onClick={handleImportConnections}>
+                导入
+              </Button>
             </Space>
           </FormItem>
         </Form>

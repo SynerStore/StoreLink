@@ -33,8 +33,8 @@ const Sider = (props: SiderProps) => {
           <TaskPanel>
             <IconSwap />
           </TaskPanel>
-          <IconMessage />
-          <IconTool />
+          {/* <IconMessage /> */}
+          {/* <IconTool /> */}
           <SettingPanel>
             <IconSettings />
           </SettingPanel>
