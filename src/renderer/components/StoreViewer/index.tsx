@@ -14,7 +14,7 @@ const StoreViewer = (props: any) => {
 
   const connection = useMemo(() => {
     return connections.find((item: any) => item.id === data.id);
-  }, [data.id]);
+  }, [data.id, connections]);
 
   // 拖拽事件监听
   const handleDragEventListener = useCallback((e: any) => {

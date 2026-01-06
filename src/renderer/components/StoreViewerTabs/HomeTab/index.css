@@ -1,11 +1,30 @@
 .home-tab {
   width: 100%;
   height: 100%;
+  overflow-y: auto;
+
+  .home-tab-header {
+    display: flex;
+    padding: 0 16px;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   .home-tab-dashbord {
     display: flex;
     align-items: center;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
+    padding: 12px 24px;
+
+    .home-tab-dashbord-card {
+      width: calc(33% - 12px);
+    }
+  }
+
+  .home-tab-content-list-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
   }
 }

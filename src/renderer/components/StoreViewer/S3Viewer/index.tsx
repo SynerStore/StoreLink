@@ -80,6 +80,11 @@ const S3Viewer = (props: S3ViwerProps) => {
   const handleToggleCollected = async () => {
     await events.updateConnectionCollected({ id: connectionId, isCollected: !isCollected });
     await initializeData();
+    await events.logAction({
+      action: 'toggle_favorite',
+      message: isCollected ? 'unfavorite' : 'favorite',
+      meta: { connectionId },
+    });
   };
 
   const handleDownload = async (record: any) => {

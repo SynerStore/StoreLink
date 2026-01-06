@@ -75,6 +75,11 @@ const OssViewer = (props: OssViewerProps) => {
   const handleToggleCollected = async () => {
     await events.updateConnectionCollected({ id: connectionId, isCollected: !isCollected });
     await initializeData();
+    await events.logAction({
+      action: 'toggle_favorite',
+      message: isCollected ? 'unfavorite' : 'favorite',
+      meta: { connectionId },
+    });
   };
 
   const handleDownload = async (record: any) => {

@@ -164,6 +164,11 @@ const WebDevViewer = (props: WebDevViewerProps) => {
               <span
                 onClick={async () => {
                   await events.updateConnectionCollected({ id: connectionId, isCollected: !connection?.isCollected });
+                  await events.logAction({
+                    action: 'toggle_favorite',
+                    message: connection?.isCollected ? 'unfavorite' : 'favorite',
+                    meta: { connectionId },
+                  });
                 }}
               >
                 {connection?.isCollected ? (
