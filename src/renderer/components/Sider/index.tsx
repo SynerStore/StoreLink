@@ -11,6 +11,7 @@ import {
 
 import SettingPanel from '../SettingPanel';
 import TaskPanel from '../TaskPanel';
+import { useTabsStore } from '@/renderer/store';
 import './index.css';
 
 export type SiderProps = {
@@ -19,13 +20,14 @@ export type SiderProps = {
 };
 const Sider = (props: SiderProps) => {
   const { onFold, fold } = props;
+  const { selectTab } = useTabsStore();
 
   return (
     <aside className="sider">
       <div className="sider-top">
         {fold ? <MenuUnfoldOutlined onClick={onFold} /> : <MenuFoldOutlined onClick={onFold} />}
         <Divider style={{ margin: '8px 0px' }} />
-        <HomeOutlined style={{ color: 'var(--primary-color)' }} />
+        <HomeOutlined style={{ color: 'var(--primary-color)' }} onClick={() => selectTab('home')} />
       </div>
       <div className="sider-bottom">
         <Divider style={{ margin: '8px 0px' }} />
