@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Space, Card, Statistic, List, Tag, DatePicker, Select } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import { StoreConnectModal, StoreIcon } from '@/renderer/components';
-import { useConfigStore } from '@/renderer/store';
+import { useConfigStore, useTabsStore } from '@/renderer/store';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus } from '@/types';
 import dayjs from 'dayjs';
@@ -12,6 +12,8 @@ import './index.css';
 const HomeTab = () => {
   const { connections, initializeData } = useConfigStore();
   const { tasks, refresh } = useTasks();
+  const [activeStoreCount, setActiveStoreCount] = useState<number>(0);
+  const { activeTab } = useTabsStore();
 
   const totalConnections = connections.length;
   const runningCount = useMemo(() => {
@@ -37,6 +39,19 @@ const HomeTab = () => {
   useEffect(() => {
     refresh();
   }, []);
+  useEffect(() => {
+    if (activeTab === 'home') {
+      events.getActiveStoreCount().then((n: number) => setActiveStoreCount(n || 0));
+    }
+  }, [tasks, activeTab]);
+  useEffect(() => {
+    if (activeTab !== 'home') return;
+    events.getActiveStoreCount().then((n: number) => setActiveStoreCount(n || 0));
+    const timer = setInterval(() => {
+      events.getActiveStoreCount().then((n: number) => setActiveStoreCount(n || 0));
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [activeTab]);
 
   const favoriteConnections = useMemo(() => {
     return connections.filter((c: any) => c?.isCollected);
@@ -81,6 +96,9 @@ const HomeTab = () => {
         </Card>
         <Card hoverable className="home-tab-dashbord-card">
           <Statistic title="正在进行的任务" value={runningCount} />
+        </Card>
+        <Card hoverable className="home-tab-dashbord-card">
+          <Statistic title="激活的存储实例" value={activeStoreCount} />
         </Card>
         <Card hoverable className="home-tab-dashbord-card">
           <Statistic title="今日完成任务" value={todayCompleted} />

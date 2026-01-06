@@ -18,7 +18,8 @@
     padding: 12px 24px;
 
     .home-tab-dashbord-card {
-      width: calc(33% - 12px);
+      width: calc(25% - 12px);
+      min-width: 200px;
     }
   }
 
