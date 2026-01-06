@@ -1,16 +1,17 @@
 import { Fragment, useRef } from 'react';
 import { Input } from '@arco-design/web-react';
-import { IconStar } from '@arco-design/web-react/icon';
 
 import { useEffect, useState } from 'react';
 
 export type ViewInputProps = {
   value: string;
   prefix: string;
+  addAfter?: React.ReactNode;
   onChange: (value: string) => void;
+  style?: React.CSSProperties;
 };
-const ViewInput = (props: any) => {
-  const { value, onChange, prefix } = props;
+const ViewInput = (props: ViewInputProps) => {
+  const { value, onChange, prefix, addAfter, style = {} } = props;
   const inputRef = useRef<any>(null);
   const [inputValue, setInputValue] = useState(value);
 
@@ -33,7 +34,7 @@ const ViewInput = (props: any) => {
       <Input
         ref={inputRef}
         addBefore={prefix}
-        addAfter={<IconStar style={{ fontSize: 'large' }} />}
+        addAfter={addAfter}
         value={inputValue}
         onChange={handleChange}
         onPressEnter={handlePressEnter}

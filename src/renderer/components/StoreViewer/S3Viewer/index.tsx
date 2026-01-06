@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Menu, Radio } from '@arco-design/web-react';
-import { IconLeft, IconRight, IconDown, IconList, IconApps } from '@arco-design/web-react/icon';
+import { IconLeft, IconRight, IconDown, IconList, IconApps, IconStar, IconStarFill } from '@arco-design/web-react/icon';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
@@ -9,7 +9,7 @@ import { PathHistory, events, storeRequest, openViewer } from '@/renderer/utils'
 import { createTask } from '@/renderer/utils/task';
 import { ETaskType } from '@/types';
 import { useLoading } from '@/renderer/hooks';
-import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
+import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 import './index.css';
 
 const RadioGroup = Radio.Group;
@@ -22,6 +22,7 @@ export type S3ViwerProps = {
 const S3Viewer = (props: S3ViwerProps) => {
   const { connectionId, bucketName, data } = props;
   const { updateTab } = useTabsStore();
+  const { connections, initializeData } = useConfigStore();
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
   const [curPrefix, setCurPrefix] = useState<string>('');
@@ -73,6 +74,12 @@ const S3Viewer = (props: S3ViwerProps) => {
       ...data,
       bucketName,
     });
+  };
+  const connection = useMemo(() => connections.find((c: any) => c.id === connectionId), [connections, connectionId]);
+  const isCollected = connection?.isCollected;
+  const handleToggleCollected = async () => {
+    await events.updateConnectionCollected({ id: connectionId, isCollected: !isCollected });
+    await initializeData();
   };
 
   const handleDownload = async (record: any) => {
@@ -162,7 +169,21 @@ const S3Viewer = (props: S3ViwerProps) => {
           />
         </Space>
         <div className="viewer-path-input">
-          <ViewInput prefix={bucketName} value={curPrefix} onChange={handlePrefixChange} style={{ width: '100%' }} />
+          <ViewInput
+            prefix={bucketName}
+            addAfter={
+              <span onClick={handleToggleCollected}>
+                {isCollected ? (
+                  <IconStarFill style={{ fontSize: 'large', color: 'rgb(var(--primary-6))' }} />
+                ) : (
+                  <IconStar style={{ fontSize: 'large' }} />
+                )}
+              </span>
+            }
+            value={curPrefix}
+            onChange={handlePrefixChange}
+            style={{ width: '100%' }}
+          />
         </div>
       </div>
       <div className="viewer-actions">

@@ -68,3 +68,12 @@ export async function importConnections(filePath: string, merge: boolean = false
   await setConnectionsData(next);
   return next;
 }
+
+export async function updateConnectionCollected(params: { id: string; isCollected: boolean }) {
+  const data = getConnectionsData();
+  const next = (data.connections || []).map((c: any) =>
+    c.id === params.id ? { ...c, isCollected: params.isCollected } : c
+  );
+  await setConnectionsData({ connections: next });
+  return params;
+}

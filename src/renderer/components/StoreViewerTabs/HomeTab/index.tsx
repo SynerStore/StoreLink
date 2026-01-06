@@ -1,93 +1,119 @@
-import { Button ,Space} from '@arco-design/web-react';
+import { useEffect, useMemo } from 'react';
+import { Button, Space, Card, Statistic, List, Tag } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
-import { StoreConnectModal } from '@/renderer/components';
-
+import { StoreConnectModal, StoreIcon } from '@/renderer/components';
+import { useConfigStore } from '@/renderer/store';
+import { useTasks } from '@/renderer/hooks';
+import { ETaskStatus } from '@/types';
 import './index.css';
 const HomeTab = () => {
+  const { connections, initializeData } = useConfigStore();
+  const { tasks, refresh } = useTasks();
+
+  const totalConnections = connections.length;
+  const runningCount = useMemo(() => {
+    return tasks.filter((t: any) =>
+      [ETaskStatus.PENDING, ETaskStatus.RUNNING, ETaskStatus.PAUSED].includes(t.status)
+    ).length;
+  }, [tasks]);
+
+  const todayCompleted = useMemo(() => {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = today.getMonth();
+    const d = today.getDate();
+    const start = new Date(y, m, d).getTime();
+    const end = new Date(y, m, d + 1).getTime();
+    return tasks.filter((t: any) => {
+      if (t.status !== ETaskStatus.COMPLETED) return false;
+      if (!t.endTime) return false;
+      const ts = new Date(t.endTime).getTime();
+      return ts >= start && ts < end;
+    }).length;
+  }, [tasks]);
+
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  const favoriteConnections = useMemo(() => {
+    return connections.filter((c: any) => c?.isCollected);
+  }, [connections]);
+
+  const toggleFavorite = (id: string) => {
+    const target = connections.find((c: any) => c.id === id);
+    window.electronBridge?.dispatch('eventsX', {
+      eventName: 'updateConnectionCollected',
+      data: { id, isCollected: !target?.isCollected },
+    }).then(async () => {
+      await initializeData();
+    });
+  };
+
   return (
     <div className="home-tab">
       <div className="home-tab-header">
         <h1>StoreLink</h1>
-        <p> 让你的存储管理更简单</p>
+        <p>让你的存储管理更简单</p>
       </div>
       <div className="home-tab-dashbord">
- {/* <!-- 概览卡片区 (新增存储空间总数、账号数量卡片) --> */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
-            {/* <!-- 总存储链接数 --> */}
-            <div className="bg-white rounded-lg p-5 card-shadow flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <i className="fa-solid fa-link text-primary text-xl"></i>
-                </div>
-                <div>
-                    <p className="text-neutral-400 text-sm">总存储链接数</p>
-                    <h3 className="text-2xl font-bold text-neutral-600">8</h3>
-                </div>
-            </div>
-
-            {/* <!-- 正在进行的任务 --> */}
-            <div className="bg-white rounded-lg p-5 card-shadow flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center">
-                    <i className="fa-solid fa-spinner text-warning text-xl"></i>
-                </div>
-                <div>
-                    <p className="text-neutral-400 text-sm">正在进行的任务</p>
-                    <h3 className="text-2xl font-bold text-neutral-600">3</h3>
-                </div>
-            </div>
-
-            {/* <!-- 已完成任务 --> */}
-            <div className="bg-white rounded-lg p-5 card-shadow flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center">
-                    <i className="fa-solid fa-check-circle text-success text-xl"></i>
-                </div>
-                <div>
-                    <p className="text-neutral-400 text-sm">今日已完成任务</p>
-                    <h3 className="text-2xl font-bold text-neutral-600">24</h3>
-                </div>
-            </div>
-
-            {/* <!-- 已用存储容量 --> */}
-            <div className="bg-white rounded-lg p-5 card-shadow flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <i className="fa-solid fa-database text-primary text-xl"></i>
-                </div>
-                <div>
-                    <p className="text-neutral-400 text-sm">已用存储容量</p>
-                    <h3 className="text-2xl font-bold text-neutral-600">128.5 GB</h3>
-                </div>
-            </div>
-
-            {/* <!-- 新增：总存储空间数量 --> */}
-            <div className="bg-white rounded-lg p-5 card-shadow flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center">
-                    <i className="fa-solid fa-boxes-stacked text-neutral-500 text-xl"></i>
-                </div>
-                <div>
-                    <p className="text-neutral-400 text-sm">总存储空间数</p>
-                    <h3 className="text-2xl font-bold text-neutral-600">15</h3>
-                </div>
-            </div>
-
-            {/* <!-- 新增：账号数量 --> */}
-            <div className="bg-white rounded-lg p-5 card-shadow flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center">
-                    <i className="fa-solid fa-user-circle text-neutral-500 text-xl"></i>
-                </div>
-                <div>
-                    <p className="text-neutral-400 text-sm">管理账号数</p>
-                    <h3 className="text-2xl font-bold text-neutral-600">6</h3>
-                </div>
-            </div>
-        </section>
-
+        <Space size={16} wrap>
+          <Card hoverable style={{ width: 220 }}>
+            <Statistic title="当前链接数" value={totalConnections} />
+          </Card>
+          <Card hoverable style={{ width: 220 }}>
+            <Statistic title="正在进行的任务" value={runningCount} />
+          </Card>
+          <Card hoverable style={{ width: 220 }}>
+            <Statistic title="今日完成任务" value={todayCompleted} />
+          </Card>
+        </Space>
       </div>
-      展示所有的存储空间数量 展示所有的账号数量 展示管理按钮 账号添加按钮 展示常用的品牌添加快捷键 最近查看 我的收藏
-      <div className="home-tab-content">
-        <StoreConnectModal>
-          <Button type="primary" icon={<IconPlus style={{ fontSize: 'medium' }} />}>
-            添加连接
-          </Button>
-        </StoreConnectModal>
+      <div className="home-tab-content" style={{ marginTop: 16 }}>
+        <Space size={12} style={{ width: '100%', justifyContent: 'space-between' }}>
+          <StoreConnectModal>
+            <Button type="primary" icon={<IconPlus style={{ fontSize: 'medium' }} />}>
+              添加连接
+            </Button>
+          </StoreConnectModal>
+        </Space>
+        <div style={{ marginTop: 16 }}>
+          <Card title="我的收藏链接" bordered={false}>
+            {favoriteConnections.length > 0 ? (
+              <List
+                bordered={false}
+                dataSource={favoriteConnections}
+                render={(item: any) => (
+                  <List.Item key={item.id}>
+                    <Space size={8}>
+                      <StoreIcon brand={item.brand} size={24} styles={{}} />
+                      <span style={{ fontWeight: 500 }}>{item.name}</span>
+                      <Tag color="arcoblue">{item.brand}</Tag>
+                    </Space>
+                    <Button type="text" onClick={() => toggleFavorite(item.id)}>★ 取消收藏</Button>
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <Space size={8} direction="vertical">
+                <span>暂无收藏链接</span>
+                <List
+                  bordered
+                  dataSource={connections}
+                  render={(item: any) => (
+                    <List.Item key={item.id}>
+                      <Space size={8}>
+                        <StoreIcon brand={item.brand} size={24} styles={{}} />
+                        <span style={{ fontWeight: 500 }}>{item.name}</span>
+                      </Space>
+                      <Button type="text" onClick={() => toggleFavorite(item.id)}>★ 收藏</Button>
+                    </List.Item>
+                  )}
+                />
+              </Space>
+            )}
+          </Card>
+        </div>
       </div>
     </div>
   );

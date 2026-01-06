@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Menu, Radio } from '@arco-design/web-react';
-import { IconLeft, IconRight, IconDown, IconList, IconApps } from '@arco-design/web-react/icon';
+import { IconLeft, IconRight, IconDown, IconList, IconApps, IconStar, IconStarFill } from '@arco-design/web-react/icon';
 import { debounce } from 'lodash';
 
 import TableContent from './TableContent';
@@ -160,6 +160,19 @@ const WebDevViewer = (props: WebDevViewerProps) => {
         <div className="viewer-path-input">
           <ViewInput
             prefix={connection.config.root}
+            addAfter={
+              <span
+                onClick={async () => {
+                  await events.updateConnectionCollected({ id: connectionId, isCollected: !connection?.isCollected });
+                }}
+              >
+                {connection?.isCollected ? (
+                  <IconStarFill style={{ fontSize: 'large', color: 'rgb(var(--primary-6))' }} />
+                ) : (
+                  <IconStar style={{ fontSize: 'large' }} />
+                )}
+              </span>
+            }
             value={curPrefix}
             onChange={handlePrefixChange}
             style={{ width: '100%' }}

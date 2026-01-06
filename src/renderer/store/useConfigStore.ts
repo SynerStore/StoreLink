@@ -9,6 +9,7 @@ export type Connection = {
   type: string;
   brand: string;
   name: string;
+  isCollected?: boolean;
   config: Record<string, any>;
   createDate?: string;
   updateDate?: string;
