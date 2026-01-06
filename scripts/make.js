@@ -9,7 +9,7 @@ const dist_dir = path.normalize(path.join(__dirname, '..', 'dist'));
 const macIcon = path.normalize(path.join(__dirname, './assets', 'mac.png'));
 const winIcon = path.normalize(path.join(__dirname, './assets', 'win.png'));
 
-const APP_NAME = 'StorLink';
+const APP_NAME = 'StoreLink';
 
 const TARGET_PLATFORMS_configs = {
   mac: {

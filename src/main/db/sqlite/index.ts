@@ -1,7 +1,6 @@
-import Database from 'better-sqlite3';
+import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import fs from 'fs-extra';
-import { app } from 'electron';
 
 import { getUserDataPath } from '@/main/utils';
 
@@ -10,7 +9,7 @@ const dbPath = path.join(getUserDataPath(), 'database.sqlite');
 // Ensure the directory exists
 fs.ensureDirSync(path.dirname(dbPath));
 
-const db = new Database(dbPath);
+const db = new DatabaseSync(dbPath);
 
 // Create tasks table if not exists
 db.exec(`

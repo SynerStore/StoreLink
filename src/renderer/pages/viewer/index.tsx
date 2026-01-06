@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ConfigProvider } from '@arco-design/web-react';
 
-import App from './app';
+// import App from './app';
 import '@arco-design/web-react/dist/css/arco.css';
 import '@arco-themes/react-syner-store/css/arco.css';
 import '@/renderer/styles/index.css';
@@ -17,7 +17,8 @@ if (rootEl) {
   root.render(
     <React.StrictMode>
       <ConfigProvider>
-        <App />
+        {/* <App /> */}
+        sasas
       </ConfigProvider>
     </React.StrictMode>,
   );

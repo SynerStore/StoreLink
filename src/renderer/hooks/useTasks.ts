@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ipcRenderer } from 'electron';
 import { EChannels, ETaskStatus, ETaskType } from '@/types';
 import { taskRequest } from '@/renderer/utils';
 
@@ -29,7 +28,7 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
   useEffect(() => {
     fetchTasks();
 
-    const handler = (_event: any, updatedTask: any) => {
+    const handler = (updatedTask: any) => {
       setTasks((prev) => {
         if (updatedTask._deleted) {
           return prev.filter((t) => t.taskId !== updatedTask.taskId);
@@ -63,10 +62,10 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
       });
     };
 
-    ipcRenderer.on(EChannels.taskUpdate, handler);
+    window.electronBridge?.on(EChannels.taskUpdate, handler);
 
     return () => {
-      ipcRenderer.removeListener(EChannels.taskUpdate, handler);
+      window.electronBridge?.removeListener(EChannels.taskUpdate, handler);
     };
   }, [fetchTasks]);
 

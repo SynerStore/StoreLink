@@ -11,7 +11,7 @@ const ROOT = path.resolve(__dirname, '..');
 const rspackConfig: Configuration = {
   name: 'renderer',
   mode: isDev ? 'development' : 'production',
-  target: 'electron-renderer',
+  target: 'web',
   entry: {
     render_main: path.resolve(ROOT, './src/renderer/pages/main/index.tsx'),
     render_launch: path.resolve(ROOT, './src/renderer/pages/launch/index.tsx'),
@@ -21,6 +21,7 @@ const rspackConfig: Configuration = {
     path: path.resolve(ROOT, 'build'),
     filename: '[name].js',
     publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
+    globalObject: 'globalThis',
   },
   resolve: {
     extensions: ['...', '.ts', '.tsx', '.jsx'],

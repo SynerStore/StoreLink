@@ -1,5 +1,5 @@
 import { EChannels } from '@/types';
-import { ETaskType } from '@/main/tasks/entity';
+// import { ETaskType } from '@/main/tasks/entity';
 
 export const taskRequest = async (action: string, params: any) => {
   if (!window.electronBridge) return;
@@ -7,7 +7,7 @@ export const taskRequest = async (action: string, params: any) => {
 };
 
 export const createTask = async (
-  type: ETaskType,
+  type: any,
   connectionId: string,
   method: string,
   params: any,

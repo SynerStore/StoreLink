@@ -88,7 +88,8 @@ class TaskManager {
   }
 
   private notifyRenderer(task: TaskEntity) {
-    const win = MainWindow.getInstance().window;
+    const mainWin = MainWindow.getInstance();
+    const win = mainWin?.window;
     if (win) {
       win.webContents.send(EChannels.taskUpdate, task.toRow());
     }
@@ -135,7 +136,8 @@ class TaskManager {
     try {
       db.prepare('DELETE FROM tasks WHERE taskId = ?').run(taskId);
       // Notify renderer about deletion
-      const win = MainWindow.getInstance().window;
+      const mainWin = MainWindow.getInstance();
+      const win = mainWin?.window;
       if (win) {
         win.webContents.send(EChannels.taskUpdate, { taskId, _deleted: true });
       }

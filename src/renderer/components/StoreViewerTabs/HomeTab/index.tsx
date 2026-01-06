@@ -7,7 +7,7 @@ const HomeTab = () => {
   return (
     <div className="home-tab">
       <div className="home-tab-header">
-        <h1>StorLink</h1>
+        <h1>StoreLink</h1>
         <p> 让你的存储管理更简单</p>
       </div>
       <div className="home-tab-dashbord">

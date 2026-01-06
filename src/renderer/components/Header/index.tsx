@@ -28,7 +28,7 @@ const Header = (props: HeaderProps) => {
     <header className="header">
       <div className="logo">
         {icon ? icon : <img className="logo-img" src={logo} alt="logo" />}
-        <span className="logo-text">{title ? title : 'StorLink'}</span>
+        <span className="logo-text">{title ? title : 'StoreLink'}</span>
       </div>
       {/* windows \linux 显示信号灯  */}
       {/* {isInMac() ? null : ( */}

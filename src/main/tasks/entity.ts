@@ -113,15 +113,15 @@ export default class TaskEntity {
       type: this.type,
       connectionId: this.connectionId,
       method: this.method,
-      params: JSON.stringify(this.params),
+      params: JSON.stringify(this.params) ?? '{}',
       status: this.status,
       progress: this.progress,
       speed: this.speed,
-      size: this.size,
-      startTime: this.startTime,
-      endTime: this.endTime,
+      size: this.size ?? 0,
+      startTime: this.startTime ?? null,
+      endTime: this.endTime ?? null,
       createTime: this.createTime,
-      errorMessage: this.errorMessage
+      errorMessage: this.errorMessage ?? null
     };
   }
 }
