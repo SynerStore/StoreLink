@@ -30,7 +30,7 @@ const StoreViewerTabs = () => {
     const handler = (updatedTask: any) => {
       if (
         updatedTask?.status === ETaskStatus.COMPLETED &&
-        ['delete', 'rename'].includes(updatedTask?.method) &&
+        ['delete', 'rename', 'create_dir', 'copy'].includes(updatedTask?.method) &&
         updatedTask?.connectionId
       ) {
         updateTab({ id: updatedTask.connectionId, refreshTick: Date.now() });
