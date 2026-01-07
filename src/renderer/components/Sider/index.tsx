@@ -5,7 +5,9 @@ import {
   HomeOutlined,
   SwapOutlined,
   MessageOutlined,
+  CalendarOutlined,
   ToolOutlined,
+  ProfileOutlined,
   MenuUnfoldOutlined,
 } from '@ant-design/icons';
 
@@ -57,8 +59,11 @@ const Sider = (props: SiderProps) => {
           <Tooltip title="任务">
             <SwapOutlined className={isTasks ? 'active' : undefined} onClick={() => navigate('/tasks')} />
           </Tooltip>
+          {/* <Tooltip title="定时任务">
+            <CalendarOutlined className={isSettingPage ? 'active' : undefined} onClick={() => navigate('/setting')} />
+          </Tooltip> */}
           <Tooltip title="日志">
-            <MessageOutlined className={isLogs ? 'active' : undefined} onClick={() => navigate('/logs')} />
+            <ProfileOutlined className={isLogs ? 'active' : undefined} onClick={() => navigate('/logs')} />
           </Tooltip>
           {/* <Tooltip title="工具">
             <ToolOutlined
@@ -66,7 +71,7 @@ const Sider = (props: SiderProps) => {
               onClick={() => navigate('/setting')}
             />
           </Tooltip> */}
-          <Tooltip title="设置弹窗">
+          <Tooltip title="设置">
             <SettingOutlined className={isSettingPage ? 'active' : undefined} onClick={() => navigate('/setting')} />
           </Tooltip>
         </Space>
