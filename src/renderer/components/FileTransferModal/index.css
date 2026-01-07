@@ -1,0 +1,12 @@
+.transfer-modal-tree {
+  height: 300px;
+  overflow: auto;
+  border: 1px solid var(--border-color);
+  margin-top: 10px;
+  padding: 5px;
+}
+
+.transfer-modal-info {
+  margin-bottom: 10px;
+  color: var(--text-color-secondary);
+}

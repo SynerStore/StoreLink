@@ -1,5 +1,5 @@
 import { Fragment, useLayoutEffect, useState } from 'react';
-import { Table } from '@arco-design/web-react';
+import { FileTable } from '@/renderer/components';
 import dayjs from 'dayjs';
 
 import { EWindowSize, EOssStorageClass, TStoreObject } from '@/types';
@@ -107,15 +107,14 @@ const TableContent = (props: TableContentProps) => {
 
   return (
     <div className="table-content">
-      <Table
+      <FileTable
         rowKey={'key'}
         size="small"
-        borderCell={false}
-        border={false}
+        bordered={false}
         loading={loading}
-        rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
+        rowSelection={{ type: 'checkbox', columnWidth: 40 }}
         scroll={{ y: tableScrollHight }}
-        data={data}
+        dataSource={data}
         pagination={false}
         columns={columns}
       />

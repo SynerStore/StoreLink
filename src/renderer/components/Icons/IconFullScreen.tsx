@@ -3,7 +3,7 @@ export const IconFullScreen = (props: IconProps) => {
   const { className = '', style = {}, size = 18, onClick = () => {} } = props;
   return (
     <span
-      className={`arco-icon ${className}`}
+      className={`anticon ${className}`}
       onClick={onClick}
       style={{ display: 'flex', alignItems: 'center', ...style }}
     >

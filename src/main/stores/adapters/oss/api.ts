@@ -202,9 +202,24 @@ export type UploadObjectParams = {
   localPath: string;
 };
 
-export async function uploadObject(client: OSS, params: UploadObjectParams) {
+export async function uploadObject(client: OSS, params: UploadObjectParams, onProgress?: any) {
   const { key, localPath } = params;
-  const result = await client.put(key as string, fs.createReadStream(localPath));
+  const result = await client.put(key as string, localPath, {
+    progress: async (p: number, _checkpoint: any) => {
+      if (onProgress) {
+        onProgress({
+          progress: p * 100,
+          status: 'running',
+        });
+      }
+    },
+  });
+  if (onProgress) {
+    onProgress({
+      progress: 100,
+      status: 'finished',
+    });
+  }
   return result;
 }
 
@@ -213,14 +228,14 @@ export type PutObjectParams = {
   key?: string;
   localPath: string;
 };
-export async function putObject(client: OSS, params: PutObjectParams) {
+export async function putObject(client: OSS, params: PutObjectParams, onProgress?: any) {
   const { prefix, key, localPath } = params;
   const objectKey = key || path.join(prefix as string, path.basename(localPath));
 
   if (await isDirectory(localPath)) {
     return await putFolder(client, { prefix: prefix as string, localPath });
   } else {
-    return await uploadObject(client, { key: objectKey, localPath });
+    return await uploadObject(client, { key: objectKey, localPath }, onProgress);
   }
 }
 
@@ -245,19 +260,54 @@ export type PutMultiObjectsParams = {
   prefix: string;
   localPaths: string[];
 };
-export async function putMultiObjects(client: OSS, params: PutMultiObjectsParams) {
+export async function putMultiObjects(client: OSS, params: PutMultiObjectsParams, onProgress?: any) {
   const { prefix, localPaths } = params;
   const allLocalPaths = await readDirectoryRecursive(localPaths);
 
-  for (const localPath of allLocalPaths) {
-    const filePath = localPath.fullPath;
-    const remotePath = path.join(prefix, localPath.path);
+  // Calculate total size
+  let totalSize = 0;
+  const filesToUpload = [];
 
-    await putObject(client, {
-      key: remotePath,
-      prefix: prefix,
-      localPath: filePath,
-    });
+  for (const item of allLocalPaths) {
+    if (await isDirectory(item.fullPath)) {
+      filesToUpload.push({ ...item, isDir: true, size: 0 });
+    } else {
+      const stat = await fs.stat(item.fullPath);
+      totalSize += stat.size;
+      filesToUpload.push({ ...item, isDir: false, size: stat.size });
+    }
+  }
+
+  let uploadedBytes = 0;
+
+  for (const item of filesToUpload) {
+    const filePath = item.fullPath;
+    const remotePath = path.join(prefix, item.path);
+
+    await putObject(
+      client,
+      {
+        key: remotePath,
+        prefix: prefix,
+        localPath: filePath,
+      },
+      (progressData: any) => {
+        if (onProgress && totalSize > 0 && !item.isDir) {
+          const filePercent = progressData.progress || 0;
+          const currentFileLoaded = (filePercent / 100) * item.size;
+          const totalLoaded = uploadedBytes + currentFileLoaded;
+          const totalPercent = (totalLoaded / totalSize) * 100;
+          onProgress({
+            progress: totalPercent,
+            status: 'running',
+          });
+        }
+      },
+    );
+
+    if (!item.isDir) {
+      uploadedBytes += item.size;
+    }
   }
 }
 
@@ -297,6 +347,17 @@ export async function deleteMultiObjects(client: OSS, params: DeleteMultiObjects
       await deleteObject(client, { key });
     }
   }
+}
+
+// 复制对象
+export type CopyObjectParams = {
+  sourceKey: string;
+  targetKey: string;
+};
+export async function copyObject(client: OSS, params: CopyObjectParams) {
+  const { sourceKey, targetKey } = params;
+  const result = await client.copy(targetKey, sourceKey);
+  return result;
 }
 
 async function isExistObject(client: OSS, key: string, options = {}) {

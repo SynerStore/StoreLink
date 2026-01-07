@@ -1,7 +1,16 @@
 import React, { useMemo } from 'react';
-import { Space } from '@arco-design/web-react';
+import { Space } from 'antd';
 
-import { IconDownload, IconInfoCircle, IconEdit, IconEye, IconDelete, IconCopy } from '@arco-design/web-react/icon';
+import {
+  DownloadOutlined,
+  InfoCircleOutlined,
+  EditOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  CopyOutlined,
+  ScissorOutlined,
+  ExportOutlined,
+} from '@ant-design/icons';
 import { FileRenameWrap, FileDeteleWrap, ContextMenu, MenuItem } from '@/renderer/components';
 
 export type FileContextMenuProps = {
@@ -12,18 +21,20 @@ export type FileContextMenuProps = {
   onRename?: (data: any, newName: string) => Promise<void>;
   onOpen?: (data: any) => Promise<void>;
   onCopy?: (data: any) => Promise<void>;
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
   children?: React.ReactNode;
 };
 
 const FileContextMenu = (props: any) => {
-  const { data, onDetail, onDownload, onDelete, onRename, onOpen, onCopy, children } = props;
+  const { data, onDetail, onDownload, onDelete, onRename, onOpen, onCopy, onMoveTo, onCopyTo, children } = props;
 
   const menus = useMemo<MenuItem[]>(() => {
     const baseMenus: MenuItem[] = [];
 
     if (onDetail) {
       baseMenus.push({
-        icon: <IconInfoCircle />,
+        icon: <InfoCircleOutlined />,
         text: '详情',
         onClick: () => onDetail(data),
       });
@@ -31,7 +42,7 @@ const FileContextMenu = (props: any) => {
 
     if (onOpen && !data.isDirectory) {
       baseMenus.push({
-        icon: <IconEye />,
+        icon: <EyeOutlined />,
         text: '查看',
         onClick: () => onOpen(data),
       });
@@ -39,7 +50,7 @@ const FileContextMenu = (props: any) => {
 
     if (onDownload) {
       baseMenus.push({
-        icon: <IconDownload />,
+        icon: <DownloadOutlined />,
         text: '下载',
         onClick: () => onDownload(data),
       });
@@ -47,9 +58,25 @@ const FileContextMenu = (props: any) => {
 
     if (onCopy) {
       baseMenus.push({
-        icon: <IconCopy />,
+        icon: <CopyOutlined />,
         text: '复制',
         onClick: () => onCopy(data),
+      });
+    }
+
+    if (onCopyTo) {
+      baseMenus.push({
+        icon: <ExportOutlined />,
+        text: '复制到...',
+        onClick: () => onCopyTo(data),
+      });
+    }
+
+    if (onMoveTo) {
+      baseMenus.push({
+        icon: <ScissorOutlined />,
+        text: '移动到...',
+        onClick: () => onMoveTo(data),
       });
     }
 
@@ -57,8 +84,8 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         render: () => (
           <FileRenameWrap name={data.name as string} onRename={(newName: string) => onRename(data, newName)}>
-            <Space size={1}>
-              <IconEdit /> 重命名
+            <Space size={8}>
+              <EditOutlined /> 重命名
             </Space>
           </FileRenameWrap>
         ),
@@ -69,8 +96,8 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         render: () => (
           <FileDeteleWrap fileInfo={data} onDelete={onDelete}>
-            <Space size={1}>
-              <IconDelete /> 删除
+            <Space size={8}>
+              <DeleteOutlined /> 删除
             </Space>
           </FileDeteleWrap>
         ),

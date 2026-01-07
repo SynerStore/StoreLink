@@ -1,0 +1,10 @@
+.log-list {
+  background-color: rgba(60, 98, 205, 0.06); /* #3c62cd opacity 0.06 */
+  border-radius: 8px;
+}
+[data-theme='dark'] .log-list {
+  background-color: rgba(60, 98, 205, 0.12); /* #3c62cd opacity 0.12 */
+}
+.log-list .list-item {
+  background: transparent;
+}

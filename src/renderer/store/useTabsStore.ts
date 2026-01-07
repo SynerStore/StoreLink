@@ -12,6 +12,7 @@ export type Tab = {
   id: string;
   name: string;
   display: ETabDisplay;
+  refreshTick?: number;
 };
 
 type DataType = {

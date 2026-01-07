@@ -4,6 +4,7 @@ import { sucessResponse, errorResponse } from '@/main/utils';
 import { IStorageHandler } from '../store';
 import {
   list,
+  listDir,
   ListParams,
   deleteFile,
   deleteMultiFiles,
@@ -17,6 +18,8 @@ import {
   getSourceUrl,
   PutMultiObjectsParams,
   putMultiObjects,
+  CopyFileParams,
+  copyFile,
 } from './api';
 
 class LocalStore implements IStorageHandler {
@@ -41,6 +44,19 @@ class LocalStore implements IStorageHandler {
   async list(params: ListParams) {
     try {
       let result = await list(this.root, params);
+      // 隐藏文件
+      if (this.config?.isShowHiddenFiles === false) {
+        result = result.filter((item: any) => !item.isHiddenFile);
+      }
+      return sucessResponse(result);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
+
+  async listDir(params: ListParams) {
+    try {
+      let result = await listDir(this.root, params);
       // 隐藏文件
       if (this.config?.isShowHiddenFiles === false) {
         result = result.filter((item: any) => !item.isHiddenFile);
@@ -76,6 +92,17 @@ class LocalStore implements IStorageHandler {
   async rename(params: RenameParams) {
     try {
       const result = await rename(params);
+      return sucessResponse(result);
+    } catch (err: any) {
+      console.error(err);
+      return errorResponse(err.message);
+    }
+  }
+
+  // 复制
+  async copy(params: CopyFileParams) {
+    try {
+      const result = await copyFile(params);
       return sucessResponse(result);
     } catch (err: any) {
       console.error(err);

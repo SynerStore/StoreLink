@@ -1,15 +1,15 @@
-import { useMemo } from 'react';
-import { Menu, Input, Space } from '@arco-design/web-react';
+import { useMemo, useState, useEffect, useRef } from 'react';
+import { Menu, Input, Space, Tooltip } from 'antd';
 import { groupBy } from 'lodash';
-import { IconEdit, IconDelete, IconPlus } from '@arco-design/web-react/icon';
+import { EditOutlined, DeleteOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 
-import { StoreConnectModal, ConnectionDeleteWrap, ContextMenu } from '@/renderer/components';
+import { StoreConnectModal, ConnectionDeleteWrap, ContextMenu, ConnectionEditWrap } from '@/renderer/components';
 import MenuTitle from './MenuTitle';
 import { useConfigStore, useTabsStore, ETabDisplay } from '@/renderer/store';
+import { StoreTypes } from '@/types';
+import { storeRequest, storeRemove } from '@/renderer/utils';
 import './index.css';
 
-const MenuItem = Menu.Item;
-const SubMenu = Menu.SubMenu;
 const Search = Input.Search;
 
 export type StoreSiderProps = {
@@ -19,22 +19,117 @@ const StoreSider = (props: StoreSiderProps) => {
   const { fold } = props;
   const { connections, removeConnection } = useConfigStore();
   const { activeTab, addTab, removeTab } = useTabsStore();
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    const connection: any = connections.find((item: any) => item.id === activeTab);
+    if (connection) {
+      const key = connection.brand;
+      setOpenKeys((prev) => {
+        if (prev.includes(key)) return prev;
+        return [...prev, key];
+      });
+    }
+  }, [activeTab, connections]);
+
+  const [statuses, setStatuses] = useState<Record<string, 'idle' | 'connecting' | 'success' | 'failed'>>({});
+  const retryTimers = useRef<Record<string, any>>({});
+  useEffect(() => {
+    return () => {
+      Object.values(retryTimers.current).forEach((t) => {
+        try {
+          clearTimeout(t);
+        } catch {}
+      });
+      retryTimers.current = {};
+    };
+  }, []);
 
   const items = useMemo(() => {
     const groups = groupBy(connections, 'brand');
     return Reflect.ownKeys(groups).map((groupKey: any) => {
       return {
-        key: groupKey,
+        key: String(groupKey),
         label: <MenuTitle brand={groupKey}>{groupKey}</MenuTitle>,
         children: groups[groupKey].map((connection: any) => {
+          const id = String(connection.id);
+          const isConnecting = statuses[id] === 'connecting';
           return {
-            key: `${connection.id}`,
-            label: connection.name,
+            key: id,
+            label: (
+              <ContextMenu
+                menu={[
+                  {
+                    render: () => (
+                      <ConnectionEditWrap connection={connection}>
+                        <Space size={2}>
+                          <EditOutlined /> 编辑
+                        </Space>
+                      </ConnectionEditWrap>
+                    ),
+                  },
+                  ...(connection.type === StoreTypes.LOCAL
+                    ? []
+                    : [
+                        {
+                          render: () => (
+                            <Tooltip title="重新连接">
+                              <span
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  reconnect({ key: id, ...connection });
+                                }}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                              >
+                                <ReloadOutlined
+                                  style={{
+                                    fontSize: 14,
+                                    color: statuses[id] === 'failed' ? 'var(--danger-color)' : 'var(--text-color)',
+                                    transition: 'transform 0.3s ease',
+                                    transform: isConnecting ? 'rotate(180deg)' : 'none',
+                                  }}
+                                />
+                                重新连接
+                              </span>
+                            </Tooltip>
+                          ),
+                        },
+                      ]),
+                  {
+                    render: () => (
+                      <ConnectionDeleteWrap onDelete={handleDelete} connection={{ key: id, ...connection }}>
+                        <Space size={2}>
+                          <DeleteOutlined /> 删除
+                        </Space>
+                      </ConnectionDeleteWrap>
+                    ),
+                  },
+                ]}
+              >
+                <span style={{ width: '100%', display: 'inline-flex', alignItems: 'center' }}>
+                  {isConnecting ? (
+                    <Tooltip title="连接中">
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: 'clamp(4px, 0.4vw, 6px)',
+                          height: 'clamp(4px, 0.4vw, 6px)',
+                          borderRadius: '50%',
+                          backgroundColor: '#faad14',
+                          transition: 'background-color 0.2s ease',
+                        }}
+                      />
+                    </Tooltip>
+                  ) : null}
+                  <span style={{ marginLeft: isConnecting ? 'clamp(4px, 0.6vw, 8px)' : 0 }}>{connection.name}</span>
+                </span>
+              </ContextMenu>
+            ),
           };
         }),
       };
     });
-  }, [connections]);
+  }, [connections, statuses]);
 
   const handleClick = (key: string) => {
     const connection: any = connections.find((item: any) => item.id === key);
@@ -55,8 +150,28 @@ const StoreSider = (props: StoreSiderProps) => {
     removeTab(data.key);
   };
 
-  //编辑
-  const handleEdit = () => {};
+  const reconnect = async (child: any, attempt: number = 0) => {
+    const id = child.key;
+    setStatuses((s) => ({ ...s, [id]: 'connecting' }));
+    try {
+      await storeRemove(id);
+      const result = await storeRequest({ id, method: 'test', params: {} });
+      if (result?.success) {
+        setStatuses((s) => ({ ...s, [id]: 'success' }));
+      } else {
+        throw new Error(result?.message || 'reconnect_failed');
+      }
+    } catch (_e) {
+      if (attempt < 2) {
+        const t = setTimeout(() => {
+          reconnect(child, attempt + 1);
+        }, 800 * (attempt + 1));
+        retryTimers.current[id] = t;
+      } else {
+        setStatuses((s) => ({ ...s, [id]: 'failed' }));
+      }
+    }
+  };
 
   return (
     <div className="store-sider" style={{ visibility: fold ? 'hidden' : 'visible' }}>
@@ -64,7 +179,7 @@ const StoreSider = (props: StoreSiderProps) => {
         <span>存储库</span>
         <StoreConnectModal>
           <div className="store-sider-tip-add">
-            <IconPlus style={{ fontSize: 'medium' }} />
+            <PlusOutlined style={{ fontSize: 'medium' }} />
           </div>
         </StoreConnectModal>
       </div>
@@ -74,45 +189,14 @@ const StoreSider = (props: StoreSiderProps) => {
 
       <div className="store-sider-content">
         <Menu
-          autoOpen
-          autoScrollIntoView
-          selectable
-          onClickMenuItem={handleClick}
+          mode="inline"
+          openKeys={openKeys}
+          onOpenChange={(keys) => setOpenKeys(keys as string[])}
           style={{ width: '100%' }}
           selectedKeys={[activeTab]}
-        >
-          {items.map((item: any) => {
-            return (
-              <SubMenu key={item.key} title={item.label}>
-                {item.children.map((child: any) => {
-                  return (
-                    <ContextMenu
-                      key={child.key}
-                      menu={[
-                        {
-                          icon: <IconEdit />,
-                          text: '编辑',
-                          onClick: () => {},
-                        },
-                        {
-                          render: () => (
-                            <ConnectionDeleteWrap onDelete={handleDelete} connection={child}>
-                              <Space size={2}>
-                                <IconDelete /> 删除
-                              </Space>
-                            </ConnectionDeleteWrap>
-                          ),
-                        },
-                      ]}
-                    >
-                      <MenuItem key={child.key}>{child.label}</MenuItem>
-                    </ContextMenu>
-                  );
-                })}
-              </SubMenu>
-            );
-          })}
-        </Menu>
+          items={items as any}
+          onClick={({ key }) => handleClick(String(key))}
+        />
       </div>
     </div>
   );

@@ -1,22 +1,180 @@
-import { Button } from '@arco-design/web-react';
-import { IconPlus } from '@arco-design/web-react/icon';
-import { StoreConnectModal } from '@/renderer/components';
-
+import { useEffect, useMemo, useState } from 'react';
+import { Button, Space, Card, Statistic, Tag, DatePicker, Select } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { StoreConnectModal, StoreIcon, List } from '@/renderer/components';
+import { useConfigStore, useTabsStore } from '@/renderer/store';
+import { useTasks } from '@/renderer/hooks';
+import { ETaskStatus } from '@/types';
+import dayjs from 'dayjs';
+import { events } from '@/renderer/utils';
 import './index.css';
+
 const HomeTab = () => {
+  const { connections, initializeData } = useConfigStore();
+  const { tasks, refresh } = useTasks();
+  const [activeStoreCount, setActiveStoreCount] = useState<number>(0);
+  const { activeTab } = useTabsStore();
+
+  const totalConnections = connections.length;
+  const runningCount = useMemo(() => {
+    return tasks.filter((t: any) => [ETaskStatus.PENDING, ETaskStatus.RUNNING, ETaskStatus.PAUSED].includes(t.status))
+      .length;
+  }, [tasks]);
+
+  const todayCompleted = useMemo(() => {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = today.getMonth();
+    const d = today.getDate();
+    const start = new Date(y, m, d).getTime();
+    const end = new Date(y, m, d + 1).getTime();
+    return tasks.filter((t: any) => {
+      if (t.status !== ETaskStatus.COMPLETED) return false;
+      if (!t.endTime) return false;
+      const ts = new Date(t.endTime).getTime();
+      return ts >= start && ts < end;
+    }).length;
+  }, [tasks]);
+
+  useEffect(() => {
+    refresh();
+  }, []);
+  useEffect(() => {
+    if (activeTab === 'home') {
+      events.getActiveStoreCount().then((n: number) => setActiveStoreCount(n || 0));
+    }
+  }, [tasks, activeTab]);
+  useEffect(() => {
+    if (activeTab !== 'home') return;
+    events.getActiveStoreCount().then((n: number) => setActiveStoreCount(n || 0));
+    const timer = setInterval(() => {
+      events.getActiveStoreCount().then((n: number) => setActiveStoreCount(n || 0));
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [activeTab]);
+
+  const favoriteConnections = useMemo(() => {
+    return connections.filter((c: any) => c?.isCollected);
+  }, [connections]);
+
+  const toggleFavorite = (id: string) => {
+    const target = connections.find((c: any) => c.id === id);
+    window.electronBridge
+      ?.dispatch('eventsX', {
+        eventName: 'updateConnectionCollected',
+        data: { id, isCollected: !target?.isCollected },
+      })
+      .then(async () => {
+        await initializeData();
+      });
+  };
+
+  const [logs, setLogs] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [logsLimit, setLogsLimit] = useState<number>(10);
+  const fetchLogs = async (date?: string, limit?: number) => {
+    const payload: any = { date, limit: limit ?? logsLimit };
+    const res: any = await events.getLogs(payload);
+    const lines = Array.isArray(res) ? res : res?.lines || [];
+    setLogs(lines);
+  };
+  useEffect(() => {
+    fetchLogs();
+  }, [logsLimit]);
+
   return (
     <div className="home-tab">
       <div className="home-tab-header">
-        <h1>SynerStore</h1>
-        <p> 让你的存储管理更简单</p>
-      </div>
-      展示所有的存储空间数量 展示所有的账号数量 展示管理按钮 账号添加按钮 展示常用的品牌添加快捷键 最近查看 我的收藏
-      <div className="home-tab-content">
+        <h2>StoreLink</h2>
         <StoreConnectModal>
-          <Button type="primary" icon={<IconPlus style={{ fontSize: 'medium' }} />}>
+          <Button type="primary" icon={<PlusOutlined style={{ fontSize: 'medium' }} />}>
             添加连接
           </Button>
         </StoreConnectModal>
+      </div>
+      <div className="home-tab-dashbord">
+        <Card hoverable className="home-tab-dashbord-card">
+          <Statistic title="当前链接数" value={totalConnections} />
+        </Card>
+        <Card hoverable className="home-tab-dashbord-card">
+          <Statistic title="正在进行的任务" value={runningCount} />
+        </Card>
+        <Card hoverable className="home-tab-dashbord-card">
+          <Statistic title="激活的存储实例" value={activeStoreCount} />
+        </Card>
+        <Card hoverable className="home-tab-dashbord-card">
+          <Statistic title="今日完成任务" value={todayCompleted} />
+        </Card>
+      </div>
+      <div className="home-tab-content" style={{ marginTop: 16 }}>
+        <div style={{ marginTop: 16 }}>
+          <Card title="我的收藏链接">
+            {favoriteConnections.length > 0 ? (
+              <List
+                bordered={false}
+                dataSource={favoriteConnections}
+                renderItem={(item: any) => (
+                  <List.Item key={item.id} className="home-tab-content-list-item">
+                    <Space size={8}>
+                      <StoreIcon brand={item.brand} size={24} styles={{}} />
+                      <span className="home-tab-content-list-item-name" style={{ fontWeight: 500 }}>
+                        {item.name}
+                      </span>
+                      <Tag color="blue">{item.brand}</Tag>
+                      <Button type="text" onClick={() => toggleFavorite(item.id)}>
+                        ★ 取消收藏
+                      </Button>
+                    </Space>
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <Space size={8} vertical>
+                <span>暂无收藏链接</span>
+              </Space>
+            )}
+          </Card>
+        </div>
+        <div style={{ marginTop: 16 }}>
+          <Card
+            title="操作日志"
+            extra={
+              <Space size={8}>
+                <DatePicker
+                  value={selectedDate ? dayjs(selectedDate) : undefined}
+                  onChange={(_v: any, dateString: any) => {
+                    const d = typeof dateString === 'string' ? dateString : null;
+                    setSelectedDate(d);
+                    fetchLogs(d || undefined);
+                  }}
+                />
+                <Select
+                  style={{ width: 100 }}
+                  value={String(logsLimit)}
+                  onChange={(val) => {
+                    const n = Number(val);
+                    setLogsLimit(n);
+                  }}
+                  options={[
+                    { label: '10条', value: '10' },
+                    { label: '50条', value: '50' },
+                    { label: '100条', value: '100' },
+                  ]}
+                />
+                <Button onClick={() => fetchLogs(selectedDate || undefined)}>刷新</Button>
+              </Space>
+            }
+          >
+            <List
+              size="small"
+              bordered
+              height={240}
+              itemHeight={32}
+              dataSource={logs}
+              renderItem={(line: string, index: number) => <List.Item key={index}>{line}</List.Item>}
+            />
+          </Card>
+        </div>
       </div>
     </div>
   );

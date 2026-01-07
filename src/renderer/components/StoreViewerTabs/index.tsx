@@ -1,19 +1,30 @@
-import { useMemo } from 'react';
-import { Tabs } from '@arco-design/web-react';
-import { IconHome } from '@arco-design/web-react/icon';
+import { useMemo, useEffect } from 'react';
+import { Tabs } from 'antd';
+import { HomeOutlined } from '@ant-design/icons';
 
 // import { IconSplitColumn } from '@/renderer/components/Icons';
 import { useTabsStore } from '@/renderer/store';
+import { EChannels, ETaskStatus } from '@/types';
 import StoreViewer from '../StoreViewer';
 import HomeTab from './HomeTab';
 import './index.css';
 
-const TabPane = Tabs.TabPane;
-
 const StoreViewerTabs = () => {
-  const { tabs, activeTab, removeTab, selectTab }: any = useTabsStore();
+  const { tabs, activeTab, removeTab, selectTab, updateTab }: any = useTabsStore();
 
   const items = useMemo(() => {
+    const homeTab = {
+      label: (
+        <span>
+          <HomeOutlined style={{ marginRight: 4 }} />
+          Home
+        </span>
+      ),
+      key: 'home',
+      children: <HomeTab />,
+      closable: false,
+    };
+
     const allTabs = tabs.map((tab: any) => {
       return {
         label: tab.name,
@@ -22,69 +33,47 @@ const StoreViewerTabs = () => {
       };
     });
 
-    return allTabs;
+    return [homeTab, ...allTabs];
   }, [tabs]);
+
+  useEffect(() => {
+    const handler = (updatedTask: any) => {
+      if (
+        updatedTask?.status === ETaskStatus.COMPLETED &&
+        ['delete', 'rename', 'create_dir', 'copy'].includes(updatedTask?.method) &&
+        updatedTask?.connectionId
+      ) {
+        updateTab({ id: updatedTask.connectionId, refreshTick: Date.now() });
+      }
+    };
+    window.electronBridge?.on(EChannels.taskUpdate, handler);
+    return () => {
+      window.electronBridge?.removeListener(EChannels.taskUpdate, handler);
+    };
+  }, []);
 
   const handleClick = (key: string) => {
     selectTab(key);
   };
 
-  const handleClose = (key: any) => {
-    removeTab(key);
+  const handleEdit = (targetKey: any, action: 'add' | 'remove') => {
+    if (action === 'remove') {
+      removeTab(targetKey);
+    }
   };
 
   return (
     <div className="store-viewer-tabs">
       <Tabs
         size="small"
-        type="card-gutter"
+        type="editable-card"
         className="store-viewer-tab store-viewer-tab-left "
-        editable
-        justify
-        showAddButton={false}
-        // extra={<IconSplitColumn className="store-viewer-split-icon" size={20} />}
-        activeTab={activeTab}
-        onDeleteTab={handleClose}
+        hideAdd
+        activeKey={activeTab}
+        onEdit={handleEdit}
         onChange={handleClick}
-        // style={{ width: '50%' }}
-      >
-        <TabPane
-          key={'home'}
-          title={
-            <span>
-              <IconHome style={{ marginRight: 4 }} />
-              Home
-            </span>
-          }
-          closable={false}
-        >
-          <HomeTab />
-        </TabPane>
-        {items.map((tab: any) => (
-          <TabPane key={tab.key} title={tab.label}>
-            {tab.children}
-          </TabPane>
-        ))}
-      </Tabs>
-      {/* <Tabs
-        size="small"
-        type="card-gutter"
-        editable
-        justify
-        className="store-viewer-tab store-viewer-tab-right "
-        showAddButton={false}
-        extra={<IconSplitColumn className="store-viewer-split-icon" />}
-        activeTab={activeTab}
-        onDeleteTab={handleClose}
-        onChange={handleClick}
-        style={{ width: '50%' }}
-      >
-        {items.map((tab: any) => (
-          <TabPane key={tab.key} title={tab.label}>
-            {tab.children}
-          </TabPane>
-        ))}
-      </Tabs> */}
+        items={items}
+      />
     </div>
   );
 };

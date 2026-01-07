@@ -15,8 +15,8 @@ import {
   PutMultiObjectsParams,
   putFolder,
   PutFolderParams,
-  // GetSourceUrlParams,
-  // getSourceUrl,
+  GetSourceUrlParams,
+  getSourceUrl,
   getFolder,
   GetFileParams,
   getFile,
@@ -38,6 +38,10 @@ class WebDAVStore implements IStorageHandler {
   async init(config: any) {
     const { address, username, password } = config;
     this.client = createClient(address, { username, password });
+    // 清除内存中的明文密码
+    try {
+      this.config.password = undefined;
+    } catch (_e) {}
   }
 
   //   需要获取权限 如何通过系统询问访问
@@ -54,6 +58,17 @@ class WebDAVStore implements IStorageHandler {
     try {
       const result = await list(this.client, params);
       return sucessResponse(result);
+    } catch (err: any) {
+      console.log(err);
+      return errorResponse(err.message);
+    }
+  }
+
+  async listDir(params: ListParams) {
+    try {
+      const result = await list(this.client, params);
+      const folders = result.filter((item: any) => item.isDirectory);
+      return sucessResponse(folders);
     } catch (err: any) {
       console.log(err);
       return errorResponse(err.message);
@@ -77,11 +92,9 @@ class WebDAVStore implements IStorageHandler {
 
   async put(params: PutMultiObjectsParams) {
     try {
-      debugger
       const result = await putMultiObjects(this.client, params);
       return sucessResponse(result);
     } catch (err: any) {
-      debugger
       return errorResponse(err.message);
     }
   }
@@ -95,7 +108,7 @@ class WebDAVStore implements IStorageHandler {
     }
   }
 
-  // // 删除
+  // 删除
   async delete(params: DeleteFileParams) {
     try {
       let result = await deleteFile(this.client, params);
@@ -128,14 +141,14 @@ class WebDAVStore implements IStorageHandler {
   }
 
   // // 获取资源地址
-  // async getSourceUrl(params: GetSourceUrlParams) {
-  //   try {
-  //     const result = await getSourceUrl(this.client, params);
-  //     return sucessResponse(result);
-  //   } catch (err: any) {
-  //     return errorResponse(err.message);
-  //   }
-  // }
+  async getSourceUrl(params: GetSourceUrlParams) {
+    try {
+      const result = await getSourceUrl(this.client,this.config, params);
+      return sucessResponse(result);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
 }
 
 export default WebDAVStore;

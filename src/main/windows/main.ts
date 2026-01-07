@@ -26,8 +26,19 @@ export function getMainWindowOptions(): BrowserWindowConstructorOptions {
 
 export class MainWindow extends BaseWindow {
   page: EPages = EPages.Main;
+  private static instance: MainWindow | null = null;
+
   constructor() {
     super();
+    MainWindow.instance = this;
     this.create(getMainWindowOptions());
+  }
+
+  public static getInstance(): MainWindow | null {
+    return MainWindow.instance;
+  }
+
+  public get window() {
+    return this.browserWindow;
   }
 }

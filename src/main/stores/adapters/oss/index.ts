@@ -23,6 +23,8 @@ import {
   renameFolder,
   RenameFolderParams,
   renameObject,
+  CopyObjectParams,
+  copyObject,
   ListAllObjectsParams,
   listAllObjects,
   PutFolderParams,
@@ -50,6 +52,10 @@ class OssStore implements IStorageHandler {
       bucket: bucketName,
       secure: true,
     });
+    try {
+      this.config.secretAccessKey = undefined;
+      this.config.accessKeySecret = undefined;
+    } catch (_e) {}
   }
 
   // 销毁
@@ -82,14 +88,24 @@ class OssStore implements IStorageHandler {
     }
   }
 
+  async listDir(params: ListParams) {
+    try {
+      const result = await list(this.client, params);
+      const folders = result.objects.filter((item: any) => item.isDirectory);
+      return sucessResponse(folders);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
+
   // 下载单个对象
-  async get(params: GetObjectParams & GetFolderParams) {
+  async get(params: GetObjectParams & GetFolderParams, onProgress?: any) {
     try {
       let result;
       if (isObjectFolder(params.key)) {
         result = await getFolder(this.client, params);
       } else {
-        result = await getObject(this.client, params);
+        result = await getObject(this.client, params, onProgress);
       }
       return sucessResponse(result);
     } catch (err: any) {
@@ -108,9 +124,9 @@ class OssStore implements IStorageHandler {
   }
 
   // 上传对象·
-  async put(params: PutMultiObjectsParams) {
+  async put(params: PutMultiObjectsParams, onProgress?: any) {
     try {
-      const result = await putMultiObjects(this.client, params);
+      const result = await putMultiObjects(this.client, params, onProgress);
       return sucessResponse(result);
     } catch (err: any) {
       console.error(err);
@@ -166,6 +182,16 @@ class OssStore implements IStorageHandler {
       return sucessResponse(result);
     } catch (err: any) {
       console.error(err);
+      return errorResponse(err.message);
+    }
+  }
+
+  // 复制
+  async copy(params: CopyObjectParams) {
+    try {
+      const result = await copyObject(this.client, params);
+      return sucessResponse(result);
+    } catch (err: any) {
       return errorResponse(err.message);
     }
   }

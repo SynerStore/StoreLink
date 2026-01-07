@@ -1,10 +1,7 @@
-import { Fragment } from 'react';
-import { Tooltip, Space } from '@arco-design/web-react';
-import dayjs from 'dayjs';
+import { Spin, Empty } from 'antd';
 
 import { TStoreObject } from '@/types';
-import { FileIcon, FileContextMenu } from '@/renderer/components';
-import { calculateSize } from '@/renderer/utils';
+import { FileCardList } from '@/renderer/components';
 import './index.css';
 
 export type CardContentProps = {
@@ -21,67 +18,26 @@ export type CardContentProps = {
 const CardContent = (props: CardContentProps) => {
   const { data, onPrefixChange, onFileView, onDownload, loading, onRename, onDelete, connectionId } = props;
 
-  const handleFileClick = (record: TStoreObject) => {
-    if (record.isDirectory) {
-      onPrefixChange(record.key as string);
-    } else {
-      onFileView(record);
-    }
-  };
-
-  const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: TStoreObject[]) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  };
-
   return (
     <div className="cards-content">
-      <Space size={12} wrap>
-        {data.map((item) => {
-          return (
-            <FileContextMenu
-              key={item.key}
-              data={item}
-              onDetail={(data: any) => {}}
-              onDownload={onDownload}
-              onRename={onRename}
-              onDelete={onDelete}
-            >
-              <Tooltip
-                key={item.key}
-                mini
-                position="bottom"
-                trigger="click"
-                content={
-                  <div>
-                    <div>名称: {item.name}</div>
-                    <div>大小: {calculateSize(item.size as number)}</div>
-                    <div>修改时间: {dayjs(item.lastModified).format('YYYY-MM-DD HH:mm:ss')}</div>
-                  </div>
-                }
-              >
-                <div
-                  draggable="true"
-                  className="file-item"
-                  data-info={item}
-                  onDoubleClick={() => handleFileClick(item)}
-                >
-                  {item.isDirectory ? (
-                    <Fragment>
-                      <FileIcon size="large" type="folder" />
-                      <div className="file-name">{item.name}</div>
-                    </Fragment>
-                  ) : (
-                    <Fragment>
-                      <FileIcon size="large" mime={item.mime as string} />
-                      <div className="file-name">{item.name}</div>
-                    </Fragment>
-                  )}
-                </div>
-              </Tooltip>
-            </FileContextMenu>
-          );
-        })}
-      </Space>
+      <Spin spinning={loading} style={{ width: '100%', minHeight: 200, display: 'block' }}>
+        {data.length > 0 ? (
+          <FileCardList
+            data={data}
+            onPrefixChange={onPrefixChange}
+            onFileView={onFileView}
+            onDownload={onDownload}
+            onRename={onRename}
+            onDelete={onDelete}
+            minItemWidth={80}
+            maxItemWidth={100}
+            columnGap={12}
+            rowGap={12}
+          />
+        ) : (
+          <Empty />
+        )}
+      </Spin>
     </div>
   );
 };

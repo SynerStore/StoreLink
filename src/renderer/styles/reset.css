@@ -9,28 +9,6 @@ body {
   height: 100vh;
 }
 
-/* arco-design 样式重置 */
-
-.arco-tabs-content {
-  padding-top: 6px !important;
-  border: none !important;
-}
-
-.arco-tabs-header-title {
-  margin-left: 0px !important;
-  margin-right: 2px !important;
-  padding: 2px 12px !important;
-}
-
-.arco-menu-item,
-.arco-menu-inline-header {
-  line-height: 36px !important;
-}
-
-.arco-table-size-small .arco-table-td {
-  padding: 5px 6px !important;
-}
-
 /* videojs 样式重置 */
 .vjs-paused .vjs-big-play-button,
 .vjs-paused.vjs-has-started .vjs-big-play-button {

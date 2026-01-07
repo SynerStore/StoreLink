@@ -15,8 +15,8 @@ const StoreBrand = (props: MenuTitleProps) => {
         backgroundColor: active ? '#f5f5f5' : 'transparent',
       }}
     >
-      <StoreIcon size={20} brand={brand} styles={{ marginRight: '8px' }} />
-      <span style={{ fontWeight: 500 }}> {brand}</span>
+      <StoreIcon size={26} brand={brand} styles={{ marginRight: '8px' }} />
+      <span style={{ fontWeight: 500,fontSize:16 }}> {brand}</span>
     </div>
   );
 };

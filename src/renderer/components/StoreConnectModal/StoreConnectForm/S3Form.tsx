@@ -1,26 +1,129 @@
-import { Form, Input, Button } from '@arco-design/web-react';
-const FormItem = Form.Item;
+import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
+import { Form, Input, Button, Select } from 'antd';
 
-const S3Form = () => {
+import { useLoading } from '@/renderer/hooks';
+import { storeConnect } from '@/renderer/utils';
+import { StoreTypes } from '@/types';
+import { useConfigStore } from '@/renderer/store';
+import { SecurePasswordInput } from '@/renderer/components';
+
+const FormItem = Form.Item;
+const Option = Select.Option;
+
+type Props = { mode?: 'create' | 'edit'; initial?: any; onSubmit?: (conn: any) => Promise<any> | any };
+const S3Form = forwardRef((props: Props, ref) => {
+  const [form] = Form.useForm();
+  const [buckets, setBuckets] = useState([]);
+  const { addConnection } = useConfigStore();
+  const { loading, setLoading } = useLoading();
+  const { mode = 'create', initial, onSubmit } = props;
+
+  useImperativeHandle(ref, () => {
+    return {
+      onConfirm: handleConfirm,
+    };
+  });
+
+  useEffect(() => {
+    if (initial?.config) {
+      form.setFieldsValue({
+        name: initial.name,
+        endpoint: initial.config.endpoint,
+        bucketName: initial.config.bucketName ? [initial.config.bucketName] : [],
+      });
+    }
+  }, [initial]);
+  const handleTest = async () => {
+    setLoading(true);
+    const res =
+      (form?.validateFields ? await form.validateFields(['endpoint', 'accessKeyId', 'secretAccessKey']) : form.getFieldsValue(true)) ||
+      {};
+    const result = await storeConnect({
+      type: StoreTypes.S3,
+      config: {
+        accessKeyId: res.accessKeyId ?? initial?.config?.accessKeyId,
+        secretAccessKey: res.secretAccessKey ?? initial?.config?.secretAccessKey,
+        endpoint: res.endpoint ?? initial?.config?.endpoint,
+      },
+    });
+    setLoading(false);
+    if (result.success) {
+      const bucketsData = result.data || [];
+      setBuckets(bucketsData);
+      if (bucketsData.length) {
+        form.setFieldsValue({
+          bucketName: bucketsData.map((item: any) => item.name),
+        });
+      }
+    }
+  };
+
+  const handleConfirm = async () => {
+    const res = (form?.validateFields ? await form.validateFields() : form.getFieldsValue(true)) || {};
+    // Ensure bucketName is an array
+    const bucketNames = Array.isArray(res.bucketName) ? res.bucketName : [res.bucketName];
+
+    const connections = bucketNames.map((item: any) => {
+      const bucket: any = buckets.find((bucket: any) => bucket.name === item);
+      return {
+        id: initial?.id,
+        type: StoreTypes.S3,
+        brand: 's3',
+        name: res.name || bucket?.name || item,
+        config: {
+          accessKeyId: res.accessKeyId ?? initial?.config?.accessKeyId,
+          secretAccessKey: res.secretAccessKey ?? initial?.config?.secretAccessKey,
+          endpoint: res.endpoint ?? initial?.config?.endpoint,
+          bucketName: bucket?.name || item,
+          region: bucket?.region,
+        },
+      };
+    });
+    if (mode === 'edit' && onSubmit) {
+      return onSubmit(connections[0]);
+    }
+    return addConnection(connections);
+  };
+
   return (
-    <Form style={{ width: 600 }} autoComplete="off">
-      <FormItem label="Access Key">
+    <Form form={form} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
+      <FormItem label="连接名称" name="name">
         <Input />
       </FormItem>
-      <FormItem label="Secret Key">
+      <FormItem label="Endpoint" name="endpoint" tooltip="可选，默认为 AWS S3">
+        <Input placeholder="https://s3.amazonaws.com" />
+      </FormItem>
+      <FormItem label="Access Key" name="accessKeyId" rules={[{ required: true }]}>
         <Input />
       </FormItem>
-      <FormItem label="Bucket Name">
-        <Input />
+      <FormItem
+        label="Secret Key"
+        name="secretAccessKey"
+        rules={[{ required: !(mode === 'edit' && !!initial?.config?.secretAccessKey) }]}
+      >
+        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.secretAccessKey?.length} maskChar="*" />
+      </FormItem>
+      <FormItem
+        label="Bucket Name"
+        name="bucketName"
+        extra="点击连接测试自动填充账号下的 Bucket"
+      >
+        <Select allowClear mode="tags">
+          {buckets.map((bucket: any) => (
+            <Option key={bucket.name} value={bucket.name}>
+              {bucket.name}
+            </Option>
+          ))}
+        </Select>
       </FormItem>
 
       <FormItem wrapperCol={{ offset: 5 }}>
-        <Button type="primary" size="small">
-          链接测试
+        <Button type="primary" size="small" onClick={handleTest} loading={loading}>
+          连接测试
         </Button>
       </FormItem>
     </Form>
   );
-};
+});
 
 export default S3Form;

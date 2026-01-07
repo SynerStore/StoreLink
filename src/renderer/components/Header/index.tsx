@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react';
-import { IconMinus, IconClose } from '@arco-design/web-react/icon';
+import { MinusOutlined, CloseOutlined } from '@ant-design/icons';
 
 import { winClose, winFullScreen, winMinimize } from '@/renderer/utils';
 import { IconFullScreen, IconUnFullScreen } from '@/renderer/components';
@@ -28,19 +28,19 @@ const Header = (props: HeaderProps) => {
     <header className="header">
       <div className="logo">
         {icon ? icon : <img className="logo-img" src={logo} alt="logo" />}
-        <span className="logo-text">{title ? title : 'SynerStore'}</span>
+        <span className="logo-text">{title ? title : 'StoreLink'}</span>
       </div>
       {/* windows \linux 显示信号灯  */}
       {/* {isInMac() ? null : ( */}
       <div className="win-linux-traffic">
         <div className="traffic" onClick={winMinimize}>
-          <IconMinus />
+          <MinusOutlined />
         </div>
         <div className="traffic" onClick={handleFullScreen}>
           {isFullScreen ? <IconUnFullScreen /> : <IconFullScreen />}
         </div>
         <div className="traffic traffic-close" onClick={winClose}>
-          <IconClose />
+          <CloseOutlined />
         </div>
       </div>
       {/* )} */}

@@ -8,9 +8,14 @@
   margin: 0;
   padding: 0;
   max-width: unset;
-}
 
-.main {
-  height: calc(100vh - var(--header-height));
-  display: flex;
+  .main {
+    height: calc(100vh - var(--header-height));
+    display: flex;
+
+    .content {
+      width: 100%;
+      display: flex;
+    }
+  }
 }

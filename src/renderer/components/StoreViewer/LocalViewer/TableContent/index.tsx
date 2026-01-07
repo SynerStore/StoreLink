@@ -1,9 +1,8 @@
 import { Fragment, useLayoutEffect, useState } from 'react';
-import { Table } from '@arco-design/web-react';
 import dayjs from 'dayjs';
 
 import { EWindowSize, TStoreObject } from '@/types';
-import { FileIcon, FileContextMenu } from '@/renderer/components';
+import { FileIcon, FileContextMenu, FileTable } from '@/renderer/components';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
@@ -15,11 +14,15 @@ export type TableContentProps = {
   onFileView: (data: any) => void;
   onDelete: (data: any) => Promise<void>;
   onRename: (data: any, newName: string) => Promise<void>;
+  onSelectionChange?: (selectedKeys: React.Key[]) => void;
+  selectedKeys?: React.Key[];
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
 };
 
 const TableContent = (props: TableContentProps) => {
   const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 196 - 55);
-  const { data, connectionId, onPrefixChange, onFileView, loading, onRename, onDelete } = props;
+  const { data, connectionId, onPrefixChange, onFileView, loading, onRename, onDelete, onSelectionChange, selectedKeys, onMoveTo, onCopyTo } = props;
 
   const handleFileClick = (record: TStoreObject) => {
     if (record.isDirectory) {
@@ -29,23 +32,32 @@ const TableContent = (props: TableContentProps) => {
     }
   };
 
+  const handleRowDragStart = (e: React.DragEvent<HTMLElement>, selectedRows: TStoreObject[]) => {
+    const dragData = selectedRows.map(row => ({
+      connectionId,
+      ...row
+    }));
+    e.dataTransfer.setData('application/json', JSON.stringify(dragData));
+    e.dataTransfer.effectAllowed = 'copyMove';
+  };
+
   const columns = [
     {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
       render: (text: any, record: TStoreObject) => {
-        const dataInfo = JSON.stringify({
-          connectionId: connectionId,
-          key: record.key,
-        });
         return (
-          <FileContextMenu data={record} onDetail={(data: any) => {}} onRename={onRename} onDelete={onDelete}>
+          <FileContextMenu
+            data={record}
+            onDetail={(data: any) => {}}
+            onRename={onRename}
+            onDelete={onDelete}
+            onMoveTo={onMoveTo}
+            onCopyTo={onCopyTo}
+          >
             <div
-              draggable="true"
               className="file-item"
-              data-info={dataInfo}
-              onDoubleClick={() => handleFileClick(record)}
             >
               {record.isDirectory ? (
                 <Fragment>
@@ -82,6 +94,7 @@ const TableContent = (props: TableContentProps) => {
   ];
 
   const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: TStoreObject[]) => {
+    onSelectionChange?.(selectedRowKeys);
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
   };
 
@@ -91,17 +104,18 @@ const TableContent = (props: TableContentProps) => {
 
   return (
     <div className="table-content">
-      <Table
+      <FileTable
         rowKey={'key'}
         size="small"
-        borderCell={false}
-        border={false}
+        bordered={false}
         loading={loading}
-        rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
+        rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange, selectedRowKeys: selectedKeys }}
         scroll={{ y: tableScrollHight }}
-        data={data}
+        dataSource={data}
         pagination={false}
         columns={columns}
+        onRowDoubleClick={handleFileClick}
+        onRowDragStart={handleRowDragStart}
       />
     </div>
   );

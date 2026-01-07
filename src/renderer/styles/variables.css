@@ -10,12 +10,14 @@ body {
   --border-color: #e6e8eb;
   --icon-hover-bg-color: #ededed;
   --icon-hover-danger-color: #f53f3f;
+  --card-selected-bg: #f0f6ff;
 }
 
-body[arco-theme='dark'] {
+body[data-theme='dark'] {
   --primary-color: #3c62cd;
   --border-color: #e6e8eb;
   --icon-hover-bg-color: #ededed;
   --icon-hover-danger-color: #f53f3f;
+  --card-selected-bg: #f0f6ff;
   color-scheme: dark;
 }

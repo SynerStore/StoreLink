@@ -2,7 +2,7 @@ import { useMemo, useEffect, useCallback } from 'react';
 
 import S3Viewer from './S3Viewer';
 import LocalViewer from './LocalViewer';
-import FtpViewer from './FtpViewer';
+import SftpViewer from './SftpViewer';
 import OssViewer from './OssViewer';
 import WebDevViewer from './WebDEVViewer';
 import { StoreTypes } from '@/types';
@@ -14,7 +14,7 @@ const StoreViewer = (props: any) => {
 
   const connection = useMemo(() => {
     return connections.find((item: any) => item.id === data.id);
-  }, [data.id]);
+  }, [data.id, connections]);
 
   // 拖拽事件监听
   const handleDragEventListener = useCallback((e: any) => {
@@ -33,15 +33,15 @@ const StoreViewer = (props: any) => {
     };
   });
 
-  switch (connection.type) {
+  switch (connection?.type) {
     case StoreTypes.OSS:
       return <OssViewer data={data} key={data.id} bucketName={data.name} connectionId={data.id} />;
     case StoreTypes.S3:
       return <S3Viewer data={data} key={data.id} bucketName={data.name} connectionId={data.id} />;
     case StoreTypes.LOCAL:
       return <LocalViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
-    case StoreTypes.FTP:
-      return <FtpViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
+    case StoreTypes.SFTP:
+      return <SftpViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     case StoreTypes.WEBDAV:
       return <WebDevViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
 

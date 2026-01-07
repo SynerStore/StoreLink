@@ -9,6 +9,7 @@ export type Connection = {
   type: string;
   brand: string;
   name: string;
+  isCollected?: boolean;
   config: Record<string, any>;
   createDate?: string;
   updateDate?: string;
@@ -19,7 +20,7 @@ type DataState = {
   loading: boolean;
   initializeData: () => Promise<void>;
   removeConnection: (v: string) => void;
-  updateConnection: (v: Connection) => void;
+  updateConnection: (v: Connection) => Promise<void>;
   addConnection: (v: Connection | Connection[]) => Promise<void>;
 };
 
@@ -48,28 +49,17 @@ export const useConfigStore = create<DataState>()(
           createDate: con.createDate || new Date().toLocaleString(),
           updateDate: new Date().toLocaleString(),
         }));
-        const currentConnections = get().connections;
-        const cons = [...currentConnections, ...newConnections];
-        await events.setConnectionsData({ connections: cons });
-        set(() => {
-          return { connections: cons };
-        });
+        await events.addConnection(newConnections);
+        await get().initializeData()
         return newConnections; // 返回新增 connect 用于创建 tab
       },
       removeConnection: async (id: string) => {
-        const currentConnections = get().connections;
-        const cons = currentConnections.filter((c) => c.id !== id);
-        await events.setConnectionsData({ connections: cons });
-        set(() => {
-          return { connections: cons };
-        });
+        await events.removeConnection(id);
+        await get().initializeData()
       },
-      updateConnection: (connection: Connection) => {
-        set((state) => ({
-          connections: state.connections.map((c) =>
-            c.id === connection.id ? { ...connection, updateDate: new Date().toLocaleString() } : c,
-          ),
-        }));
+      updateConnection: async (connection: Connection) => {
+        await events.updateConnection(connection);
+        await get().initializeData();
       },
     }),
     {

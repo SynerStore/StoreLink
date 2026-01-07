@@ -1,5 +1,5 @@
-import { Tooltip } from '@arco-design/web-react';
-import { IconCopy } from '@arco-design/web-react/icon';
+import { Tooltip } from 'antd';
+import { CopyOutlined } from '@ant-design/icons';
 
 import './index.css';
 
@@ -19,9 +19,9 @@ const TxtViewer = (props: TxtViewerProps) => {
     <div className="txt-viewer">
       <div className="txt-viewer-toolbar">
         <div className="txt-viewer-toolbar-item">
-          <Tooltip content="复制">
+          <Tooltip title="复制">
             <div className="txt-viewer-toolbar-item-btn" onClick={handleCopy}>
-              <IconCopy />
+              <CopyOutlined />
             </div>
           </Tooltip>
         </div>

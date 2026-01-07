@@ -41,6 +41,36 @@ export async function list(root: string, params: ListParams) {
   return filesSort(accessFiles as any[]);
 }
 
+export async function listDir(root: string, params: ListParams) {
+  let prefix = params.prefix;
+  // Handle absolute path if it starts with root (robustness for UI passing keys back)
+  if (path.isAbsolute(prefix) && prefix.startsWith(root)) {
+    // It's already an absolute path including root
+  } else {
+    prefix = path.join(root, prefix);
+  }
+
+  const dirents = await fs.readdir(prefix, { withFileTypes: true });
+  const folders = dirents
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => {
+      const fullPath = path.join(prefix, dirent.name);
+      return {
+        key: fullPath,
+        name: dirent.name,
+        lastModified: 0, // Not needed for tree
+        size: 0,
+        etag: '',
+        storageClass: '',
+        isDirectory: true,
+        mime: '',
+        isHiddenFile: dirent.name.startsWith('.'), // Simple check
+      } as TStoreObject;
+    });
+    
+  return filesSort(folders);
+}
+
 // 删除桶内的全部对象
 export type DeleteFileParams = {
   file: string;
@@ -99,27 +129,36 @@ export type PutFolderParams = {
   prefix: string;
   localPath: string;
 };
+
 export async function putFolder(root: string, params: PutFolderParams) {
   const { prefix, localPath } = params;
-  const key = path.join(root, prefix, localPath);
-  const result = await fs.mkdir(key, { recursive: true });
-  return result;
+  const targetFilePath = path.join(root, prefix, path.basename(localPath));
+  await fs.ensureDir(targetFilePath);
+  await fs.copy(localPath, targetFilePath);
 }
 
 export type GetSourceUrlParams = {
   key: string;
 };
-export async function getSourceUrl(params: GetSourceUrlParams) {
+
+export async function getSourceUrl(root: string, params: GetSourceUrlParams) {
   const { key } = params;
-  const filePath = `file://${key}`;
-  const mimeValue = mime.lookup(filePath) || '';
-  let content = '';
-  if (isGetFileContent(mimeValue)) {
-    content = await fs.readFile(key, { encoding: 'utf-8' });
-  }
-  return {
-    src: filePath,
-    mime: mimeValue,
-    content: content,
-  };
+  return key;
+}
+
+export type CopyFileParams = {
+  sourceKey: string;
+  targetPath: string;
+};
+
+export async function copyFile(root: string, params: CopyFileParams) {
+  const { sourceKey, targetPath } = params;
+  // For LocalStore, targetPath is usually the destination directory
+  // sourceKey is the full path of the source file
+  const fileName = path.basename(sourceKey);
+  const destPath = path.join(targetPath, fileName);
+  
+  // Ensure target directory exists (though targetPath should be valid)
+  // Check if it's move or copy? This function is named copyFile.
+  await fs.copy(sourceKey, destPath);
 }

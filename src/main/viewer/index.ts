@@ -26,6 +26,21 @@ export default class ViewerWindowManager {
     ipcMain.handle(EChannels.getViewerSource, (_event: any, data: any) => {
       return this.getViewerSource(data);
     });
+
+    ipcMain.handle(EChannels.downloadViewerSource, async (_event: any, data: any) => {
+      const { id, localPath, src } = data || {};
+      const viewer = this.windowsPools.get(id);
+      const store = getStoreInstance(viewer?.data?.connectionId || '');
+      const params: any = {
+        key: viewer?.data?.key || '',
+        localPath,
+      };
+      if (viewer?.data?.bucketName) {
+        params.bucketName = viewer?.data?.bucketName;
+      }
+      const result = await store.get(params);
+      return result;
+    });
   }
 
   create(data: any) {

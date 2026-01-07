@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Spin } from '@arco-design/web-react';
+import { Spin } from 'antd';
 
 import MarkdownViewer from './MarkdownViewer';
 import PdfViewer from './PdfViewer';
@@ -55,9 +55,9 @@ const FileViewer = (props: FileViewerProps) => {
   }, [type]);
 
   return (
-    <Spin className="file-viewer-spin" dot loading={loading} tip="资源加载中，请耐心等待...">
+    <Spin className="file-viewer-spin" spinning={loading} tip="资源加载中，请耐心等待...">
       {ViewerComponent ? (
-        React.createElement(ViewerComponent, { src: sourceUrl, content: content, mime: props?.mime })
+        React.createElement(ViewerComponent as any, { id: props.id, src: sourceUrl, content: content, mime: props?.mime })
       ) : (
         <div> 该文档无法查看</div>
       )}

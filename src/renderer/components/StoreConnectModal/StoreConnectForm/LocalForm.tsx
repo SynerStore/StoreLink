@@ -1,6 +1,6 @@
-import { useImperativeHandle, forwardRef } from 'react';
-import { Form, Input, Switch } from '@arco-design/web-react';
-import { IconFolder } from '@arco-design/web-react/icon';
+import { useImperativeHandle, forwardRef, useEffect } from 'react';
+import { Form, Input, Switch } from 'antd';
+import { FolderOutlined } from '@ant-design/icons';
 
 import { StoreTypes } from '@/types';
 import { events } from '@/renderer/utils';
@@ -8,13 +8,15 @@ import { useConfigStore } from '@/renderer/store';
 
 const FormItem = Form.Item;
 
-const LocalForm = forwardRef((_props, ref) => {
+type Props = { mode?: 'create' | 'edit'; initial?: any; onSubmit?: (conn: any) => Promise<any> | any };
+const LocalForm = forwardRef((props: Props, ref) => {
   const [form] = Form.useForm();
   const { addConnection } = useConfigStore();
+  const { mode = 'create', initial, onSubmit } = props;
 
   const handleSelectLocalDirPath = async () => {
     const dirPath = await events.getSingleDirPath();
-    form.setFieldValue('root', dirPath);
+    form.setFieldsValue({ root: dirPath });
   };
 
   useImperativeHandle(ref, () => {
@@ -23,11 +25,20 @@ const LocalForm = forwardRef((_props, ref) => {
     };
   });
 
+  useEffect(() => {
+    if (initial?.config) {
+      form.setFieldsValue({
+        name: initial.name,
+        root: initial.config.root,
+        isShowHiddenFiles: initial.config.isShowHiddenFiles,
+      });
+    }
+  }, [initial]);
   // 确认
   const handleConfirm = async () => {
-    const res = await form.validate();
-    // 判断是否存在
-    const newCons = await addConnection({
+    const res = await form.validateFields();
+    const payload = {
+      id: initial?.id,
       type: StoreTypes.LOCAL,
       brand: 'local',
       name: res.name,
@@ -35,19 +46,22 @@ const LocalForm = forwardRef((_props, ref) => {
         root: res.root,
         isShowHiddenFiles: res.isShowHiddenFiles || false,
       },
-    });
-    return newCons;
+    };
+    if (mode === 'edit' && onSubmit) {
+      return onSubmit(payload);
+    }
+    return addConnection(payload);
   };
 
   return (
-    <Form form={form} style={{ width: 600 }} autoComplete="off">
-      <FormItem label="连接名称" field="name">
+    <Form form={form} autoComplete="off">
+      <FormItem label="连接名称" name="name">
         <Input />
       </FormItem>
-      <FormItem label="本机目录" field="root">
+      <FormItem label="本机目录" name="root">
         <Input
-          addAfter={
-            <IconFolder
+          addonAfter={
+            <FolderOutlined
               onClick={handleSelectLocalDirPath}
               style={{
                 color: 'var(--primary-color)',
@@ -60,7 +74,7 @@ const LocalForm = forwardRef((_props, ref) => {
           placeholder="输入本机路径"
         />
       </FormItem>
-      <FormItem label="显示隐藏文件" field="isShowHiddenFiles" triggerPropName="checked" rules={[{ type: 'boolean' }]}>
+      <FormItem label="显示隐藏文件" name="isShowHiddenFiles" valuePropName="checked" rules={[{ type: 'boolean' }]}>
         <Switch />
       </FormItem>
     </Form>

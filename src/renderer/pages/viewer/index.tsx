@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ConfigProvider } from '@arco-design/web-react';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 
 import App from './app';
-import '@arco-design/web-react/dist/css/arco.css';
-import '@arco-themes/react-syner-store/css/arco.css';
+import 'antd/dist/reset.css';
 import '@/renderer/styles/index.css';
 
 // @ts-ignore
@@ -16,7 +16,7 @@ if (rootEl) {
   const root = ReactDOM.createRoot(rootEl);
   root.render(
     <React.StrictMode>
-      <ConfigProvider>
+      <ConfigProvider locale={zhCN}>
         <App />
       </ConfigProvider>
     </React.StrictMode>,

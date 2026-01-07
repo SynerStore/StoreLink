@@ -9,12 +9,17 @@ export enum EChannels {
   storeConnect = 'storeConnect',
   storeRemove = 'storeRemove',
 
+  // tasks
+  taskRequest = 'taskRequest',
+  taskUpdate = 'taskUpdate',
+
   // events
   eventsX = 'eventsX',
 
   // viewer
   openViewer = 'openViewer',
   getViewerSource = 'getViewerSource',
+  downloadViewerSource = 'downloadViewerSource',
 }
 
 export type ChannelData = {

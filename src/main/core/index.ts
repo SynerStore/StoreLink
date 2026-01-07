@@ -4,7 +4,9 @@ import Windows from '../windows';
 import ViewerWindowManager from '../viewer';
 import { storeRequestRegistry } from '../stores';
 import eventsRegistry from '../events/registry';
+import { taskRequestRegistry } from '../tasks/manage';
 import { logger, isDev, installDevtool } from '../utils';
+import { ensureEncryptedPasswordsOnStartup } from '../db/json/connections';
 
 export default class Core {
   logger = logger.scope('Core');
@@ -30,6 +32,7 @@ export default class Core {
         app.quit();
       }
     });
+    ensureEncryptedPasswordsOnStartup();
   }
 
   private async afterAppReady() {
@@ -47,6 +50,7 @@ export default class Core {
   private async resistry() {
     await storeRequestRegistry();
     await eventsRegistry();
+    await taskRequestRegistry();
   }
 
   private async installExtension() {

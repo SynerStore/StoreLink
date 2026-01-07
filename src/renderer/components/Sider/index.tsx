@@ -1,16 +1,18 @@
-import { Space, Divider } from '@arco-design/web-react';
+import { Space, Divider, Tooltip } from 'antd';
 import {
-  IconSettings,
-  IconMenuFold,
-  IconHome,
-  IconSwap,
-  IconMessage,
-  IconTool,
-  IconMenuUnfold,
-} from '@arco-design/web-react/icon';
+  SettingOutlined,
+  MenuFoldOutlined,
+  HomeOutlined,
+  SwapOutlined,
+  MessageOutlined,
+  CalendarOutlined,
+  ToolOutlined,
+  ProfileOutlined,
+  MenuUnfoldOutlined,
+} from '@ant-design/icons';
 
-import SettingPanel from '../SettingPanel';
-import TaskPanel from '../TaskPanel';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useTabsStore } from '@/renderer/store';
 import './index.css';
 
 export type SiderProps = {
@@ -19,25 +21,59 @@ export type SiderProps = {
 };
 const Sider = (props: SiderProps) => {
   const { onFold, fold } = props;
+  const { selectTab } = useTabsStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isHome = location.pathname === '/';
+  const isTasks = location.pathname.startsWith('/tasks');
+  const isLogs = location.pathname.startsWith('/logs');
+  const isSettingPage = location.pathname.startsWith('/setting');
 
   return (
     <aside className="sider">
       <div className="sider-top">
-        {fold ? <IconMenuUnfold onClick={onFold} /> : <IconMenuFold onClick={onFold} />}
+        {fold ? (
+          <Tooltip title="展开侧边栏">
+            <MenuUnfoldOutlined onClick={onFold} />
+          </Tooltip>
+        ) : (
+          <Tooltip title="收起侧边栏">
+            <MenuFoldOutlined onClick={onFold} />
+          </Tooltip>
+        )}
         <Divider style={{ margin: '8px 0px' }} />
-        <IconHome style={{ color: 'var(--primary-color)' }} />
+        <Tooltip title="首页">
+          <HomeOutlined
+            className={isHome ? 'active' : undefined}
+            onClick={() => {
+              selectTab('home');
+              navigate('/');
+            }}
+          />
+        </Tooltip>
       </div>
       <div className="sider-bottom">
         <Divider style={{ margin: '8px 0px' }} />
-        <Space direction="vertical">
-          <TaskPanel>
-            <IconSwap />
-          </TaskPanel>
-          <IconMessage />
-          <IconTool />
-          <SettingPanel>
-            <IconSettings />
-          </SettingPanel>
+        <Space vertical size={16}>
+          <Tooltip title="任务">
+            <SwapOutlined className={isTasks ? 'active' : undefined} onClick={() => navigate('/tasks')} />
+          </Tooltip>
+          {/* <Tooltip title="定时任务">
+            <CalendarOutlined className={isSettingPage ? 'active' : undefined} onClick={() => navigate('/setting')} />
+          </Tooltip> */}
+          <Tooltip title="日志">
+            <ProfileOutlined className={isLogs ? 'active' : undefined} onClick={() => navigate('/logs')} />
+          </Tooltip>
+          {/* <Tooltip title="工具">
+            <ToolOutlined
+              className={isSettingPage ? 'active' : undefined}
+              onClick={() => navigate('/setting')}
+            />
+          </Tooltip> */}
+          <Tooltip title="设置">
+            <SettingOutlined className={isSettingPage ? 'active' : undefined} onClick={() => navigate('/setting')} />
+          </Tooltip>
         </Space>
       </div>
     </aside>
