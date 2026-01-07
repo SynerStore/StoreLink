@@ -12,7 +12,7 @@ import {
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap } from '@/renderer/components';
+import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup } from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer, createTask } from '@/renderer/utils';
 import { useLoading, useUnmount } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
@@ -172,14 +172,14 @@ const OssViewer = (props: OssViewerProps) => {
   return (
     <div className="viewer">
       <div className="viewer-path">
-        <Space size={2}>
+        <ButtonGroup>
           <Button disabled={!canBack} icon={<LeftOutlined style={{ fontSize: 'large' }} />} onClick={handlePathBack} />
           <Button
             disabled={!canForward}
             icon={<RightOutlined style={{ fontSize: 'large' }} />}
             onClick={handlePathForward}
           />
-        </Space>
+        </ButtonGroup>
         <div className="viewer-path-input">
           <ViewInput
             prefix={bucketName}

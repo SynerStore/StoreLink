@@ -19,3 +19,4 @@ export { default as StoreConnectModal } from './StoreConnectModal';
 export { default as ConnectionDeleteWrap } from './ConnectionDeleteWrap';
 export { default as ResponsiveGrid } from './ResponsiveGrid';
 export { default as PageWrapper } from './PageWrapper';
+export { default as ButtonGroup } from './ButtonGroup';

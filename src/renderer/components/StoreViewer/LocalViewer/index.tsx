@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Space, Input, Dropdown, Menu, Radio } from 'antd';
+import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
   RightOutlined,
@@ -12,7 +12,7 @@ import {
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap } from '@/renderer/components';
+import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup } from '@/renderer/components';
 import { PathHistory, storeRequest, openViewer, events } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
@@ -141,10 +141,10 @@ const LocalViewer = (props: LocalViewerProps) => {
   return (
     <div className="viewer">
       <div className="viewer-path">
-        <Space size={2}>
+        <ButtonGroup>
           <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
           <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
-        </Space>
+        </ButtonGroup>
         <div className="viewer-path-input">
           <ViewInput
             prefix={connection.config.root}

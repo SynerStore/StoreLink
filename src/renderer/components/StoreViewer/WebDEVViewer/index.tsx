@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Space, Input, Dropdown, Menu, Radio } from 'antd';
+import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import { LeftOutlined, RightOutlined, DownOutlined, UnorderedListOutlined, AppstoreOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
 import { debounce } from 'lodash';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { ViewInput, FileDropWrap, FolderCreateWrap } from '@/renderer/components';
+import { ViewInput, FileDropWrap, FolderCreateWrap, ButtonGroup } from '@/renderer/components';
 import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
@@ -160,10 +160,10 @@ const WebDevViewer = (props: WebDevViewerProps) => {
   return (
     <div className="viewer">
       <div className="viewer-path">
-        <Space size={2}>
+        <ButtonGroup>
           <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
           <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
-        </Space>
+        </ButtonGroup>
         <div className="viewer-path-input">
           <ViewInput
             prefix={connection.config.root}

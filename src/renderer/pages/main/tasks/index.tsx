@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Tabs } from 'antd';
-import { PageWrapper } from '@/renderer/components';
 
 import DownloadingTaskTable from './DownloadingTaskTable';
 import FinishedTaskTable from './FinishedTaskTable';
@@ -42,15 +41,16 @@ const Tasks: React.FC = () => {
   ];
 
   return (
-    <PageWrapper title="任务管理">
+    <div style={{ padding: 16, width: '100%', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <h2 style={{ marginBottom: 16 }}>任务管理</h2>
       <Tabs
         type="card"
         activeKey={activeTab}
         onChange={(key: string) => setActiveTab(key as ETaskManageTab)}
         items={items}
-        style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+        style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
       />
-    </PageWrapper>
+    </div>
   );
 };
 

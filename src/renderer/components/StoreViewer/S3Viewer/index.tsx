@@ -4,7 +4,7 @@ import { LeftOutlined, RightOutlined, DownOutlined, UnorderedListOutlined, Appst
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap } from '@/renderer/components';
+import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup } from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer } from '@/renderer/utils';
 import { createTask } from '@/renderer/utils/task';
 import { ETaskType } from '@/types';
@@ -166,14 +166,14 @@ const S3Viewer = (props: S3ViwerProps) => {
   return (
     <div className="viewer">
       <div className="viewer-path">
-        <Space size={2}>
+        <ButtonGroup>
           <Button disabled={!canBack} icon={<LeftOutlined style={{ fontSize: 'large' }} />} onClick={handlePathBack} />
           <Button
             disabled={!canForward}
             icon={<RightOutlined style={{ fontSize: 'large' }} />}
             onClick={handlePathForward}
           />
-        </Space>
+        </ButtonGroup>
         <div className="viewer-path-input">
           <ViewInput
             prefix={bucketName}
