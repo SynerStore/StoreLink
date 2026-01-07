@@ -164,7 +164,7 @@ const SftpViewer = (props: SftpViewerProps) => {
                 }}
               >
                 {connection?.isCollected ? (
-                  <StarFilled style={{ fontSize: 'large', color: 'rgb(var(--primary-6))' }} />
+                  <StarFilled style={{ fontSize: 'large', color: 'var(--primary-color)' }} />
                 ) : (
                   <StarOutlined style={{ fontSize: 'large' }} />
                 )}

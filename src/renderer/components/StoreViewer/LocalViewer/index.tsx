@@ -31,6 +31,7 @@ const LocalViewer = (props: LocalViewerProps) => {
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
   const [curPrefix, setCurPrefix] = useState<string>('');
+  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
 
   const display = useMemo(() => {
@@ -63,6 +64,7 @@ const LocalViewer = (props: LocalViewerProps) => {
     setLoading(false);
     if (res.success) {
       setDataList(res.data);
+      setSelectedKeys([]);
       console.log(res.data);
     }
   };
@@ -117,6 +119,10 @@ const LocalViewer = (props: LocalViewerProps) => {
     });
   };
 
+  const handleSelectionChange = (keys: React.Key[]) => {
+    setSelectedKeys(keys);
+  };
+
   const handleDisplayChange = (e: any) => {
     updateTab({ ...tabData, display: e.target.value });
   };
@@ -155,7 +161,7 @@ const LocalViewer = (props: LocalViewerProps) => {
                 }}
               >
                 {connection?.isCollected ? (
-                  <StarFilled style={{ fontSize: 'large', color: 'rgb(var(--primary-6))' }} />
+                  <StarFilled style={{ fontSize: 'large', color: 'var(--primary-color)' }} />
                 ) : (
                   <StarOutlined style={{ fontSize: 'large' }} />
                 )}
@@ -203,6 +209,8 @@ const LocalViewer = (props: LocalViewerProps) => {
               onFileView={handleFileView}
               onDelete={handleDelete}
               onRename={handleRename}
+              onSelectionChange={handleSelectionChange}
+              selectedKeys={selectedKeys}
             />
           ) : null}
           {display === ETabDisplay.CARD ? (
@@ -214,12 +222,14 @@ const LocalViewer = (props: LocalViewerProps) => {
               onFileView={handleFileView}
               onDelete={handleDelete}
               onRename={handleRename}
+              onSelectionChange={handleSelectionChange}
+              selectedKeys={selectedKeys}
             />
           ) : null}
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
-        <span>已选 0 项，已拉取 {dataList.length} 项 </span>
+        <span>已选 {selectedKeys.length} 项，已拉取 {dataList.length} 项 </span>
       </div>
     </div>
   );

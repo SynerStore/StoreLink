@@ -7,6 +7,8 @@ export type FileCardListProps = {
   onDownload?: (data: any) => Promise<void>;
   onDelete?: (data: any) => Promise<void>;
   onRename?: (data: any, newName: string) => Promise<void>;
+  onSelectionChange?: (selectedKeys: React.Key[]) => void;
+  selectedKeys?: React.Key[];
   className?: string;
   itemClassName?: string;
   minItemWidth?: number;

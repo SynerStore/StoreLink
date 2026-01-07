@@ -15,6 +15,8 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     onDownload,
     onDelete,
     onRename,
+    onSelectionChange,
+    selectedKeys: propSelectedKeys,
     className = '',
     itemClassName = '',
     minItemWidth = 80,
@@ -24,7 +26,9 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   } = props;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
+  const [internalSelectedKeys, setInternalSelectedKeys] = useState<React.Key[]>([]);
+  const selectedKeys = propSelectedKeys !== undefined ? propSelectedKeys : internalSelectedKeys;
+
   const [lastSelectedKey, setLastSelectedKey] = useState<React.Key | null>(null);
   const [focusedKey, setFocusedKey] = useState<React.Key | null>(null);
   const [lassoing, setLassoing] = useState(false);
@@ -33,9 +37,12 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
 
   const triggerSelectionChange = useCallback(
     (newKeys: React.Key[]) => {
-      setSelectedKeys(newKeys);
+      if (propSelectedKeys === undefined) {
+        setInternalSelectedKeys(newKeys);
+      }
+      onSelectionChange?.(newKeys);
     },
-    []
+    [onSelectionChange, propSelectedKeys]
   );
 
   const getIndex = useCallback(
