@@ -48,6 +48,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
         closable={false}
         maskClosable={false}
         open={isModalOpen}
+        centered
         width={620}
         onCancel={step === 0 ? handleCancel : handlePrev}
         onOk={step === 0 ? handleNext : handleOk}

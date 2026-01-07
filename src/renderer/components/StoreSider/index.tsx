@@ -8,8 +8,6 @@ import MenuTitle from './MenuTitle';
 import { useConfigStore, useTabsStore, ETabDisplay } from '@/renderer/store';
 import './index.css';
 
-const MenuItem = Menu.Item;
-const SubMenu = Menu.SubMenu;
 const Search = Input.Search;
 
 export type StoreSiderProps = {
@@ -31,22 +29,6 @@ const StoreSider = (props: StoreSiderProps) => {
       });
     }
   }, [activeTab, connections]);
-
-  const items = useMemo(() => {
-    const groups = groupBy(connections, 'brand');
-    return Reflect.ownKeys(groups).map((groupKey: any) => {
-      return {
-        key: groupKey,
-        label: <MenuTitle brand={groupKey}>{groupKey}</MenuTitle>,
-        children: groups[groupKey].map((connection: any) => {
-          return {
-            key: `${connection.id}`,
-            label: connection.name,
-          };
-        }),
-      };
-    });
-  }, [connections]);
 
   const handleClick = (key: string) => {
     const connection: any = connections.find((item: any) => item.id === key);
@@ -70,6 +52,47 @@ const StoreSider = (props: StoreSiderProps) => {
   //编辑
   const handleEdit = () => {};
 
+  const items = useMemo(() => {
+    const groups = groupBy(connections, 'brand');
+    return Reflect.ownKeys(groups).map((groupKey: any) => {
+      return {
+        key: groupKey,
+        label: <MenuTitle brand={groupKey}>{groupKey}</MenuTitle>,
+        children: groups[groupKey].map((connection: any) => {
+          return {
+            key: `${connection.id}`,
+            label: (
+              <ContextMenu
+                menu={[
+                  {
+                    icon: <EditOutlined />,
+                    text: '编辑',
+                    onClick: () => {},
+                  },
+                  {
+                    render: () => (
+                      <ConnectionDeleteWrap
+                        onDelete={handleDelete}
+                        connection={{ key: connection.id, label: connection.name }}
+                      >
+                        <Space size={2}>
+                          <DeleteOutlined /> 删除
+                        </Space>
+                      </ConnectionDeleteWrap>
+                    ),
+                  },
+                ]}
+              >
+                <span style={{ width: '100%', display: 'inline-block' }}>{connection.name}</span>
+              </ContextMenu>
+            ),
+            onClick: () => handleClick(connection.id),
+          };
+        }),
+      };
+    });
+  }, [connections]);
+
   return (
     <div className="store-sider" style={{ visibility: fold ? 'hidden' : 'visible' }}>
       <div className="store-sider-tip">
@@ -91,40 +114,8 @@ const StoreSider = (props: StoreSiderProps) => {
           onOpenChange={(keys) => setOpenKeys(keys as string[])}
           style={{ width: '100%' }}
           selectedKeys={[activeTab]}
-        >
-          {items.map((item: any) => {
-            return (
-              <SubMenu key={item.key} title={item.label}>
-                {item.children.map((child: any) => {
-                  return (
-                    <MenuItem onClick={() => handleClick(child.key)} key={child.key}>
-                      <ContextMenu
-                        menu={[
-                          {
-                            icon: <EditOutlined />,
-                            text: '编辑',
-                            onClick: () => {},
-                          },
-                          {
-                            render: () => (
-                              <ConnectionDeleteWrap onDelete={handleDelete} connection={child}>
-                                <Space size={2}>
-                                  <DeleteOutlined /> 删除
-                                </Space>
-                              </ConnectionDeleteWrap>
-                            ),
-                          },
-                        ]}
-                      >
-                        <span style={{ width: '100%', display: 'inline-block' }}>{child.label}</span>
-                      </ContextMenu>
-                    </MenuItem>
-                  );
-                })}
-              </SubMenu>
-            );
-          })}
-        </Menu>
+          items={items}
+        />
       </div>
     </div>
   );

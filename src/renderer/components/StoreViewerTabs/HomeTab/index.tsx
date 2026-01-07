@@ -134,7 +134,6 @@ const HomeTab = () => {
         <div style={{ marginTop: 16 }}>
           <Card
             title="操作日志"
-            bordered={false}
             extra={
               <Space size={8}>
                 <DatePicker

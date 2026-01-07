@@ -27,6 +27,7 @@ const FileRenameWrap = (props: FolderCreateWrapProps) => {
         maskClosable={false}
         style={{ width: 520 }}
         open={isModalOpen}
+        centered
         onOk={handleOk}
         onCancel={() => setIsModalOpen(false)}
       >

@@ -35,6 +35,7 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
         closable={false}
         maskClosable={false}
         open={isModalOpen}
+        centered
         style={{ width: 520 }}
         onOk={handleOk}
         onCancel={handleCancel}

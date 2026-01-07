@@ -56,6 +56,7 @@ const SettingPanel: React.FC<SettingPanelProps> = (props: SettingPanelProps) => 
         closable={true}
         maskClosable={false}
         open={isModalOpen}
+        centered
         cancelButtonProps={{ style: { display: 'none' } }}
         okButtonProps={{ style: { display: 'none' } }}
         onCancel={() => setIsModalOpen(false)}

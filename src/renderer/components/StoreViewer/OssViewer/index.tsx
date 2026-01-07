@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
-import { LeftOutlined, RightOutlined, DownOutlined, UnorderedListOutlined, AppstoreOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
+import {
+  LeftOutlined,
+  RightOutlined,
+  DownOutlined,
+  UnorderedListOutlined,
+  AppstoreOutlined,
+  StarOutlined,
+  StarFilled,
+} from '@ant-design/icons';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
@@ -192,22 +200,15 @@ const OssViewer = (props: OssViewerProps) => {
       </div>
       <div className="viewer-actions">
         <Space size={4}>
-          <Button type="primary" onClick={handleUpload} >
+          <Button type="primary" onClick={handleUpload}>
             上传
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button >
-              新建目录
-            </Button>
+            <Button>新建目录</Button>
           </FolderCreateWrap>
-          <Button >
-            下载
-          </Button>
-          <Dropdown
-            trigger={['click']}
-            menu={{ items: menuItems }}
-          >
-            <Button >
+          <Button>下载</Button>
+          <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+            <Button>
               更多 <DownOutlined style={{ fontSize: 'medium' }} />
             </Button>
           </Dropdown>

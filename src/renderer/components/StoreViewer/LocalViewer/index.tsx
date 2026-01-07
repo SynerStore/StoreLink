@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Menu, Radio } from 'antd';
-import { LeftOutlined, RightOutlined, DownOutlined, UnorderedListOutlined, AppstoreOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
+import {
+  LeftOutlined,
+  RightOutlined,
+  DownOutlined,
+  UnorderedListOutlined,
+  AppstoreOutlined,
+  StarOutlined,
+  StarFilled,
+} from '@ant-design/icons';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
@@ -162,18 +170,11 @@ const LocalViewer = (props: LocalViewerProps) => {
       <div className="viewer-actions">
         <Space size={4}>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button size="small">
-              新建目录
-            </Button>
+            <Button>新建目录</Button>
           </FolderCreateWrap>
-          <Button size="small">
-            下载
-          </Button>
-          <Dropdown
-            trigger={['click']}
-            menu={{ items: menuItems }}
-          >
-            <Button size="small">
+          <Button>下载</Button>
+          <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+            <Button>
               更多 <DownOutlined />
             </Button>
           </Dropdown>
