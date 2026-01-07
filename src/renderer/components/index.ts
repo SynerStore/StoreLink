@@ -24,3 +24,4 @@ export { default as PageWrapper } from './PageWrapper';
 export { default as ButtonGroup } from './ButtonGroup';
 export { default as List } from './List';
 export * from './FileTable';
+export { default as FileCardList } from './FileCardList';

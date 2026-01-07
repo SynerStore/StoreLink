@@ -10,6 +10,7 @@ body {
   --border-color: #e6e8eb;
   --icon-hover-bg-color: #ededed;
   --icon-hover-danger-color: #f53f3f;
+  --card-selected-bg: #f0f6ff;
 }
 
 body[data-theme='dark'] {
@@ -17,5 +18,6 @@ body[data-theme='dark'] {
   --border-color: #e6e8eb;
   --icon-hover-bg-color: #ededed;
   --icon-hover-danger-color: #f53f3f;
+  --card-selected-bg: #f0f6ff;
   color-scheme: dark;
 }
