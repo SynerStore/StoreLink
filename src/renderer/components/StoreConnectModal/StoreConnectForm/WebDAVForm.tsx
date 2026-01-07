@@ -33,7 +33,7 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
   }, [initial]);
   const handleTest = async () => {
     setLoading(true);
-    const res = await form.validateFields();
+    const res = (form?.validateFields ? await form.validateFields(['address', 'username', 'password']) : form.getFieldsValue(true)) || {};
     const result = await storeConnect({
       type: StoreTypes.WEBDAV,
       config: {
@@ -47,7 +47,7 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
   };
 
   const handleConfirm = async () => {
-    const res = await form.validateFields();
+    const res = (form?.validateFields ? await form.validateFields() : form.getFieldsValue(true)) || {};
     const connection = {
       id: initial?.id,
       type: StoreTypes.WEBDAV,
@@ -76,7 +76,7 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
         <Input />
       </FormItem>
       <FormItem label="密码" name="password">
-        <SecurePasswordInput mode={mode} />
+        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.password?.length} maskChar="*" />
       </FormItem>
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>

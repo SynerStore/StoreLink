@@ -35,7 +35,9 @@ const S3Form = forwardRef((props: Props, ref) => {
   }, [initial]);
   const handleTest = async () => {
     setLoading(true);
-    const res = await form.validateFields();
+    const res =
+      (form?.validateFields ? await form.validateFields(['endpoint', 'accessKeyId', 'secretAccessKey']) : form.getFieldsValue(true)) ||
+      {};
     const result = await storeConnect({
       type: StoreTypes.S3,
       config: {
@@ -57,7 +59,7 @@ const S3Form = forwardRef((props: Props, ref) => {
   };
 
   const handleConfirm = async () => {
-    const res = await form.validateFields();
+    const res = (form?.validateFields ? await form.validateFields() : form.getFieldsValue(true)) || {};
     // Ensure bucketName is an array
     const bucketNames = Array.isArray(res.bucketName) ? res.bucketName : [res.bucketName];
 
@@ -98,9 +100,8 @@ const S3Form = forwardRef((props: Props, ref) => {
         label="Secret Key"
         name="secretAccessKey"
         rules={[{ required: !(mode === 'edit' && !!initial?.config?.secretAccessKey) }]}
-        extra={mode === 'edit' && initial?.config?.secretAccessKey ? '编辑模式：未修改将保留原值' : undefined}
       >
-        <SecurePasswordInput mode={mode} />
+        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.secretAccessKey?.length} maskChar="*" />
       </FormItem>
       <FormItem
         label="Bucket Name"

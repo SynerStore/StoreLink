@@ -32,16 +32,19 @@ const SFtpForm = forwardRef((props: Props, ref) => {
   }, [initial]);
   const handleTest = async () => {
     setLoading(true);
-    const res = await form.validateFields();
+    const res =
+      (form?.validateFields
+        ? await form.validateFields(['host', 'port', 'username', 'password', 'privateKey', 'passphrase'])
+        : form.getFieldsValue(true)) || {};
     const result = await storeConnect({
       type: StoreTypes.SFTP,
       config: {
         host: res.host,
         port: Number(res.port || 22),
         username: res.username,
-        password: res.password,
-        privateKey: res.privateKey,
-        passphrase: res.passphrase,
+        password: res.password ?? initial?.config?.password,
+        privateKey: res.privateKey ?? initial?.config?.privateKey,
+        passphrase: res.passphrase ?? initial?.config?.passphrase,
       },
     });
     console.log(result);
@@ -49,14 +52,13 @@ const SFtpForm = forwardRef((props: Props, ref) => {
   };
 
   const handleConfirm = async () => {
-    const res = await form.validateFields();
+    const res = (form?.validateFields ? await form.validateFields() : form.getFieldsValue(true)) || {};
     const connection = {
       id: initial?.id,
       type: StoreTypes.SFTP,
       brand: StoreBrands.sftp,
       name: res.name || res.host,
       config: {
-        host: res.host,
         port: Number(res.port || 22),
         username: res.username,
         password: res.password ?? initial?.config?.password,
@@ -85,13 +87,13 @@ const SFtpForm = forwardRef((props: Props, ref) => {
         <Input />
       </FormItem>
       <FormItem label="密码" name="password">
-        <SecurePasswordInput mode={mode} />
+        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.password?.length} maskChar="*" />
       </FormItem>
       <FormItem label="私钥" name="privateKey">
-        <SecurePasswordInput mode={mode} multiline />
+        <SecurePasswordInput mode={mode} multiline maskedLength={initial?.config?.privateKey?.length} maskChar="*" />
       </FormItem>
       <FormItem label="口令" name="passphrase">
-        <SecurePasswordInput mode={mode} />
+        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.passphrase?.length} maskChar="*" />
       </FormItem>
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>

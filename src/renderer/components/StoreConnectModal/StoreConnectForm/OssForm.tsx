@@ -28,14 +28,15 @@ const OssForm = forwardRef((props: Props, ref) => {
   useEffect(() => {
     if (initial?.config) {
       form.setFieldsValue({
-        name: initial.name,
+        accessKeyId: initial.config.accessKeyId,
+        secretAccessKey: initial.config.secretAccessKey,
         bucketName: initial.config.bucketName ? [initial.config.bucketName] : [],
       });
     }
   }, [initial]);
   const handleTest = async () => {
     setLoading(true);
-    const res = await form.validateFields();
+    const res = (form?.validateFields ? await form.validateFields(['accessKeyId', 'secretAccessKey']) : form.getFieldsValue(true)) || {};
     const result = await storeConnect({
       type: StoreTypes.OSS,
       config: {
@@ -55,7 +56,7 @@ const OssForm = forwardRef((props: Props, ref) => {
   };
   // 确认
   const handleConfirm = async () => {
-    const res = await form.validateFields();
+    const res = (form?.validateFields ? await form.validateFields() : form.getFieldsValue(true)) || {};
     const connections = res.bucketName.map((item: any) => {
       const bucket: any = buckets.find((bucket: any) => bucket.name === item);
       return {
@@ -90,9 +91,8 @@ const OssForm = forwardRef((props: Props, ref) => {
         label="Secret Key"
         name="secretAccessKey"
         rules={[{ required: !(mode === 'edit' && !!initial?.config?.secretAccessKey) }]}
-        extra={mode === 'edit' && initial?.config?.secretAccessKey ? '编辑模式：未修改将保留原值' : undefined}
       >
-        <SecurePasswordInput mode={mode} />
+        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.secretAccessKey?.length} maskChar="*" />
       </FormItem>
       <FormItem
         label="Bucket Name"

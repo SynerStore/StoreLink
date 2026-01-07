@@ -12,26 +12,11 @@ type SecurePasswordInputProps = {
   allowCopy?: boolean;
   multiline?: boolean;
   disabled?: boolean;
+  maskedLength?: number;
+  maskChar?: string;
 };
 
-const maskText = (len: number) => '•'.repeat(Math.max(1, Math.min(len, 64)));
-
-const calcStrength = (v: string) => {
-  let score = 0;
-  if (!v) return 0;
-  if (v.length >= 8) score += 1;
-  if (/[a-z]/.test(v)) score += 1;
-  if (/[A-Z]/.test(v)) score += 1;
-  if (/\d/.test(v)) score += 1;
-  if (/[^A-Za-z0-9]/.test(v)) score += 1;
-  return Math.min(score, 5);
-};
-
-const strengthText = (s: number) => {
-  if (s <= 1) return '弱';
-  if (s <= 3) return '中';
-  return '强';
-};
+const maskText = (len: number, ch: string = '*') => ch.repeat(Math.max(1, Math.min(len, 256)));
 
 const SecurePasswordInput = (props: SecurePasswordInputProps) => {
   const {
@@ -44,6 +29,8 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
     allowCopy = false,
     multiline = false,
     disabled = false,
+    maskedLength,
+    maskChar = '*',
   } = props;
 
   const initialHasValue = useMemo(() => !!(value ?? defaultValue), [value, defaultValue]);
@@ -82,6 +69,9 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
     }
   };
 
+  const maskLen = typeof maskedLength === 'number' ? maskedLength : initialHasValue ? 8 : 0;
+  const masked = maskText(maskLen, maskChar);
+
   const inputProps = {
     autoComplete: 'new-password',
     inputMode: 'text' as any,
@@ -92,7 +82,8 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
     onCopy: handleCopy,
     onChange: handleChange,
     disabled,
-    placeholder: placeholder || (mode === 'edit' && initialHasValue ? '已设置，未修改将保留原值' : undefined),
+    placeholder:
+      (mode === 'edit' && initialHasValue && !touchedRef.current ? masked : undefined) || placeholder,
     value: visible ? internal : mode === 'edit' && initialHasValue && !touchedRef.current ? '' : internal,
   };
 
@@ -108,8 +99,6 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
   );
 
   const shownText = visible ? internal : maskText(internal?.length || (initialHasValue ? 8 : 0));
-  const strength = calcStrength(internal);
-  const showStrength = !!internal && (visible || touchedRef.current);
 
   if (multiline) {
     return (
@@ -120,14 +109,8 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
           value={visible ? internal : ''}
         />
         <div style={{ display: 'flex', alignItems: 'center', marginTop: 4 }}>
-          <span style={{ flex: 1, color: 'var(--text-color-secondary)' }}>{visible ? '' : shownText}</span>
           <span style={{ marginLeft: 8 }}>{suffix}</span>
         </div>
-        {showStrength ? (
-          <div style={{ marginTop: 4, fontSize: 12, color: strength >= 4 ? '#52c41a' : strength >= 2 ? '#faad14' : '#ff4d4f' }}>
-            密码强度：{strengthText(strength)}
-          </div>
-        ) : null}
         {mode === 'edit' && initialHasValue ? (
           <div style={{ marginTop: 4, fontSize: 12, color: 'var(--text-color-secondary)' }}>编辑模式：未修改将保留原值</div>
         ) : null}
@@ -142,11 +125,6 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
         {...inputProps}
         suffix={suffix}
       />
-      {showStrength ? (
-        <div style={{ marginTop: 4, fontSize: 12, color: strength >= 4 ? '#52c41a' : strength >= 2 ? '#faad14' : '#ff4d4f' }}>
-          密码强度：{strengthText(strength)}
-        </div>
-      ) : null}
       {mode === 'edit' && initialHasValue ? (
         <div style={{ marginTop: 4, fontSize: 12, color: 'var(--text-color-secondary)' }}>编辑模式：未修改将保留原值</div>
       ) : null}
