@@ -3,7 +3,7 @@ import { Menu, Input, Space } from 'antd';
 import { groupBy } from 'lodash';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { StoreConnectModal, ConnectionDeleteWrap, ContextMenu } from '@/renderer/components';
+import { StoreConnectModal, ConnectionDeleteWrap, ContextMenu, ConnectionEditWrap } from '@/renderer/components';
 import MenuTitle from './MenuTitle';
 import { useConfigStore, useTabsStore, ETabDisplay } from '@/renderer/store';
 import './index.css';
@@ -67,9 +67,6 @@ const StoreSider = (props: StoreSiderProps) => {
     removeTab(data.key);
   };
 
-  //编辑
-  const handleEdit = () => {};
-
   return (
     <div className="store-sider" style={{ visibility: fold ? 'hidden' : 'visible' }}>
       <div className="store-sider-tip">
@@ -101,9 +98,13 @@ const StoreSider = (props: StoreSiderProps) => {
                       <ContextMenu
                         menu={[
                           {
-                            icon: <EditOutlined />,
-                            text: '编辑',
-                            onClick: () => {},
+                            render: () => (
+                              <ConnectionEditWrap connection={child}>
+                                <Space size={2}>
+                                  <EditOutlined /> 编辑
+                                </Space>
+                              </ConnectionEditWrap>
+                            ),
                           },
                           {
                             render: () => (

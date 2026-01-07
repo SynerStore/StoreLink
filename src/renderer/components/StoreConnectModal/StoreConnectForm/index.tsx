@@ -10,9 +10,12 @@ import { StoreDatas } from '@/constants';
 
 export type StoreConnectFormProps = {
   brand: string;
+  mode?: 'create' | 'edit';
+  initial?: any;
+  onSubmit?: (conn: any) => Promise<any> | any;
 };
 const StoreConnectForm = forwardRef((props: StoreConnectFormProps, ref) => {
-  const { brand } = props;
+  const { brand, mode = 'create', initial, onSubmit } = props;
 
   const store: any = useMemo(() => {
     return StoreDatas.find((item: any) => item.brand === brand);
@@ -20,15 +23,15 @@ const StoreConnectForm = forwardRef((props: StoreConnectFormProps, ref) => {
 
   switch (store.type) {
     case StoreTypes.OSS:
-      return <OssForm ref={ref} />;
+      return <OssForm ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
     case StoreTypes.S3:
-      return <S3Form />;
+      return <S3Form ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
     case StoreTypes.SFTP:
-      return <SFtpForm ref={ref} />;
+      return <SFtpForm ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
     case StoreTypes.LOCAL:
-      return <LocalForm ref={ref} />;
+      return <LocalForm ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
     case StoreTypes.WEBDAV:
-      return <WebDAVForm ref={ref} />;
+      return <WebDAVForm ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
     default:
       return null;
   }

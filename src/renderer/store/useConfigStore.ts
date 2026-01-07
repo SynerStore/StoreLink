@@ -20,7 +20,7 @@ type DataState = {
   loading: boolean;
   initializeData: () => Promise<void>;
   removeConnection: (v: string) => void;
-  updateConnection: (v: Connection) => void;
+  updateConnection: (v: Connection) => Promise<void>;
   addConnection: (v: Connection | Connection[]) => Promise<void>;
 };
 
@@ -57,12 +57,9 @@ export const useConfigStore = create<DataState>()(
         await events.removeConnection(id);
         await get().initializeData()
       },
-      updateConnection: (connection: Connection) => {
-        set((state) => ({
-          connections: state.connections.map((c) =>
-            c.id === connection.id ? { ...connection, updateDate: new Date().toLocaleString() } : c,
-          ),
-        }));
+      updateConnection: async (connection: Connection) => {
+        await events.updateConnection(connection);
+        await get().initializeData();
       },
     }),
     {

@@ -1,19 +1,22 @@
-import { useState, useImperativeHandle, forwardRef } from 'react';
+import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
 import { StoreTypes } from '@/types';
 import { useConfigStore } from '@/renderer/store';
+import { SecurePasswordInput } from '@/renderer/components';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-const S3Form = forwardRef((_props, ref) => {
+type Props = { mode?: 'create' | 'edit'; initial?: any; onSubmit?: (conn: any) => Promise<any> | any };
+const S3Form = forwardRef((props: Props, ref) => {
   const [form] = Form.useForm();
   const [buckets, setBuckets] = useState([]);
   const { addConnection } = useConfigStore();
   const { loading, setLoading } = useLoading();
+  const { mode = 'create', initial, onSubmit } = props;
 
   useImperativeHandle(ref, () => {
     return {
@@ -21,15 +24,24 @@ const S3Form = forwardRef((_props, ref) => {
     };
   });
 
+  useEffect(() => {
+    if (initial?.config) {
+      form.setFieldsValue({
+        name: initial.name,
+        endpoint: initial.config.endpoint,
+        bucketName: initial.config.bucketName ? [initial.config.bucketName] : [],
+      });
+    }
+  }, [initial]);
   const handleTest = async () => {
     setLoading(true);
     const res = await form.validateFields();
     const result = await storeConnect({
       type: StoreTypes.S3,
       config: {
-        accessKeyId: res.accessKeyId,
-        secretAccessKey: res.secretAccessKey,
-        endpoint: res.endpoint,
+        accessKeyId: res.accessKeyId ?? initial?.config?.accessKeyId,
+        secretAccessKey: res.secretAccessKey ?? initial?.config?.secretAccessKey,
+        endpoint: res.endpoint ?? initial?.config?.endpoint,
       },
     });
     setLoading(false);
@@ -52,32 +64,43 @@ const S3Form = forwardRef((_props, ref) => {
     const connections = bucketNames.map((item: any) => {
       const bucket: any = buckets.find((bucket: any) => bucket.name === item);
       return {
+        id: initial?.id,
         type: StoreTypes.S3,
         brand: 's3',
-        name: bucket?.name || item,
+        name: res.name || bucket?.name || item,
         config: {
-          accessKeyId: res.accessKeyId,
-          secretAccessKey: res.secretAccessKey,
-          endpoint: res.endpoint,
+          accessKeyId: res.accessKeyId ?? initial?.config?.accessKeyId,
+          secretAccessKey: res.secretAccessKey ?? initial?.config?.secretAccessKey,
+          endpoint: res.endpoint ?? initial?.config?.endpoint,
           bucketName: bucket?.name || item,
           region: bucket?.region,
         },
       };
     });
-    const newCons = await addConnection(connections);
-    return newCons;
+    if (mode === 'edit' && onSubmit) {
+      return onSubmit(connections[0]);
+    }
+    return addConnection(connections);
   };
 
   return (
     <Form form={form} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
+      <FormItem label="连接名称" name="name">
+        <Input />
+      </FormItem>
       <FormItem label="Endpoint" name="endpoint" tooltip="可选，默认为 AWS S3">
         <Input placeholder="https://s3.amazonaws.com" />
       </FormItem>
       <FormItem label="Access Key" name="accessKeyId" rules={[{ required: true }]}>
         <Input />
       </FormItem>
-      <FormItem label="Secret Key" name="secretAccessKey" rules={[{ required: true }]}>
-        <Input.Password />
+      <FormItem
+        label="Secret Key"
+        name="secretAccessKey"
+        rules={[{ required: !(mode === 'edit' && !!initial?.config?.secretAccessKey) }]}
+        extra={mode === 'edit' && initial?.config?.secretAccessKey ? '编辑模式：未修改将保留原值' : undefined}
+      >
+        <SecurePasswordInput mode={mode} />
       </FormItem>
       <FormItem
         label="Bucket Name"

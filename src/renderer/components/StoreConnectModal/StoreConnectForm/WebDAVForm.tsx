@@ -1,17 +1,20 @@
-import { useImperativeHandle, forwardRef } from 'react';
+import { useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
 import { StoreTypes, StoreBrands } from '@/types';
 import { useConfigStore } from '@/renderer/store';
+import { SecurePasswordInput } from '@/renderer/components';
 
 const FormItem = Form.Item;
 
-const WebDAVForm = forwardRef((_props, ref) => {
+type Props = { mode?: 'create' | 'edit'; initial?: any; onSubmit?: (conn: any) => Promise<any> | any };
+const WebDAVForm = forwardRef((props: Props, ref) => {
   const [form] = Form.useForm();
   const { loading, setLoading } = useLoading();
   const { addConnection } = useConfigStore();
+  const { mode = 'create', initial, onSubmit } = props;
 
   useImperativeHandle(ref, () => {
     return {
@@ -19,6 +22,15 @@ const WebDAVForm = forwardRef((_props, ref) => {
     };
   });
 
+  useEffect(() => {
+    if (initial?.config) {
+      form.setFieldsValue({
+        name: initial.name,
+        address: initial.config.address,
+        username: initial.config.username,
+      });
+    }
+  }, [initial]);
   const handleTest = async () => {
     setLoading(true);
     const res = await form.validateFields();
@@ -27,7 +39,7 @@ const WebDAVForm = forwardRef((_props, ref) => {
       config: {
         address: res.address,
         username: res.username,
-        password: res.password,
+        password: res.password ?? initial?.config?.password,
       },
     });
     console.log(result);
@@ -37,21 +49,26 @@ const WebDAVForm = forwardRef((_props, ref) => {
   const handleConfirm = async () => {
     const res = await form.validateFields();
     const connection = {
+      id: initial?.id,
       type: StoreTypes.WEBDAV,
       brand: StoreBrands.WebDAV,
-      name: res.address,
+      name: res.name || res.address,
       config: {
         address: res.address,
         username: res.username,
         password: res.password,
       },
     };
-    // 判断是否存在
-    const newCons = await addConnection(connection);
-    return newCons;
+    if (mode === 'edit' && onSubmit) {
+      return onSubmit(connection);
+    }
+    return addConnection(connection);
   };
   return (
     <Form form={form}  autoComplete="off">
+      <FormItem label="连接名称" name="name">
+        <Input />
+      </FormItem>
       <FormItem label="服务器地址" name="address">
         <Input />
       </FormItem>
@@ -59,7 +76,7 @@ const WebDAVForm = forwardRef((_props, ref) => {
         <Input />
       </FormItem>
       <FormItem label="密码" name="password">
-        <Input.Password />
+        <SecurePasswordInput mode={mode} />
       </FormItem>
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>

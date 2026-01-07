@@ -1,15 +1,18 @@
-import { useImperativeHandle, forwardRef } from 'react';
+import { useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
 import { StoreTypes, StoreBrands } from '@/types';
 import { useConfigStore } from '@/renderer/store';
+import { SecurePasswordInput } from '@/renderer/components';
 const FormItem = Form.Item;
 
-const SFtpForm = forwardRef((_props, ref) => {
+type Props = { mode?: 'create' | 'edit'; initial?: any; onSubmit?: (conn: any) => Promise<any> | any };
+const SFtpForm = forwardRef((props: Props, ref) => {
   const [form] = Form.useForm();
   const { loading, setLoading } = useLoading();
   const { addConnection } = useConfigStore();
+  const { mode = 'create', initial, onSubmit } = props;
 
   useImperativeHandle(ref, () => {
     return {
@@ -17,6 +20,16 @@ const SFtpForm = forwardRef((_props, ref) => {
     };
   });
 
+  useEffect(() => {
+    if (initial?.config) {
+      form.setFieldsValue({
+        name: initial.name,
+        host: initial.config.host,
+        port: initial.config.port,
+        username: initial.config.username,
+      });
+    }
+  }, [initial]);
   const handleTest = async () => {
     setLoading(true);
     const res = await form.validateFields();
@@ -38,24 +51,30 @@ const SFtpForm = forwardRef((_props, ref) => {
   const handleConfirm = async () => {
     const res = await form.validateFields();
     const connection = {
+      id: initial?.id,
       type: StoreTypes.SFTP,
       brand: StoreBrands.sftp,
-      name: res.host,
+      name: res.name || res.host,
       config: {
         host: res.host,
         port: Number(res.port || 22),
         username: res.username,
-        password: res.password,
-        privateKey: res.privateKey,
-        passphrase: res.passphrase,
+        password: res.password ?? initial?.config?.password,
+        privateKey: res.privateKey ?? initial?.config?.privateKey,
+        passphrase: res.passphrase ?? initial?.config?.passphrase,
       },
     };
-    const newCons = await addConnection(connection);
-    return newCons;
+    if (mode === 'edit' && onSubmit) {
+      return onSubmit(connection);
+    }
+    return addConnection(connection);
   };
 
   return (
     <Form form={form} autoComplete="off">
+      <FormItem label="连接名称" name="name">
+        <Input />
+      </FormItem>
       <FormItem label="主机" name="host" rules={[{ required: true }]}>
         <Input />
       </FormItem>
@@ -66,13 +85,13 @@ const SFtpForm = forwardRef((_props, ref) => {
         <Input />
       </FormItem>
       <FormItem label="密码" name="password">
-        <Input.Password />
+        <SecurePasswordInput mode={mode} />
       </FormItem>
       <FormItem label="私钥" name="privateKey">
-        <Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }} />
+        <SecurePasswordInput mode={mode} multiline />
       </FormItem>
       <FormItem label="口令" name="passphrase">
-        <Input.Password />
+        <SecurePasswordInput mode={mode} />
       </FormItem>
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>

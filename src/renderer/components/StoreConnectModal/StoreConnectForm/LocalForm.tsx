@@ -1,4 +1,4 @@
-import { useImperativeHandle, forwardRef } from 'react';
+import { useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Switch } from 'antd';
 import { FolderOutlined } from '@ant-design/icons';
 
@@ -8,9 +8,11 @@ import { useConfigStore } from '@/renderer/store';
 
 const FormItem = Form.Item;
 
-const LocalForm = forwardRef((_props, ref) => {
+type Props = { mode?: 'create' | 'edit'; initial?: any; onSubmit?: (conn: any) => Promise<any> | any };
+const LocalForm = forwardRef((props: Props, ref) => {
   const [form] = Form.useForm();
   const { addConnection } = useConfigStore();
+  const { mode = 'create', initial, onSubmit } = props;
 
   const handleSelectLocalDirPath = async () => {
     const dirPath = await events.getSingleDirPath();
@@ -23,11 +25,20 @@ const LocalForm = forwardRef((_props, ref) => {
     };
   });
 
+  useEffect(() => {
+    if (initial?.config) {
+      form.setFieldsValue({
+        name: initial.name,
+        root: initial.config.root,
+        isShowHiddenFiles: initial.config.isShowHiddenFiles,
+      });
+    }
+  }, [initial]);
   // 确认
   const handleConfirm = async () => {
     const res = await form.validateFields();
-    // 判断是否存在
-    const newCons = await addConnection({
+    const payload = {
+      id: initial?.id,
       type: StoreTypes.LOCAL,
       brand: 'local',
       name: res.name,
@@ -35,8 +46,11 @@ const LocalForm = forwardRef((_props, ref) => {
         root: res.root,
         isShowHiddenFiles: res.isShowHiddenFiles || false,
       },
-    });
-    return newCons;
+    };
+    if (mode === 'edit' && onSubmit) {
+      return onSubmit(payload);
+    }
+    return addConnection(payload);
   };
 
   return (

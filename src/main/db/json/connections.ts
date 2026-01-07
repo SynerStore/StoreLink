@@ -146,3 +146,24 @@ export async function updateConnectionCollected(params: { id: string; isCollecte
   });
   return params;
 }
+
+export async function updateConnection(connection: any) {
+  const data = getConnectionsData();
+  const payload = encryptConnectionSensitive([connection])[0] || connection;
+  const next = (data.connections || []).map((c: any) =>
+    c.id === payload.id
+      ? {
+          ...c,
+          ...payload,
+          config: { ...(c?.config || {}), ...(payload?.config || {}) },
+          updateDate: new Date().toLocaleString(),
+        }
+      : c
+  );
+  await setConnectionsData({ connections: next });
+  logAction({
+    action: 'update_connection',
+    meta: { connectionId: payload.id },
+  });
+  return payload;
+}
