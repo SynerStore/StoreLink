@@ -73,8 +73,8 @@ const HomeTab = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [logsLimit, setLogsLimit] = useState<number>(10);
   const fetchLogs = async (date?: string, limit?: number) => {
-    const res = await events.getLogs({ date, limit: limit ?? logsLimit });
-    setLogs(res || []);
+    const res = await events.getLogs({ date, pageSize: limit ?? logsLimit });
+    setLogs(res?.lines || []);
   };
   useEffect(() => {
     fetchLogs();
@@ -106,7 +106,7 @@ const HomeTab = () => {
       </div>
       <div className="home-tab-content" style={{ marginTop: 16 }}>
         <div style={{ marginTop: 16 }}>
-          <Card title="我的收藏链接" bordered={false}>
+          <Card title="我的收藏链接">
             {favoriteConnections.length > 0 ? (
               <List
                 bordered={false}
@@ -115,7 +115,9 @@ const HomeTab = () => {
                   <List.Item key={item.id} className="home-tab-content-list-item">
                     <Space size={8}>
                       <StoreIcon brand={item.brand} size={24} styles={{}} />
-                      <span className="home-tab-content-list-item-name" style={{ fontWeight: 500 }}>{item.name}</span>
+                      <span className="home-tab-content-list-item-name" style={{ fontWeight: 500 }}>
+                        {item.name}
+                      </span>
                       <Tag color="blue">{item.brand}</Tag>
                       <Button type="text" onClick={() => toggleFavorite(item.id)}>
                         ★ 取消收藏
@@ -125,7 +127,7 @@ const HomeTab = () => {
                 )}
               />
             ) : (
-              <Space size={8} direction="vertical">
+              <Space size={8} vertical>
                 <span>暂无收藏链接</span>
               </Space>
             )}

@@ -66,20 +66,22 @@ const App = () => {
             <Header />
             <main className="main">
               <Sider fold={storeSiderfold} onFold={handleFold} />
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <>
-                      <StoreSider fold={storeSiderfold} />
-                      <StoreViewerTabs />
-                    </>
-                  }
-                />
-                <Route path="/tasks" element={<Tasks />} />
-                <Route path="/logs" element={<Logs />} />
-                <Route path="/setting" element={<Setting />} />
-              </Routes>
+              <div className="content">
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      <>
+                        <StoreSider fold={storeSiderfold} />
+                        <StoreViewerTabs />
+                      </>
+                    }
+                  />
+                  <Route path="/tasks" element={<Tasks />} />
+                  <Route path="/logs" element={<Logs />} />
+                  <Route path="/setting" element={<Setting />} />
+                </Routes>
+              </div>
             </main>
           </div>
         </HashRouter>

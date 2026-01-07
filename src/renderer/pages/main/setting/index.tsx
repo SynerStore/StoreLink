@@ -1,6 +1,7 @@
 import { Form, Select, Radio, Space, Button, message } from 'antd';
 import { useSettingStore, EnumLang, useConfigStore } from '@/renderer/store';
 import { events } from '@/renderer/utils';
+import { PageWrapper } from '@/renderer/components';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -42,7 +43,7 @@ const Setting = () => {
   };
 
   return (
-    <div style={{ padding: 16 }}>
+    <PageWrapper title="设置">
       <Form autoComplete="off" layout="horizontal">
         <FormItem label="主题样式">
           <RadioGroup name="size" value={settingStore.settings.theme} onChange={handleSwitchTheme}>
@@ -66,7 +67,7 @@ const Setting = () => {
           </Space>
         </FormItem>
       </Form>
-    </div>
+    </PageWrapper>
   );
 };
 
