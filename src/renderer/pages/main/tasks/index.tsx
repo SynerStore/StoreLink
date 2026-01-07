@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Tabs } from 'antd';
 
-import DownloadingTaskTable from '@/renderer/components/TaskPanel/DownloadingTaskTable';
-import FinishedTaskTable from '@/renderer/components/TaskPanel/FinishedTaskTable';
-import FailedTaskTable from '@/renderer/components/TaskPanel/FailedTaskTable';
-import UploadingTaskTable from '@/renderer/components/TaskPanel/UploadingTaskTable';
+import DownloadingTaskTable from './DownloadingTaskTable';
+import FinishedTaskTable from './FinishedTaskTable';
+import FailedTaskTable from './FailedTaskTable';
+import UploadingTaskTable from './UploadingTaskTable';
+import "./index.css"
 
 export enum ETaskManageTab {
   Downloading = 'downloading',
@@ -13,7 +14,7 @@ export enum ETaskManageTab {
   Failed = 'failed',
 }
 
-const TaskManage: React.FC = () => {
+const Tasks: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ETaskManageTab>(ETaskManageTab.Downloading);
 
   const items = [
@@ -53,4 +54,4 @@ const TaskManage: React.FC = () => {
   );
 };
 
-export default TaskManage;
+export default Tasks;

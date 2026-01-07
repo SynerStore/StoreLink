@@ -36,7 +36,7 @@ const Sider = (props: SiderProps) => {
       <div className="sider-bottom">
         <Divider style={{ margin: '8px 0px' }} />
         <Space vertical size={16}>
-          <SwapOutlined onClick={() => navigate('/task-manage')} />
+          <SwapOutlined onClick={() => navigate('/tasks')} />
           {/* <MessageOutlined /> */}
           {/* <ToolOutlined /> */}
           <SettingPanel>

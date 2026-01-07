@@ -6,11 +6,11 @@ import enUS from 'antd/locale/en_US';
 import 'antd/dist/reset.css';
 
 import '@/renderer/i18n';
-import { StoreViewerTabs, Header, Sider, StoreSider, TaskPanel } from '@/renderer/components';
+import { StoreViewerTabs, Header, Sider, StoreSider } from '@/renderer/components';
 import { useConfigStore, useTabsStore, useSettingStore, EnumTheme } from '@/renderer/store';
 import { updateRootStyleProperty } from '@/renderer/utils';
 import '@/renderer/styles/index.css';
-import TaskManage from './task-manage';
+import Tasks from './tasks';
 import './index.css';
 
 const App = () => {
@@ -74,8 +74,7 @@ const App = () => {
                     </>
                   }
                 />
-                <Route path="/task-manage" element={<TaskManage />} />
-                <Route path="/tasks" element={<TaskPanel />} />
+                <Route path="/tasks" element={<Tasks />} />
               </Routes>
             </main>
           </div>
