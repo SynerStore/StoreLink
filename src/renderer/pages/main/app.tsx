@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider, theme, Modal } from 'antd';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
@@ -14,6 +14,18 @@ import Tasks from './tasks';
 import Logs from './logs';
 import Setting from './setting';
 import './index.css';
+
+const __patchModalCentered__ = (() => {
+  let patched = false;
+  return () => {
+    if (patched) return;
+    ['confirm', 'info', 'success', 'warning', 'error'].forEach((k: any) => {
+      const orig = (Modal as any)[k];
+      (Modal as any)[k] = (config: any) => orig({ centered: true, ...config });
+    });
+    patched = true;
+  };
+})();
 
 const App = () => {
   const settingStore = useSettingStore();
@@ -54,6 +66,7 @@ const App = () => {
   };
 
   useEffect(() => {
+    __patchModalCentered__();
     // setTimeout(() => events.windowRenderReady(), 1000);
     handleOnready();
   }, []);

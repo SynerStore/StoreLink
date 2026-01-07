@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect } from 'react';
 import qs from 'query-string';
-import { ConfigProvider, theme } from 'antd';
+import { ConfigProvider, theme, Modal } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
 import 'antd/dist/reset.css';
@@ -8,6 +8,18 @@ import 'antd/dist/reset.css';
 import { Header, FileViewer, FileIcon } from '@/renderer/components';
 import { useSettingStore, EnumTheme } from '@/renderer/store';
 import './index.css';
+
+const __patchModalCentered__ = (() => {
+  let patched = false;
+  return () => {
+    if (patched) return;
+    ['confirm', 'info', 'success', 'warning', 'error'].forEach((k: any) => {
+      const orig = (Modal as any)[k];
+      (Modal as any)[k] = (config: any) => orig({ centered: true, ...config });
+    });
+    patched = true;
+  };
+})();
 
 const App = () => {
   const query = qs.parse(window.location.search);
@@ -27,6 +39,7 @@ const App = () => {
   }, [settingStore.settings.theme]);
 
   useEffect(() => {
+    __patchModalCentered__();
     if (settingStore.settings.theme === EnumTheme.DARK) {
       document.body.setAttribute('data-theme', 'dark');
     } else {
