@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Space, Card, Statistic, List, Tag, DatePicker, Select } from 'antd';
+import { Button, Space, Card, Statistic, Tag, DatePicker, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { StoreConnectModal, StoreIcon } from '@/renderer/components';
+import { StoreConnectModal, StoreIcon, List } from '@/renderer/components';
 import { useConfigStore, useTabsStore } from '@/renderer/store';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus } from '@/types';
@@ -73,8 +73,10 @@ const HomeTab = () => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [logsLimit, setLogsLimit] = useState<number>(10);
   const fetchLogs = async (date?: string, limit?: number) => {
-    const res = await events.getLogs({ date, pageSize: limit ?? logsLimit });
-    setLogs(res?.lines || []);
+    const payload: any = { date, limit: limit ?? logsLimit };
+    const res: any = await events.getLogs(payload);
+    const lines = Array.isArray(res) ? res : res?.lines || [];
+    setLogs(lines);
   };
   useEffect(() => {
     fetchLogs();
@@ -166,6 +168,8 @@ const HomeTab = () => {
             <List
               size="small"
               bordered
+              height={240}
+              itemHeight={32}
               dataSource={logs}
               renderItem={(line: string, index: number) => <List.Item key={index}>{line}</List.Item>}
             />
