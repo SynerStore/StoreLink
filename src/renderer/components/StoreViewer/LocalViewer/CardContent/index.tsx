@@ -13,12 +13,26 @@ export type CardContentProps = {
   onDownload?: (data: any) => Promise<void>;
   onDelete: (data: any) => Promise<void>;
   onRename: (data: any, newName: string) => Promise<void>;
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
   onSelectionChange?: (selectedKeys: React.Key[]) => void;
   selectedKeys?: React.Key[];
 };
 
 const CardContent = (props: CardContentProps) => {
-  const { data, onPrefixChange, onFileView, loading, onRename, onDelete, onDownload, onSelectionChange, selectedKeys } = props;
+  const {
+    data,
+    onPrefixChange,
+    onFileView,
+    loading,
+    onRename,
+    onDelete,
+    onDownload,
+    onMoveTo,
+    onCopyTo,
+    onSelectionChange,
+    selectedKeys,
+  } = props;
 
   return (
     <div className="cards-content">
@@ -31,6 +45,8 @@ const CardContent = (props: CardContentProps) => {
             onRename={onRename}
             onDelete={onDelete}
             onDownload={onDownload}
+            onMoveTo={onMoveTo}
+            onCopyTo={onCopyTo}
             onSelectionChange={onSelectionChange}
             selectedKeys={selectedKeys}
             minItemWidth={80}

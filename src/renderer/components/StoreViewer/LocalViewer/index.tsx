@@ -12,10 +12,11 @@ import {
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup } from '@/renderer/components';
+import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, FileTransferModal } from '@/renderer/components';
 import { PathHistory, storeRequest, openViewer, events } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
+import { TStoreObject } from '@/types';
 import './index.css';
 
 const RadioGroup = Radio.Group;
@@ -33,6 +34,10 @@ const LocalViewer = (props: LocalViewerProps) => {
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
+
+  const [transferModalVisible, setTransferModalVisible] = useState(false);
+  const [transferMode, setTransferMode] = useState<'move' | 'copy'>('copy');
+  const [transferFiles, setTransferFiles] = useState<TStoreObject[]>([]);
 
   const display = useMemo(() => {
     return tabData?.display || ETabDisplay.LIST;
@@ -117,6 +122,38 @@ const LocalViewer = (props: LocalViewerProps) => {
       id: connectionId,
       params: { oldName: record.key, newName: newName },
     });
+  };
+
+  const handleMoveTo = async (record: any) => {
+    setTransferFiles([record]);
+    setTransferMode('move');
+    setTransferModalVisible(true);
+  };
+
+  const handleCopyTo = async (record: any) => {
+    setTransferFiles([record]);
+    setTransferMode('copy');
+    setTransferModalVisible(true);
+  };
+
+  const handleTransfer = async (targetConnectionId: string, targetPath: string) => {
+    const isMove = transferMode === 'move';
+    const sourceConnectionId = connectionId;
+    const files = transferFiles.map((f) => f.key);
+
+    await storeRequest({
+      method: 'transfer',
+      id: connectionId,
+      params: {
+        sourceConnectionId,
+        targetConnectionId,
+        files,
+        targetPath,
+        isMove,
+      },
+    });
+
+    setTransferModalVisible(false);
   };
 
   const handleSelectionChange = (keys: React.Key[]) => {
@@ -211,6 +248,8 @@ const LocalViewer = (props: LocalViewerProps) => {
               onRename={handleRename}
               onSelectionChange={handleSelectionChange}
               selectedKeys={selectedKeys}
+              onMoveTo={handleMoveTo}
+              onCopyTo={handleCopyTo}
             />
           ) : null}
           {display === ETabDisplay.CARD ? (
@@ -224,6 +263,8 @@ const LocalViewer = (props: LocalViewerProps) => {
               onRename={handleRename}
               onSelectionChange={handleSelectionChange}
               selectedKeys={selectedKeys}
+              onMoveTo={handleMoveTo}
+              onCopyTo={handleCopyTo}
             />
           ) : null}
         </FileDropWrap>
@@ -231,6 +272,14 @@ const LocalViewer = (props: LocalViewerProps) => {
       <div className="viewer-footer">
         <span>已选 {selectedKeys.length} 项，已拉取 {dataList.length} 项 </span>
       </div>
+      <FileTransferModal
+        visible={transferModalVisible}
+        mode={transferMode}
+        files={transferFiles}
+        sourceConnectionId={connectionId}
+        onCancel={() => setTransferModalVisible(false)}
+        onOk={handleTransfer}
+      />
     </div>
   );
 };

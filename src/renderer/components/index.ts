@@ -25,3 +25,4 @@ export { default as ButtonGroup } from './ButtonGroup';
 export { default as List } from './List';
 export * from './FileTable';
 export { default as FileCardList } from './FileCardList';
+export { default as FileTransferModal } from './FileTransferModal';

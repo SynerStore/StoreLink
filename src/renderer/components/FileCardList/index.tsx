@@ -15,6 +15,8 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     onDownload,
     onDelete,
     onRename,
+    onMoveTo,
+    onCopyTo,
     onSelectionChange,
     selectedKeys: propSelectedKeys,
     className = '',
@@ -236,9 +238,11 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
               data={item}
               onDetail={() => {}}
               onRename={onRename}
-              onDelete={onDelete}
-              onDownload={onDownload}
-            >
+                    onDelete={onDelete}
+                    onDownload={onDownload}
+                    onMoveTo={onMoveTo}
+                    onCopyTo={onCopyTo}
+                  >
               <Tooltip
                 placement="bottom"
                 trigger="click"

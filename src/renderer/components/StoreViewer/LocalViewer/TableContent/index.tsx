@@ -16,11 +16,13 @@ export type TableContentProps = {
   onRename: (data: any, newName: string) => Promise<void>;
   onSelectionChange?: (selectedKeys: React.Key[]) => void;
   selectedKeys?: React.Key[];
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
 };
 
 const TableContent = (props: TableContentProps) => {
   const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 196 - 55);
-  const { data, connectionId, onPrefixChange, onFileView, loading, onRename, onDelete, onSelectionChange, selectedKeys } = props;
+  const { data, connectionId, onPrefixChange, onFileView, loading, onRename, onDelete, onSelectionChange, selectedKeys, onMoveTo, onCopyTo } = props;
 
   const handleFileClick = (record: TStoreObject) => {
     if (record.isDirectory) {
@@ -46,7 +48,14 @@ const TableContent = (props: TableContentProps) => {
       key: 'name',
       render: (text: any, record: TStoreObject) => {
         return (
-          <FileContextMenu data={record} onDetail={(data: any) => {}} onRename={onRename} onDelete={onDelete}>
+          <FileContextMenu
+            data={record}
+            onDetail={(data: any) => {}}
+            onRename={onRename}
+            onDelete={onDelete}
+            onMoveTo={onMoveTo}
+            onCopyTo={onCopyTo}
+          >
             <div
               className="file-item"
             >

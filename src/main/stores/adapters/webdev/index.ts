@@ -64,6 +64,17 @@ class WebDAVStore implements IStorageHandler {
     }
   }
 
+  async listDir(params: ListParams) {
+    try {
+      const result = await list(this.client, params);
+      const folders = result.filter((item: any) => item.isDirectory);
+      return sucessResponse(folders);
+    } catch (err: any) {
+      console.log(err);
+      return errorResponse(err.message);
+    }
+  }
+
   //  下载
   async get(params: GetFolderParams & GetFileParams) {
     try {

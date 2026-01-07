@@ -98,6 +98,17 @@ class SftpStore implements IStorageHandler {
     }
   }
 
+  async listDir(params: ListParams) {
+    try {
+      await this.ensureClientIsOpen();
+      const result = await list(this.client, params);
+      const folders = result.filter((item: any) => item.isDirectory);
+      return sucessResponse(folders);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
+
   async get(params: GetFolderParams & GetFileParams) {
     try {
       await this.ensureClientIsOpen();

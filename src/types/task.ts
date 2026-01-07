@@ -14,4 +14,5 @@ export enum ETaskType {
   RENAME = 'rename',
   COPY = 'copy',
   CREATE_DIR = 'create_dir',
+  TRANSFER = 'transfer',
 }

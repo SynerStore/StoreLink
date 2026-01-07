@@ -4,6 +4,7 @@ import { sucessResponse, errorResponse } from '@/main/utils';
 import { IStorageHandler } from '../store';
 import {
   list,
+  listDir,
   ListParams,
   deleteFile,
   deleteMultiFiles,
@@ -43,6 +44,19 @@ class LocalStore implements IStorageHandler {
   async list(params: ListParams) {
     try {
       let result = await list(this.root, params);
+      // 隐藏文件
+      if (this.config?.isShowHiddenFiles === false) {
+        result = result.filter((item: any) => !item.isHiddenFile);
+      }
+      return sucessResponse(result);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
+
+  async listDir(params: ListParams) {
+    try {
+      let result = await listDir(this.root, params);
       // 隐藏文件
       if (this.config?.isShowHiddenFiles === false) {
         result = result.filter((item: any) => !item.isHiddenFile);

@@ -88,6 +88,16 @@ class OssStore implements IStorageHandler {
     }
   }
 
+  async listDir(params: ListParams) {
+    try {
+      const result = await list(this.client, params);
+      const folders = result.objects.filter((item: any) => item.isDirectory);
+      return sucessResponse(folders);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
+
   // 下载单个对象
   async get(params: GetObjectParams & GetFolderParams, onProgress?: any) {
     try {

@@ -8,6 +8,8 @@ import {
   EyeOutlined,
   DeleteOutlined,
   CopyOutlined,
+  ScissorOutlined,
+  ExportOutlined,
 } from '@ant-design/icons';
 import { FileRenameWrap, FileDeteleWrap, ContextMenu, MenuItem } from '@/renderer/components';
 
@@ -19,11 +21,13 @@ export type FileContextMenuProps = {
   onRename?: (data: any, newName: string) => Promise<void>;
   onOpen?: (data: any) => Promise<void>;
   onCopy?: (data: any) => Promise<void>;
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
   children?: React.ReactNode;
 };
 
 const FileContextMenu = (props: any) => {
-  const { data, onDetail, onDownload, onDelete, onRename, onOpen, onCopy, children } = props;
+  const { data, onDetail, onDownload, onDelete, onRename, onOpen, onCopy, onMoveTo, onCopyTo, children } = props;
 
   const menus = useMemo<MenuItem[]>(() => {
     const baseMenus: MenuItem[] = [];
@@ -57,6 +61,22 @@ const FileContextMenu = (props: any) => {
         icon: <CopyOutlined />,
         text: '复制',
         onClick: () => onCopy(data),
+      });
+    }
+
+    if (onCopyTo) {
+      baseMenus.push({
+        icon: <ExportOutlined />,
+        text: '复制到...',
+        onClick: () => onCopyTo(data),
+      });
+    }
+
+    if (onMoveTo) {
+      baseMenus.push({
+        icon: <ScissorOutlined />,
+        text: '移动到...',
+        onClick: () => onMoveTo(data),
       });
     }
 

@@ -5,6 +5,7 @@ export interface IStorageHandler {
   destroy?(): void;
   test?(): Promise<ResponseData<any>>;
   list?(params: any): Promise<ResponseData<any>>;
+  listDir?(params: any): Promise<ResponseData<any>>;
   get?(params: any, onProgress?: any): Promise<ResponseData<any>>;
   getMulti?(params: any): Promise<ResponseData<any>>;
   put?(params: any, onProgress?: any): Promise<ResponseData<any>>;
