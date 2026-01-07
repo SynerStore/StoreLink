@@ -1,5 +1,5 @@
 import { Fragment, useLayoutEffect, useState } from 'react';
-import { Table } from 'antd';
+import { FileTable } from '@/renderer/components';
 import dayjs from 'dayjs';
 
 import { EWindowSize, EOssStorageClass, TStoreObject } from '@/types';
@@ -108,7 +108,7 @@ const TableContent = (props: TableContentProps) => {
 
   return (
     <div className="table-content">
-      <Table
+      <FileTable
         rowKey={'key'}
         size="small"
         bordered={false}

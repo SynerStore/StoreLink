@@ -31,7 +31,6 @@ const TableContent = (props: TableContentProps) => {
   const handleRowDragStart = (e: React.DragEvent<HTMLElement>, selectedRows: TStoreObject[]) => {
     const dragData = selectedRows.map(row => ({
       connectionId,
-      key: row.key,
       ...row
     }));
     e.dataTransfer.setData('application/json', JSON.stringify(dragData));
