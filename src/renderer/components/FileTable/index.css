@@ -1,0 +1,17 @@
+.file-table-wrapper {
+  outline: none;
+}
+
+.file-table-wrapper .ant-table-row {
+  cursor: default;
+  user-select: none;
+}
+
+.file-table-wrapper .ant-table-row.file-table-row-selected {
+  background-color: var(--primary-1);
+}
+
+.file-table-wrapper .ant-table-row.file-table-row-focused {
+  outline: 1px solid var(--primary-color);
+  outline-offset: -1px;
+}

@@ -21,3 +21,4 @@ export { default as ResponsiveGrid } from './ResponsiveGrid';
 export { default as PageWrapper } from './PageWrapper';
 export { default as ButtonGroup } from './ButtonGroup';
 export { default as List } from './List';
+export * from './FileTable';

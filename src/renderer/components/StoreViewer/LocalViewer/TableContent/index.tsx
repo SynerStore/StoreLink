@@ -1,9 +1,8 @@
 import { Fragment, useLayoutEffect, useState } from 'react';
-import { Table } from 'antd';
 import dayjs from 'dayjs';
 
 import { EWindowSize, TStoreObject } from '@/types';
-import { FileIcon, FileContextMenu } from '@/renderer/components';
+import { FileIcon, FileContextMenu, FileTable } from '@/renderer/components';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
 
@@ -29,23 +28,26 @@ const TableContent = (props: TableContentProps) => {
     }
   };
 
+  const handleRowDragStart = (e: React.DragEvent<HTMLElement>, selectedRows: TStoreObject[]) => {
+    const dragData = selectedRows.map(row => ({
+      connectionId,
+      key: row.key,
+      ...row
+    }));
+    e.dataTransfer.setData('application/json', JSON.stringify(dragData));
+    e.dataTransfer.effectAllowed = 'copyMove';
+  };
+
   const columns = [
     {
       title: '名称',
       dataIndex: 'name',
       key: 'name',
       render: (text: any, record: TStoreObject) => {
-        const dataInfo = JSON.stringify({
-          connectionId: connectionId,
-          key: record.key,
-        });
         return (
           <FileContextMenu data={record} onDetail={(data: any) => {}} onRename={onRename} onDelete={onDelete}>
             <div
-              draggable="true"
               className="file-item"
-              data-info={dataInfo}
-              onDoubleClick={() => handleFileClick(record)}
             >
               {record.isDirectory ? (
                 <Fragment>
@@ -91,7 +93,7 @@ const TableContent = (props: TableContentProps) => {
 
   return (
     <div className="table-content">
-      <Table
+      <FileTable
         rowKey={'key'}
         size="small"
         bordered={false}
@@ -101,6 +103,8 @@ const TableContent = (props: TableContentProps) => {
         dataSource={data}
         pagination={false}
         columns={columns}
+        onRowDoubleClick={handleFileClick}
+        onRowDragStart={handleRowDragStart}
       />
     </div>
   );
