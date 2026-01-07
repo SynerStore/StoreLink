@@ -11,6 +11,8 @@ import { useConfigStore, useTabsStore, useSettingStore, EnumTheme } from '@/rend
 import { updateRootStyleProperty } from '@/renderer/utils';
 import '@/renderer/styles/index.css';
 import Tasks from './tasks';
+import Logs from './logs';
+import Setting from './setting';
 import './index.css';
 
 const App = () => {
@@ -75,6 +77,8 @@ const App = () => {
                   }
                 />
                 <Route path="/tasks" element={<Tasks />} />
+                <Route path="/logs" element={<Logs />} />
+                <Route path="/setting" element={<Setting />} />
               </Routes>
             </main>
           </div>

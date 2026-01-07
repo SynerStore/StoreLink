@@ -10,6 +10,16 @@
 
   .anticon {
     cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .anticon:hover {
+    color: var(--primary-color);
+    transform: scale(1.05);
+  }
+
+  .anticon.active {
+    color: var(--primary-color);
   }
 
   .sider-top {
