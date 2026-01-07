@@ -30,7 +30,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
   
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Helper to get key
+  // 获取行键值的辅助函数
   const getRowKey = useCallback((record: T, index?: number): React.Key => {
     if (typeof restProps.rowKey === 'function') {
       return restProps.rowKey(record, index);
@@ -38,11 +38,11 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     if (typeof restProps.rowKey === 'string') {
       return (record as any)[restProps.rowKey];
     }
-    // Fallback if no rowKey provided (usually antd requires rowKey if no key prop)
+    // 未提供 rowKey 时的回退（通常 antd 需要显式 rowKey 或 key 属性）
     return (record as any).key;
   }, [restProps.rowKey]);
 
-  // Controlled vs Uncontrolled logic
+  // 受控与非受控选择逻辑
   const selectedKeys = useMemo(() => {
     return rowSelection?.selectedRowKeys ?? internalSelectedKeys;
   }, [rowSelection?.selectedRowKeys, internalSelectedKeys]);
@@ -58,16 +58,16 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     }
   };
 
-  // Helper to get index
+  // 根据键值获取行索引
   const getIndex = (key: React.Key) => dataSource.findIndex((item, index) => getRowKey(item, index) === key);
 
-  // Handle Row Click
+  // 处理行点击
   const onRowClick = (record: T, index: number, event: React.MouseEvent) => {
     const key = getRowKey(record, index);
     let newSelectedKeys = [...selectedKeys];
 
     if (event.ctrlKey || event.metaKey) {
-      // Toggle
+      // 切换选中状态
       if (newSelectedKeys.includes(key)) {
         newSelectedKeys = newSelectedKeys.filter(k => k !== key);
       } else {
@@ -76,7 +76,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       setLastSelectedKey(key);
       setFocusedKey(key);
     } else if (event.shiftKey && lastSelectedKey !== null) {
-      // Range select
+      // 范围选择
       const lastIndex = getIndex(lastSelectedKey);
       const currentIndex = index;
       if (lastIndex >= 0 && currentIndex >= 0) {
@@ -87,7 +87,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       }
       setFocusedKey(key);
     } else {
-      // Single select
+      // 单选
       newSelectedKeys = [key];
       setLastSelectedKey(key);
       setFocusedKey(key);
@@ -96,16 +96,16 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     triggerSelectionChange(newSelectedKeys);
   };
 
-  // Handle Keyboard
+  // 处理键盘操作
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (dataSource.length === 0) return;
 
-    // Prevent default scrolling for arrows
+    // 阻止方向键导致的默认滚动
     if (['ArrowUp', 'ArrowDown', ' '].includes(e.key)) {
       e.preventDefault();
     }
 
-    // Select All
+    // 全选
     if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
       e.preventDefault();
       triggerSelectionChange(dataSource.map((d, i) => getRowKey(d, i)));
@@ -123,39 +123,39 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       return;
     }
     
-    if (nextIndex === -1) nextIndex = 0; // Default to first if nothing focused
+    if (nextIndex === -1) nextIndex = 0; // 无焦点时默认聚焦第一行
 
     const nextKey = getRowKey(dataSource[nextIndex], nextIndex);
     setFocusedKey(nextKey);
-    
-    // Scroll into view
+
+    // 将焦点行滚动到视区
     const rowElement = wrapperRef.current?.querySelector(`tr[data-row-key="${nextKey}"]`);
     rowElement?.scrollIntoView({ block: 'nearest' });
 
     if (e.shiftKey) {
-      // Extend selection
+      // 扩展选区
       if (lastSelectedKey === null) {
         setLastSelectedKey(getRowKey(dataSource[currentIndex >= 0 ? currentIndex : 0], currentIndex >= 0 ? currentIndex : 0));
       }
-      
+
       const anchorKey = lastSelectedKey || getRowKey(dataSource[0], 0);
       const anchorIndex = getIndex(anchorKey);
-      
+
       const start = Math.min(anchorIndex, nextIndex);
       const end = Math.max(anchorIndex, nextIndex);
       const rangeKeys = dataSource.slice(start, end + 1).map((item, idx) => getRowKey(item, start + idx));
       triggerSelectionChange(rangeKeys);
     } else {
-      // Move and select
+      // 移动焦点并选中
       setLastSelectedKey(nextKey);
       triggerSelectionChange([nextKey]);
     }
   };
 
-  // Drag Logic
+  // 拖拽逻辑
   const handleDragStart = (e: React.DragEvent<HTMLElement>, record: T, index: number) => {
     const key = getRowKey(record, index);
-    // If dragging a row that is NOT in selection, select it first (single select)
+    // 拖拽未选中行时先将其选中（单选）
     let currentSelectedKeys = selectedKeys;
     if (!selectedKeys.includes(key)) {
       currentSelectedKeys = [key];
@@ -165,25 +165,25 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     }
 
     const selectedRows = dataSource.filter((item, i) => currentSelectedKeys.includes(getRowKey(item, i)));
-    
-    // Call prop
+
+    // 调用回调
     if (onRowDragStart) {
       onRowDragStart(e, selectedRows);
     }
   };
 
-  // Antd Table rowSelection object
-  // We merge our managed selection with provided config
+  // Antd Table 的 rowSelection 配置
+  // 合并内管的选中状态与传入配置
   const antdRowSelection: TableProps<T>['rowSelection'] = {
     ...rowSelection,
     selectedRowKeys: selectedKeys,
     onChange: (keys, rows) => {
-      // Handle checkbox changes
+      // 处理复选框选择变化
       setLastSelectedKey(keys[keys.length - 1] || null);
       setFocusedKey(keys[keys.length - 1] || null);
       triggerSelectionChange(keys);
     },
-    // We want to keep the checkbox functionality working
+    // 保持复选框功能可用
   };
 
   return (
