@@ -6,6 +6,8 @@ import SftpStore from './adapters/sftp';
 import { getConnectionsData } from '../db';
 import { StoreTypes, ETaskStatus } from '@/types';
 import TaskManager from '@/main/tasks/manage';
+import { decryptPassword, isEncrypted } from '@/main/utils/secret';
+import { errorLogger } from '@/main/utils/logger';
 
 type StoreEntry = {
   client: any;
@@ -24,7 +26,25 @@ const getConfigById = (id: string) => {
 };
 
 const createStoreClient = (data: any): any => {
-  const { id, type, config } = data;
+  const { id, type } = data;
+  const config = (() => {
+    try {
+      const cfg = { ...(data?.config || {}) };
+      if (cfg.password && typeof cfg.password === 'string' && isEncrypted(cfg.password)) {
+        cfg.password = decryptPassword(cfg.password);
+      }
+      if (cfg.secretAccessKey && typeof cfg.secretAccessKey === 'string' && isEncrypted(cfg.secretAccessKey)) {
+        cfg.secretAccessKey = decryptPassword(cfg.secretAccessKey);
+      }
+      if (cfg.accessKeySecret && typeof cfg.accessKeySecret === 'string' && isEncrypted(cfg.accessKeySecret)) {
+        cfg.accessKeySecret = decryptPassword(cfg.accessKeySecret);
+      }
+      return cfg;
+    } catch (e: any) {
+      errorLogger.error(`Decrypt config for connection ${id} failed:`, e?.message || e);
+      throw e;
+    }
+  })();
   let storeClient;
   switch (type) {
     case StoreTypes.OSS:
@@ -94,8 +114,13 @@ export const getStoreInstance = (id: string) => {
 };
 
 export const storeConnect = async (params: any) => {
-  const storeClient = await createStoreClient(params);
-  return storeClient.test();
+  try {
+    const storeClient = await createStoreClient(params);
+    return storeClient.test();
+  } catch (e: any) {
+    errorLogger.error('Store connect failed:', e?.message || e);
+    return { code: 1, data: null, message: 'decrypt_failed', success: false };
+  }
 };
 
 export const storeRemove = async (id: string) => {

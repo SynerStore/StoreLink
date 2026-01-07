@@ -48,6 +48,10 @@ class SftpStore implements IStorageHandler {
         keepaliveInterval: 15000,
       } as any);
       this.connected = true;
+      // 清除内存中的明文密码
+      try {
+        this.config.password = undefined;
+      } catch (_e) {}
     } catch (_err) {
       this.connected = false;
     }

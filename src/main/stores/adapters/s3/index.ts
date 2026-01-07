@@ -19,7 +19,6 @@ import {
   deleteMultiObjects,
   DeleteFolderParams,
   deleteFolder,
-  DeleteMultiObjectsParams,
   CopyObjectParams,
   copyObject,
   RenameFolderParams,
@@ -54,6 +53,10 @@ class S3Store implements IStorageHandler {
         secretAccessKey: secretAccessKey,
       },
     });
+    try {
+      this.config.secretAccessKey = undefined;
+      this.config.accessKeySecret = undefined;
+    } catch (_e) {}
     // 中间件
     this.client.middlewareStack.add(
       (next: any) => (args: any) => {

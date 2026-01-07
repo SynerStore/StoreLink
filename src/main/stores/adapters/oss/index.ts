@@ -52,6 +52,10 @@ class OssStore implements IStorageHandler {
       bucket: bucketName,
       secure: true,
     });
+    try {
+      this.config.secretAccessKey = undefined;
+      this.config.accessKeySecret = undefined;
+    } catch (_e) {}
   }
 
   // 销毁

@@ -38,6 +38,10 @@ class WebDAVStore implements IStorageHandler {
   async init(config: any) {
     const { address, username, password } = config;
     this.client = createClient(address, { username, password });
+    // 清除内存中的明文密码
+    try {
+      this.config.password = undefined;
+    } catch (_e) {}
   }
 
   //   需要获取权限 如何通过系统询问访问
