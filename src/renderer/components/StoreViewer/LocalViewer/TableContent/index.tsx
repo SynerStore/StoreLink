@@ -5,6 +5,7 @@ import { EWindowSize, TStoreObject } from '@/types';
 import { FileIcon, FileContextMenu, FileTable } from '@/renderer/components';
 import { calculateSize } from '@/renderer/utils';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 export type TableContentProps = {
   connectionId: string;
@@ -23,6 +24,7 @@ export type TableContentProps = {
 const TableContent = (props: TableContentProps) => {
   const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 196 - 55);
   const { data, connectionId, onPrefixChange, onFileView, loading, onRename, onDelete, onSelectionChange, selectedKeys, onMoveTo, onCopyTo } = props;
+  const { t } = useTranslation();
 
   const handleFileClick = (record: TStoreObject) => {
     if (record.isDirectory) {
@@ -43,7 +45,7 @@ const TableContent = (props: TableContentProps) => {
 
   const columns = [
     {
-      title: '名称',
+      title: t('common.name'),
       dataIndex: 'name',
       key: 'name',
       render: (text: any, record: TStoreObject) => {
@@ -74,7 +76,7 @@ const TableContent = (props: TableContentProps) => {
       },
     },
     {
-      title: '大小',
+      title: t('common.size'),
       dataIndex: 'size',
       key: 'size',
       width: 120,
@@ -83,7 +85,7 @@ const TableContent = (props: TableContentProps) => {
       },
     },
     {
-      title: '修改时间',
+      title: t('common.modified'),
       dataIndex: 'lastModified',
       key: 'lastModified',
       width: 200,

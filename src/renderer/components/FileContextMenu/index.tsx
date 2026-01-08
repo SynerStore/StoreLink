@@ -12,6 +12,7 @@ import {
   ExportOutlined,
 } from '@ant-design/icons';
 import { FileRenameWrap, FileDeteleWrap, ContextMenu, MenuItem } from '@/renderer/components';
+import { useTranslation } from 'react-i18next';
 
 export type FileContextMenuProps = {
   data: any;
@@ -28,6 +29,7 @@ export type FileContextMenuProps = {
 
 const FileContextMenu = (props: any) => {
   const { data, onDetail, onDownload, onDelete, onRename, onOpen, onCopy, onMoveTo, onCopyTo, children } = props;
+  const { t } = useTranslation();
 
   const menus = useMemo<MenuItem[]>(() => {
     const baseMenus: MenuItem[] = [];
@@ -35,7 +37,7 @@ const FileContextMenu = (props: any) => {
     if (onDetail) {
       baseMenus.push({
         icon: <InfoCircleOutlined />,
-        text: '详情',
+        text: t('contextMenu.detail'),
         onClick: () => onDetail(data),
       });
     }
@@ -43,7 +45,7 @@ const FileContextMenu = (props: any) => {
     if (onOpen && !data.isDirectory) {
       baseMenus.push({
         icon: <EyeOutlined />,
-        text: '查看',
+        text: t('contextMenu.open'),
         onClick: () => onOpen(data),
       });
     }
@@ -51,7 +53,7 @@ const FileContextMenu = (props: any) => {
     if (onDownload) {
       baseMenus.push({
         icon: <DownloadOutlined />,
-        text: '下载',
+        text: t('contextMenu.download'),
         onClick: () => onDownload(data),
       });
     }
@@ -59,7 +61,7 @@ const FileContextMenu = (props: any) => {
     if (onCopy) {
       baseMenus.push({
         icon: <CopyOutlined />,
-        text: '复制',
+        text: t('contextMenu.copy'),
         onClick: () => onCopy(data),
       });
     }
@@ -67,7 +69,7 @@ const FileContextMenu = (props: any) => {
     if (onCopyTo) {
       baseMenus.push({
         icon: <ExportOutlined />,
-        text: '复制到...',
+        text: t('contextMenu.copyTo'),
         onClick: () => onCopyTo(data),
       });
     }
@@ -75,7 +77,7 @@ const FileContextMenu = (props: any) => {
     if (onMoveTo) {
       baseMenus.push({
         icon: <ScissorOutlined />,
-        text: '移动到...',
+        text: t('contextMenu.moveTo'),
         onClick: () => onMoveTo(data),
       });
     }
@@ -85,7 +87,7 @@ const FileContextMenu = (props: any) => {
         render: () => (
           <FileRenameWrap name={data.name as string} onRename={(newName: string) => onRename(data, newName)}>
             <Space size={8}>
-              <EditOutlined /> 重命名
+              <EditOutlined /> {t('contextMenu.rename')}
             </Space>
           </FileRenameWrap>
         ),
@@ -97,7 +99,7 @@ const FileContextMenu = (props: any) => {
         render: () => (
           <FileDeteleWrap fileInfo={data} onDelete={onDelete}>
             <Space size={8}>
-              <DeleteOutlined /> 删除
+              <DeleteOutlined /> {t('contextMenu.delete')}
             </Space>
           </FileDeteleWrap>
         ),
@@ -105,7 +107,7 @@ const FileContextMenu = (props: any) => {
     }
 
     return baseMenus;
-  }, [props]);
+  }, [props, t]);
 
   return <ContextMenu menu={menus}>{children}</ContextMenu>;
 };

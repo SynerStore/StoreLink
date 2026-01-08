@@ -23,6 +23,7 @@ const CardContent = (props: CardContentProps) => {
       <Spin spinning={loading} style={{ width: '100%', minHeight: 200, display: 'block' }}>
         {data.length > 0 ? (
           <FileCardList
+            connectionId={connectionId}
             data={data}
             onPrefixChange={onPrefixChange}
             onFileView={onFileView}

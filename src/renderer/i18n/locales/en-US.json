@@ -10,6 +10,10 @@
     "search": "Search",
     "upload": "Upload",
     "download": "Download",
+    "export": "Export",
+    "import": "Import",
+    "exportSuccess": "Exported to {{path}}",
+    "importSuccess": "Imported connections",
     "rename": "Rename",
     "copy": "Copy",
     "refresh": "Refresh",
@@ -56,7 +60,8 @@
     "refresh": "Refresh",
     "pathNavigation": "Path Navigation",
     "emptyFolder": "Folder is empty",
-    "loadingFiles": "Loading files..."
+    "loadingFiles": "Loading files...",
+    "storageClass": "Storage Class"
   },
   "contextMenu": {
     "download": "Download",
@@ -64,12 +69,19 @@
     "rename": "Rename",
     "copy": "Copy",
     "detail": "Detail",
-    "open": "Open"
+    "open": "Open",
+    "copyTo": "Copy to...",
+    "moveTo": "Move to..."
   },
   "settings": {
     "title": "Settings",
     "language": "Language",
+    "langZh": "Chinese",
+    "langEn": "English",
     "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
     "downloadPath": "Download Path",
     "general": "General",
     "appearance": "Appearance",

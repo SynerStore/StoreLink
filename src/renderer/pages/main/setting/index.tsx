@@ -2,6 +2,8 @@ import { Form, Select, Radio, Space, Button, message } from 'antd';
 import { useSettingStore, EnumLang, useConfigStore } from '@/renderer/store';
 import { events } from '@/renderer/utils';
 import { PageWrapper } from '@/renderer/components';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/renderer/i18n';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -10,6 +12,7 @@ const RadioGroup = Radio.Group;
 const Setting = () => {
   const settingStore = useSettingStore();
   const configStore = useConfigStore();
+  const { t } = useTranslation();
 
   const handleSwitchTheme = (e: any) => {
     const value = e.target.value;
@@ -19,6 +22,7 @@ const Setting = () => {
   };
 
   const handleSwitchLang = (value: EnumLang) => {
+    i18n.changeLanguage(value);
     settingStore.update({
       lang: value,
     });
@@ -28,7 +32,7 @@ const Setting = () => {
     const dir = await events.getSingleDirPath({});
     if (!dir) return;
     const filePath = await events.exportConnections(dir);
-    if (filePath) message.success('已导出到 ' + filePath);
+    if (filePath) message.success(t('common.exportSuccess', { path: filePath }));
   };
 
   const handleImportConnections = async () => {
@@ -39,31 +43,31 @@ const Setting = () => {
     if (!file) return;
     await events.importConnections(file);
     await configStore.initializeData();
-    message.success('已导入连接配置');
+    message.success(t('common.importSuccess'));
   };
 
   return (
-    <PageWrapper title="设置">
+    <PageWrapper title={t('settings.title')}>
       <Form autoComplete="off" layout="horizontal">
-        <FormItem label="主题样式">
+        <FormItem label={t('settings.theme')}>
           <RadioGroup name="size" value={settingStore.settings.theme} onChange={handleSwitchTheme}>
-            <Radio.Button value="light">浅色</Radio.Button>
-            <Radio.Button value="dark">深色</Radio.Button>
-            <Radio.Button value="system">系统</Radio.Button>
+            <Radio.Button value="light">{t('settings.themeLight')}</Radio.Button>
+            <Radio.Button value="dark">{t('settings.themeDark')}</Radio.Button>
+            <Radio.Button value="system">{t('settings.themeSystem')}</Radio.Button>
           </RadioGroup>
         </FormItem>
-        <FormItem label="语言">
+        <FormItem label={t('settings.language')}>
           <Select style={{ width: 150 }} value={settingStore.settings.lang} onChange={handleSwitchLang}>
-            <Option value="zh-CN">中文</Option>
-            <Option value="en-US">英文</Option>
+            <Option value="zh-CN">{t('settings.langZh')}</Option>
+            <Option value="en-US">{t('settings.langEn')}</Option>
           </Select>
         </FormItem>
-        <FormItem label="连接配置">
+        <FormItem label={t('connection.title')}>
           <Space>
             <Button type="primary" onClick={handleExportConnections}>
-              导出
+              {t('common.export')}
             </Button>
-            <Button onClick={handleImportConnections}>导入</Button>
+            <Button onClick={handleImportConnections}>{t('common.import')}</Button>
           </Space>
         </FormItem>
       </Form>

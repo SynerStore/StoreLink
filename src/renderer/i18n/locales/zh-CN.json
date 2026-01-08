@@ -10,6 +10,10 @@
     "search": "搜索",
     "upload": "上传",
     "download": "下载",
+    "export": "导出",
+    "import": "导入",
+    "exportSuccess": "已导出到 {{path}}",
+    "importSuccess": "已导入连接配置",
     "rename": "重命名",
     "copy": "复制",
     "refresh": "刷新",
@@ -56,7 +60,8 @@
     "refresh": "刷新",
     "pathNavigation": "路径导航",
     "emptyFolder": "文件夹为空",
-    "loadingFiles": "正在加载文件..."
+    "loadingFiles": "正在加载文件...",
+    "storageClass": "存储类型"
   },
   "contextMenu": {
     "download": "下载",
@@ -64,12 +69,19 @@
     "rename": "重命名",
     "copy": "复制",
     "detail": "详情",
-    "open": "打开"
+    "open": "打开",
+    "copyTo": "复制到...",
+    "moveTo": "移动到..."
   },
   "settings": {
     "title": "设置",
     "language": "语言",
+    "langZh": "中文",
+    "langEn": "英文",
     "theme": "主题",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "themeSystem": "系统",
     "downloadPath": "下载路径",
     "general": "通用",
     "appearance": "外观",

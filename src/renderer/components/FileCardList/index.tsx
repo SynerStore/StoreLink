@@ -11,6 +11,7 @@ import styles from './styles.module.css';
 const FileCardList: React.FC<FileCardListProps> = (props) => {
   const {
     data,
+    connectionId,
     onPrefixChange,
     onFileView,
     onDownload,
@@ -261,7 +262,10 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
                   className={`${styles.item} ${itemClassName} ${
                     selectedKeys.includes(item.key as React.Key) ? styles.selected : ''
                   }`}
-                  data-info={item}
+                  data-info={JSON.stringify({
+                    connectionId,
+                    key: item.key,
+                  })}
                   data-key={item.key as React.Key}
                   data-selected={selectedKeys.includes(item.key as React.Key) ? 'true' : 'false'}
                   onClick={(e) => {

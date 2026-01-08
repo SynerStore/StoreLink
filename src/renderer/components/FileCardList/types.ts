@@ -2,6 +2,7 @@ import { TStoreObject } from '@/types';
 
 export type FileCardListProps = {
   data: TStoreObject[];
+  connectionId?: string;
   onPrefixChange: (prefix: string) => void;
   onFileView: (data: any) => void;
   onDownload?: (data: any) => Promise<void>;
@@ -36,4 +37,3 @@ export const rangeSelectKeys = (
 export const toggleSelectionKey = (keys: React.Key[], key: React.Key): React.Key[] => {
   return keys.includes(key) ? keys.filter((k) => k !== key) : [...keys, key];
 };
-
