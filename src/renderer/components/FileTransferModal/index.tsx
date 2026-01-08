@@ -34,13 +34,14 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
 
-  // Initialize target connection when modal opens
+  // 初始化目标连接为源连接，当模态框打开时
   useEffect(() => {
     if (visible) {
       setTargetConnectionId(sourceConnectionId);
       setSelectedPath('/');
       setTreeData([]);
       setExpandedKeys([]);
+      // 默认选中源连接根目录
       form.setFieldsValue({
         targetConnectionId: sourceConnectionId,
         targetPath: '/',
@@ -66,10 +67,8 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
         }));
 
         if (prefix === '') {
-          // Root level
           setTreeData(nodes);
         } else {
-          // Update tree data for expanded node
           setTreeData((origin) => updateTreeData(origin, prefix, nodes));
         }
       } else {

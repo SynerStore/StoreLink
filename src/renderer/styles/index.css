@@ -17,4 +17,7 @@
 } */
 
 /* Do not affect message component positioning */
-/* .ant-message remains default; no override applied */
+/* .ant-modal remains default; no override applied */
+body {
+  color: var(--text-primary);
+}

@@ -6,6 +6,7 @@ import enUS from 'antd/locale/en_US';
 import 'antd/dist/reset.css';
 
 import { Header, FileViewer, FileIcon } from '@/renderer/components';
+import { isInMac, isInWin } from '@/renderer/utils';
 import { useSettingStore, EnumTheme } from '@/renderer/store';
 import './index.css';
 
@@ -42,8 +43,19 @@ const App = () => {
     __patchModalCentered__();
     if (settingStore.settings.theme === EnumTheme.DARK) {
       document.body.setAttribute('data-theme', 'dark');
+      document.body.classList.add('dark-theme');
+      document.body.classList.remove('light-theme');
     } else {
       document.body.removeAttribute('data-theme');
+      document.body.classList.remove('dark-theme');
+      document.body.classList.add('light-theme');
+    }
+    if (isInMac()) {
+      document.body.classList.add('macos');
+      document.body.classList.remove('windows');
+    } else if (isInWin()) {
+      document.body.classList.add('windows');
+      document.body.classList.remove('macos');
     }
   }, [settingStore.settings.theme]);
 

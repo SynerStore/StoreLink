@@ -7,17 +7,149 @@ body {
 
   /* theme  */
   --primary-color: #3c62cd;
-  --border-color: #e6e8eb;
+  --primary-1: #eaf0ff;
+  --primary-2: #cdd9f7;
+  --primary-3: #a9bdf0;
+  --primary-4: #7f9ee4;
+  --primary-5: #587dd8;
+  --primary-6: #3c62cd;
+  --primary-7: #2f4fb0;
+  --primary-8: #263f8f;
+  --primary-9: #1d306f;
+  --accent-color-light: #3c62cd;
+  --accent-color-dark: #2bb1d9;
+
+  --neutral-1: #ffffff;
+  --neutral-2: #f7f7f8;
+  --neutral-3: #f0f2f5;
+  --neutral-4: #e6e8eb;
+  --neutral-5: #d0d3d8;
+  --neutral-6: #b7bbc3;
+  --neutral-7: #8e94a3;
+  --neutral-8: #5b6270;
+  --neutral-9: #2f3340;
+
+  --border-color: var(--neutral-4);
   --icon-hover-bg-color: #ededed;
   --icon-hover-danger-color: #f53f3f;
   --card-selected-bg: #f0f6ff;
+
+  --border-radius-base: 4px;
+  --border-radius-small: 4px;
+  --border-radius-medium: 4px;
+
+  --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.08);
+  --shadow-control: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  --header-bg-light: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
+  --sidebar-bg-light: rgba(255, 255, 255, 0.75);
+  --home-card-bg-light: linear-gradient(180deg, #ffffff, #fafbff);
+  --content-bg-light: #f7f8fa;
+  --sidebar-backdrop-filter: saturate(180%) blur(16px);
+  --header-border-color: rgba(60, 98, 205, 0.18);
+
+  --color-bg-2: var(--neutral-2);
+  --color-bg-popup: var(--neutral-1);
+  --color-fill-3: var(--neutral-4);
+  --color-neutral-2: var(--neutral-2);
+  --color-neutral-8: var(--neutral-8);
+
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  --text-primary: var(--neutral-9);
+  --text-secondary: var(--neutral-8);
+  --text-tertiary: var(--neutral-7);
+  --text-disabled: var(--neutral-6);
+  --text-inverse: var(--neutral-1);
+  --text-info: var(--primary-color);
+  --text-success: #34c759;
+  --text-warning: #ff9f0a;
+  --text-danger: #ff453a;
 }
 
-body[data-theme='dark'] {
+body[data-theme='dark'],
+body.dark-theme {
   --primary-color: #3c62cd;
-  --border-color: #e6e8eb;
-  --icon-hover-bg-color: #ededed;
+  --primary-1: #192033;
+  --primary-2: #1f2a49;
+  --primary-3: #27355f;
+  --primary-4: #2f4279;
+  --primary-5: #375096;
+  --primary-6: #3c62cd;
+  --primary-7: #6b8df0;
+  --primary-8: #91a9f7;
+  --primary-9: #c3d0fb;
+  --accent-color-dark: #2bb1d9;
+
+  --neutral-1: #0f1115;
+  --neutral-2: #171a1f;
+  --neutral-3: #1e2228;
+  --neutral-4: #2a2f38;
+  --neutral-5: #3a404c;
+  --neutral-6: #4c5260;
+  --neutral-7: #697089;
+  --neutral-8: #8a91a7;
+  --neutral-9: #bcc3d6;
+
+  --border-color: var(--neutral-4);
+  --icon-hover-bg-color: rgba(255, 255, 255, 0.08);
   --icon-hover-danger-color: #f53f3f;
-  --card-selected-bg: #f0f6ff;
+  --card-selected-bg: rgba(60, 98, 205, 0.14);
+
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-control: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  --header-bg-dark: linear-gradient(180deg, rgba(20, 22, 26, 0.9), rgba(20, 22, 26, 0.65));
+  --sidebar-bg-dark: rgba(24, 27, 33, 0.72);
+  --home-card-bg-dark: linear-gradient(180deg, #1a1d22, #181a1f);
+  --content-bg-dark: #0f1115;
+  --sidebar-backdrop-filter: saturate(160%) blur(14px);
+  --header-border-color: rgba(43, 177, 217, 0.38);
+
+  --color-bg-2: var(--neutral-2);
+  --color-bg-popup: var(--neutral-3);
+  --color-fill-3: var(--neutral-4);
+  --color-neutral-2: var(--neutral-2);
+  --color-neutral-8: var(--neutral-8);
   color-scheme: dark;
+  --text-primary: var(--neutral-9);
+  --text-secondary: var(--neutral-8);
+  --text-tertiary: var(--neutral-7);
+  --text-disabled: var(--neutral-6);
+  --text-inverse: var(--neutral-1);
+  --text-info: var(--accent-color-dark);
+  --text-success: #30d158;
+  --text-warning: #ff9f0a;
+  --text-danger: #ff453a;
+}
+
+body.macos {
+  --shadow-card: 0 12px 28px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-control: 0 10px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+  --header-bg-light: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(246, 248, 255, 0.7));
+  --sidebar-backdrop-filter: saturate(180%) blur(16px);
+  --header-border-color: rgba(60, 98, 205, 0.22);
+}
+
+body.macos[data-theme='dark'],
+body.dark-theme.macos {
+  --accent-color-dark: #2bb1d9;
+  --header-bg-dark: linear-gradient(180deg, rgba(18, 20, 24, 0.92), rgba(18, 20, 24, 0.68));
+  --sidebar-backdrop-filter: saturate(160%) blur(14px);
+  --header-border-color: rgba(43, 177, 217, 0.42);
+}
+
+body.windows {
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-control: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --header-bg-light: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 255, 0.72));
+  --sidebar-bg-light: rgba(245, 247, 250, 0.6);
+  --sidebar-backdrop-filter: saturate(180%) blur(24px);
+}
+
+body.windows[data-theme='dark'],
+body.dark-theme.windows {
+  --accent-color-dark: #00d5ff;
+  --header-bg-dark: linear-gradient(180deg, rgba(16, 18, 22, 0.9), rgba(16, 18, 22, 0.66));
+  --sidebar-bg-dark: rgba(22, 25, 30, 0.68);
+  --sidebar-backdrop-filter: saturate(160%) blur(20px);
 }

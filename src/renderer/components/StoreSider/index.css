@@ -3,6 +3,9 @@
   overflow-x: hidden;
   border-right: 1px solid var(--border-color);
   user-select: none;
+  background: var(--sidebar-bg-dark, var(--sidebar-bg-light));
+  backdrop-filter: var(--sidebar-backdrop-filter);
+  -webkit-backdrop-filter: var(--sidebar-backdrop-filter);
 
   .store-sider-tip {
     height: 28px;

@@ -8,7 +8,7 @@ import 'antd/dist/reset.css';
 import '@/renderer/i18n';
 import { StoreViewerTabs, Header, Sider, StoreSider } from '@/renderer/components';
 import { useConfigStore, useTabsStore, useSettingStore, EnumTheme } from '@/renderer/store';
-import { updateRootStyleProperty } from '@/renderer/utils';
+import { updateRootStyleProperty, isInMac, isInWin } from '@/renderer/utils';
 import '@/renderer/styles/index.css';
 import Tasks from './tasks';
 import Logs from './logs';
@@ -49,8 +49,12 @@ const App = () => {
   useEffect(() => {
     if (settingStore.settings.theme === EnumTheme.DARK) {
       document.body.setAttribute('data-theme', 'dark');
+      document.body.classList.add('dark-theme');
+      document.body.classList.remove('light-theme');
     } else {
       document.body.removeAttribute('data-theme');
+      document.body.classList.remove('dark-theme');
+      document.body.classList.add('light-theme');
     }
   }, [settingStore.settings.theme]);
 
@@ -69,6 +73,13 @@ const App = () => {
     __patchModalCentered__();
     // setTimeout(() => events.windowRenderReady(), 1000);
     handleOnready();
+    if (isInMac()) {
+      document.body.classList.add('macos');
+      document.body.classList.remove('windows');
+    } else if (isInWin()) {
+      document.body.classList.add('windows');
+      document.body.classList.remove('macos');
+    }
   }, []);
 
   return (
