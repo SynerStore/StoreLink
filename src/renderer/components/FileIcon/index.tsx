@@ -1,13 +1,14 @@
 import { getFiletype } from '@/utils';
 
 import ExeIcon from '@/renderer/assets/file-icons/exe.png';
-import Folder from '@/renderer/assets/file-icons/folder.png';
+import Folder from '@/renderer/assets/file-icons/folder.svg';
 import ImageIcon from '@/renderer/assets/file-icons/png.png';
 import PdfIcon from '@/renderer/assets/file-icons/pdf.png';
 import MiscIcon from '@/renderer/assets/file-icons/misc.png';
 import VideoIcon from '@/renderer/assets/file-icons/video.png';
 import TextIcon from '@/renderer/assets/file-icons/text.png';
 import ZipIcon from '@/renderer/assets/file-icons/zip.png';
+import MarkdownIcon from '@/renderer/assets/file-icons/markdown.svg';
 
 export type FileIconProps = {
   type?: string;
@@ -35,6 +36,8 @@ const FileIcon = (props: FileIconProps) => {
         return TextIcon;
       case 'zip':
         return ZipIcon;
+      case 'markdown':
+        return MarkdownIcon;
       default:
         return MiscIcon;
     }
