@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, CSSProperties } from 'react';
 import './index.css';
 import { debounce } from 'lodash-es';
+import { useWindowStore } from '../../store/useWindowStore';
 
 interface ResponsiveGridProps {
   /** 容器最小宽度 */
@@ -32,7 +33,14 @@ const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
   padding = 0,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [itemWidth, setItemWidth] = useState<number>(maxItemWidth);
+  const responsiveGridCardWidth = useWindowStore((state) => state.responsiveGridCardWidth);
+  const setResponsiveGridCardWidth = useWindowStore((state) => state.setResponsiveGridCardWidth);
+
+  // 使用 ref 来存储最新的 responsiveGridCardWidth，以便在 effect 中使用而不触发重行
+  const responsiveGridCardWidthRef = useRef(responsiveGridCardWidth);
+  responsiveGridCardWidthRef.current = responsiveGridCardWidth;
+
+  const [itemWidth, setItemWidth] = useState<number>(responsiveGridCardWidth ?? maxItemWidth);
   const [itemsPerRow, setItemsPerRow] = useState<number>(1);
 
   // 计算最佳的宽度和每行个数
@@ -70,7 +78,8 @@ const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
 
     setItemsPerRow(bestItemsPerRow);
     setItemWidth(finalWidth);
-  }, [minItemWidth, maxItemWidth, columnGap, padding]);
+    setResponsiveGridCardWidth(finalWidth);
+  }, [minItemWidth, maxItemWidth, columnGap, padding, setResponsiveGridCardWidth]);
 
   // 使用 lodash 的 debounce 创建防抖函数
   const debouncedResize = useMemo(() => debounce(calculateLayout, 100), [calculateLayout]);
@@ -86,8 +95,10 @@ const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // 初始计算
-    calculateLayout();
+    // 只有在没有缓存宽度时才进行初始计算
+    if (!responsiveGridCardWidthRef.current) {
+      calculateLayout();
+    }
 
     if (!responsive) return;
 
