@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Tabs } from 'antd';
 
+import PageWrapper from '@/renderer/components/PageWrapper';
 import DownloadingTaskTable from './DownloadingTaskTable';
 import FinishedTaskTable from './FinishedTaskTable';
 import FailedTaskTable from './FailedTaskTable';
 import UploadingTaskTable from './UploadingTaskTable';
-import "./index.css"
+import './index.css';
 
 export enum ETaskManageTab {
   Downloading = 'downloading',
@@ -41,8 +42,7 @@ const Tasks: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: 16, width: '100%', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <h2 style={{ marginBottom: 16 }}>任务管理</h2>
+    <PageWrapper title="任务管理">
       <Tabs
         type="card"
         activeKey={activeTab}
@@ -50,7 +50,7 @@ const Tasks: React.FC = () => {
         items={items}
         style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
       />
-    </div>
+    </PageWrapper>
   );
 };
 

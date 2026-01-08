@@ -3,7 +3,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 16px 24px;
+  padding: 16px;
 }
 
 .page-wrapper-header {
