@@ -62,7 +62,7 @@ const StoreSider = (props: StoreSiderProps) => {
                   {
                     render: () => (
                       <ConnectionEditWrap connection={connection}>
-                        <Space size={2}>
+                        <Space size={6}>
                           <EditOutlined /> 编辑
                         </Space>
                       </ConnectionEditWrap>
@@ -81,15 +81,17 @@ const StoreSider = (props: StoreSiderProps) => {
                                 }}
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
                               >
-                                <ReloadOutlined
-                                  style={{
-                                    fontSize: 14,
-                                    color: statuses[id] === 'failed' ? 'var(--danger-color)' : 'var(--text-color)',
-                                    transition: 'transform 0.3s ease',
-                                    transform: isConnecting ? 'rotate(180deg)' : 'none',
-                                  }}
-                                />
-                                重新连接
+                                <Space size={6}>
+                                  <ReloadOutlined
+                                    style={{
+                                      fontSize: 14,
+                                      color: statuses[id] === 'failed' ? 'var(--danger-color)' : 'var(--text-color)',
+                                      transition: 'transform 0.3s ease',
+                                      transform: isConnecting ? 'rotate(180deg)' : 'none',
+                                    }}
+                                  />
+                                  重新连接
+                                </Space>
                               </span>
                             </Tooltip>
                           ),
@@ -98,7 +100,7 @@ const StoreSider = (props: StoreSiderProps) => {
                   {
                     render: () => (
                       <ConnectionDeleteWrap onDelete={handleDelete} connection={{ key: id, ...connection }}>
-                        <Space size={2}>
+                        <Space size={6}>
                           <DeleteOutlined /> 删除
                         </Space>
                       </ConnectionDeleteWrap>
@@ -163,9 +165,12 @@ const StoreSider = (props: StoreSiderProps) => {
       }
     } catch (_e) {
       if (attempt < 2) {
-        const t = setTimeout(() => {
-          reconnect(child, attempt + 1);
-        }, 800 * (attempt + 1));
+        const t = setTimeout(
+          () => {
+            reconnect(child, attempt + 1);
+          },
+          800 * (attempt + 1),
+        );
         retryTimers.current[id] = t;
       } else {
         setStatuses((s) => ({ ...s, [id]: 'failed' }));
