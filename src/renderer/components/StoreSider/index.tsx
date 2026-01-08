@@ -4,7 +4,7 @@ import { groupBy } from 'lodash';
 import { EditOutlined, DeleteOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 
 import { StoreConnectModal, ConnectionDeleteWrap, ContextMenu, ConnectionEditWrap } from '@/renderer/components';
-import MenuTitle from './MenuTitle';
+import StoreBrandTitle from './StoreBrandTitle';
 import { useConfigStore, useTabsStore, ETabDisplay } from '@/renderer/store';
 import { StoreTypes } from '@/types';
 import { storeRequest, storeRemove } from '@/renderer/utils';
@@ -50,7 +50,7 @@ const StoreSider = (props: StoreSiderProps) => {
     return Reflect.ownKeys(groups).map((groupKey: any) => {
       return {
         key: String(groupKey),
-        label: <MenuTitle brand={groupKey}>{groupKey}</MenuTitle>,
+        label: <StoreBrandTitle brand={groupKey} />,
         children: groups[groupKey].map((connection: any) => {
           const id = String(connection.id);
           const isConnecting = statuses[id] === 'connecting';
