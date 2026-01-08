@@ -6,15 +6,17 @@ import enUS from 'antd/locale/en_US';
 import 'antd/dist/reset.css';
 
 import '@/renderer/i18n';
-import { StoreViewerTabs, Header, Sider, StoreSider } from '@/renderer/components';
+import { Header, Sider } from '@/renderer/components';
 import { useConfigStore, useTabsStore, useSettingStore, EnumTheme } from '@/renderer/store';
 import { updateRootStyleProperty, isInMac, isInWin } from '@/renderer/utils';
 import '@/renderer/styles/index.css';
 import Tasks from './tasks';
 import Logs from './logs';
 import Setting from './setting';
+import Home from './home';
 import './index.css';
 
+// 弹出窗居中
 const __patchModalCentered__ = (() => {
   let patched = false;
   return () => {
@@ -73,6 +75,7 @@ const App = () => {
     __patchModalCentered__();
     // setTimeout(() => events.windowRenderReady(), 1000);
     handleOnready();
+
     if (isInMac()) {
       document.body.classList.add('macos');
       document.body.classList.remove('windows');
@@ -92,15 +95,7 @@ const App = () => {
               <Sider fold={storeSiderfold} onFold={handleFold} />
               <div className="content">
                 <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <>
-                        <StoreSider fold={storeSiderfold} />
-                        <StoreViewerTabs />
-                      </>
-                    }
-                  />
+                  <Route path="/" element={<Home fold={storeSiderfold} />} />
                   <Route path="/tasks" element={<Tasks />} />
                   <Route path="/logs" element={<Logs />} />
                   <Route path="/setting" element={<Setting />} />

@@ -1,0 +1,39 @@
+/* Container */
+.responsive-grid-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Items transition for responsive resize */
+.responsive-grid-item {
+  transition:
+    flex-basis 200ms ease,
+    width 200ms ease,
+    height 200ms ease,
+    transform 200ms ease,
+    opacity 200ms ease;
+  will-change: width, height, transform;
+}
+
+/* Enter animation when items first appear */
+.responsive-grid-item {
+  opacity: 1;
+}
+.responsive-grid-item[data-enter='true'] {
+  opacity: 0;
+  transform: scale(0.98);
+}
+.responsive-grid-item[data-enter='true'] {
+  animation: rg-fade-in 240ms ease forwards;
+}
+
+@keyframes rg-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

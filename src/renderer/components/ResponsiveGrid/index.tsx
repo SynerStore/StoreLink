@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, CSSProperties } from 'react';
+import './index.css';
 import { debounce } from 'lodash-es';
 
 interface ResponsiveGridProps {
@@ -110,7 +111,7 @@ const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
 
   // 处理子元素
   const childrenArray = React.Children.toArray(children);
-  const totalRows = Math.ceil(childrenArray.length / itemsPerRow);
+
 
   const containerStyle: CSSProperties = {
     display: 'flex',
