@@ -4,16 +4,12 @@ import { StoreBrands, StoreTypes } from '@/types';
 
 export const StoreDatas = [
   {
-    brand: StoreBrands.aliyun,
-    type: StoreTypes.OSS,
-  },
-  {
     brand: StoreBrands.local,
     type: StoreTypes.LOCAL,
   },
-   {
-    brand: StoreBrands.sftp,
-    type: StoreTypes.SFTP,
+  {
+    brand: StoreBrands.S3,
+    type: StoreTypes.S3,
   },
   {
     brand: StoreBrands.tencentcloud,
@@ -24,6 +20,14 @@ export const StoreDatas = [
     type: StoreTypes.S3,
   },
   {
+    brand: StoreBrands.aliyun,
+    type: StoreTypes.OSS,
+  },
+  {
+    brand: StoreBrands.sftp,
+    type: StoreTypes.SFTP,
+  },
+  {
     brand: StoreBrands.WebDAV,
     type: StoreTypes.WEBDAV,
   },
@@ -32,3 +36,14 @@ export const StoreDatas = [
     type: StoreTypes.SYNOLOGY,
   },
 ];
+
+export const StoreBrandsLabelMap = {
+  [StoreBrands.S3]: 'S3 Storage',
+  [StoreBrands.aliyun]: '阿里云 OSS',
+  [StoreBrands.sftp]: 'SFTP Storage',
+  [StoreBrands.local]: '本地存储',
+  [StoreBrands.huaweicloud]: '华为云 OBS',
+  [StoreBrands.tencentcloud]: '腾讯云 COS',
+  [StoreBrands.WebDAV]: 'WebDAV Storage',
+  [StoreBrands.synology]: 'Synology Storage',
+};

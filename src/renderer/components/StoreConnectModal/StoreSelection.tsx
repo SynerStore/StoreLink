@@ -11,7 +11,7 @@ const StoreSelection = (props: StoreSelectionProps) => {
   const { activeBrand, onActive } = props;
   return (
     <div className="store-selection">
-      <Row className="grid-gutter-demo" gutter={[24, 12]}>
+      <Row className="grid-gutter-demo" gutter={[12, 6]}>
         {StoreDatas.map((item, index) => {
           return (
             <Col span={12} key={index}>

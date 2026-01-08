@@ -33,6 +33,7 @@ body {
   --icon-hover-bg-color: #ededed;
   --icon-hover-danger-color: #f53f3f;
   --card-selected-bg: #f0f6ff;
+  --card-selected-bg-hover: #e8f2ff;
 
   --border-radius-base: 4px;
   --border-radius-small: 4px;
@@ -54,7 +55,11 @@ body {
   --color-neutral-2: var(--neutral-2);
   --color-neutral-8: var(--neutral-8);
 
-  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
   --text-primary: var(--neutral-9);
   --text-secondary: var(--neutral-8);
   --text-tertiary: var(--neutral-7);
@@ -94,6 +99,7 @@ body.dark-theme {
   --icon-hover-bg-color: rgba(255, 255, 255, 0.08);
   --icon-hover-danger-color: #f53f3f;
   --card-selected-bg: rgba(60, 98, 205, 0.14);
+  --card-selected-bg-hover: rgba(60, 98, 205, 0.24);
 
   --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
   --shadow-control: 0 4px 12px rgba(0, 0, 0, 0.3);

@@ -1,22 +1,22 @@
+import { StoreBrandsLabelMap } from '@/constants';
+import { StoreBrands } from '@/types';
 import {StoreIcon} from '@/renderer/components';
 
 export type MenuTitleProps = {
-  brand: string;
+  brand: StoreBrands;
   active: boolean;
-  onActive: (v: string) => void;
+  onActive: (v: StoreBrands) => void;
 };
 const StoreBrand = (props: MenuTitleProps) => {
   const { brand, active, onActive } = props;
   return (
     <div
       onClick={() => onActive(brand)}
-      className="store-brand"
-      style={{
-        backgroundColor: active ? '#f5f5f5' : 'transparent',
-      }}
+      className={`store-brand ${active ? 'active' : ''}`}
+      
     >
       <StoreIcon size={26} brand={brand} styles={{ marginRight: '8px' }} />
-      <span style={{ fontWeight: 500,fontSize:16 }}> {brand}</span>
+      <span style={{ fontWeight: 500,fontSize:16 }}> { StoreBrandsLabelMap[brand as StoreBrands]}</span>
     </div>
   );
 };
