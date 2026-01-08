@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow } from 'electron';
+import { ipcMain } from 'electron';
 import db from '@/main/db/sqlite';
 import TaskEntity, { TaskEntityParams } from './entity';
 import { EChannels, ETaskStatus } from '@/types';
@@ -55,7 +55,7 @@ class TaskManager {
 
   private setupTask(task: TaskEntity) {
     task.setCallbacks(
-      (data) => {
+      () => {
         // On progress
         // Throttle DB updates if needed, but for now just update
         // We might not want to update DB on every chunk for speed, but for simplicity let's do it

@@ -3,7 +3,6 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { shell } from 'electron';
 
-import { isGetFileContent } from '@/utils';
 import { filesSort, isHiddenFile } from '@/main/utils';
 import { TStoreObject } from '@/types';
 
@@ -68,7 +67,7 @@ export async function listDir(root: string, params: ListParams) {
       } as TStoreObject;
     });
 
-  return filesSort(folders);
+  return filesSort(folders as any[]);
 }
 
 // 删除桶内的全部对象
@@ -141,7 +140,7 @@ export type GetSourceUrlParams = {
   key: string;
 };
 
-export async function getSourceUrl(root: string, params: GetSourceUrlParams) {
+export async function getSourceUrl(params: GetSourceUrlParams) {
   const { key } = params;
   return key;
 }
@@ -151,7 +150,7 @@ export type CopyFileParams = {
   targetPath: string;
 };
 
-export async function copyFile(root: string, params: CopyFileParams) {
+export async function copyFile(params: CopyFileParams) {
   const { sourceKey, targetPath } = params;
   // For LocalStore, targetPath is usually the destination directory
   // sourceKey is the full path of the source file

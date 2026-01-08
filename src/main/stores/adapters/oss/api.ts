@@ -213,7 +213,7 @@ export async function uploadObject(client: OSS, params: UploadObjectParams, onPr
         });
       }
     },
-  });
+  } as any);
   if (onProgress) {
     onProgress({
       progress: 100,

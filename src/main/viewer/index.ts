@@ -28,7 +28,7 @@ export default class ViewerWindowManager {
     });
 
     ipcMain.handle(EChannels.downloadViewerSource, async (_event: any, data: any) => {
-      const { id, localPath, src } = data || {};
+      const { id, localPath } = data || {};
       const viewer = this.windowsPools.get(id);
       const store = getStoreInstance(viewer?.data?.connectionId || '');
       const params: any = {
