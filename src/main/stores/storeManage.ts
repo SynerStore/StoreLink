@@ -3,6 +3,7 @@ import LocalStore from './adapters/local';
 import OssStore from './adapters/oss';
 import WebDAVStore from './adapters/webdev';
 import SftpStore from './adapters/sftp';
+import SynologyStore from './adapters/synology';
 import { getConnectionsData } from '../db';
 import { StoreTypes, ETaskStatus } from '@/types';
 import TaskManager from '@/main/tasks/manage';
@@ -61,6 +62,9 @@ const createStoreClient = (data: any): any => {
       break;
     case StoreTypes.WEBDAV:
       storeClient = new WebDAVStore(id, config);
+      break;
+    case StoreTypes.SYNOLOGY:
+      storeClient = new SynologyStore(id, config);
       break;
     default:
       break;

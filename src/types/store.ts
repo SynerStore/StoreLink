@@ -3,7 +3,8 @@ export enum StoreTypes {
   OSS = 'oss',
   SFTP = 'sftp',
   LOCAL = 'local',
-  WEBDAV = 'webdav'
+  WEBDAV = 'webdav',
+  SYNOLOGY = 'synology'
 }
 
 export enum StoreBrands {
@@ -13,7 +14,8 @@ export enum StoreBrands {
   sftp="sftp",
   tencentcloud = 'tencentcloud',
   huaweicloud = 'huaweicloud',
-  WebDAV = 'WebDAV'
+  WebDAV = 'WebDAV',
+  synology = 'synology'
 }
 
 export enum StoreConnectStatus {

@@ -27,4 +27,8 @@ export const StoreDatas = [
     brand: StoreBrands.WebDAV,
     type: StoreTypes.WEBDAV,
   },
+  {
+    brand: StoreBrands.synology,
+    type: StoreTypes.SYNOLOGY,
+  },
 ];

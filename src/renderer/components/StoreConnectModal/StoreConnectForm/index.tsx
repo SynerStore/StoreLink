@@ -5,6 +5,7 @@ import OssForm from './OssForm';
 import SFtpForm from './SFtpForm';
 import LocalForm from './LocalForm';
 import WebDAVForm from './WebDAVForm';
+import SynologyForm from './SynologyForm';
 import { StoreTypes } from '@/types';
 import { StoreDatas } from '@/constants';
 
@@ -32,6 +33,8 @@ const StoreConnectForm = forwardRef((props: StoreConnectFormProps, ref) => {
       return <LocalForm ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
     case StoreTypes.WEBDAV:
       return <WebDAVForm ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
+    case StoreTypes.SYNOLOGY:
+      return <SynologyForm ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
     default:
       return null;
   }

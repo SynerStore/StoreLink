@@ -7,6 +7,7 @@ import DiskIcon from '@/renderer/assets/store-icons/disk.webp';
 import HuaweiIcon from '@/renderer/assets/store-icons/huaweicloud.png';
 import TencentIcon from '@/renderer/assets/store-icons/tencentcloud.png';
 import WebDAVIcon from '@/renderer/assets/store-icons/webdav.png';
+import SynologyIcon from '@/renderer/assets/store-icons/synology.png';
 import { StoreBrands } from '@/types';
 
 export type FileIconProps = {
@@ -34,6 +35,8 @@ const StoreIcon = (props: FileIconProps) => {
         return TencentIcon;
       case StoreBrands.WebDAV:
         return WebDAVIcon;
+      case StoreBrands.synology:
+        return SynologyIcon;
 
       default:
         return DiskIcon;
