@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { EyeOutlined, EyeInvisibleOutlined, CopyOutlined } from '@ant-design/icons';
 import MarkdownPreview from '@uiw/react-markdown-preview';
 
@@ -11,6 +12,7 @@ export type MarkdownViewerProps = {
   mime?: string;
 };
 const MarkdownViewer = (props: MarkdownViewerProps) => {
+  const { t } = useTranslation();
   const { content } = props;
   const [isMd, setIsMd] = useState(true);
 
@@ -27,19 +29,19 @@ const MarkdownViewer = (props: MarkdownViewerProps) => {
       <div className="markdown-viewer-toolbar">
         <div className="markdown-viewer-toolbar-item">
           {isMd ? (
-            <Tooltip title="源文本">
+            <Tooltip title={t('fileViewer.markdownViewer.sourceText')}>
               <div className="markdown-viewer-toolbar-item-btn" onClick={handlePreview}>
                 <EyeInvisibleOutlined />
               </div>
             </Tooltip>
           ) : (
-            <Tooltip title="预览">
+            <Tooltip title={t('fileViewer.markdownViewer.preview')}>
               <div className="markdown-viewer-toolbar-item-btn" onClick={handlePreview}>
                 <EyeOutlined />
               </div>
             </Tooltip>
           )}
-          <Tooltip title="复制">
+          <Tooltip title={t('common.copy')}>
             <div className="markdown-viewer-toolbar-item-btn" onClick={handleCopy}>
               <CopyOutlined />
             </div>

@@ -12,11 +12,13 @@ const ConnectionDeleteWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWr
   const { t } = useTranslation();
   const handleConfirm = () => {
     Modal.confirm({
-      title: t('common.delete'),
+      title: t('storeSider.deleteConnection'),
       content: (
         <div>
-          <h4> 删除操作不能恢复，确定删除选中的连接吗？</h4>
-          <div> 删除链接：{connection.label}</div>
+          <h4>{t('common.deleteWarning')}</h4>
+          <div>
+            {t('connection.name')}: {connection.label}
+          </div>
         </div>
       ),
       okText: t('common.confirm'),

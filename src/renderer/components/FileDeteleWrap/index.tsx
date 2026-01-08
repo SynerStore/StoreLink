@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export type FileRenameWrapProps = {
   fileInfo: any;
@@ -8,18 +9,21 @@ export type FileRenameWrapProps = {
 };
 const FileDeteleWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProps) => {
   const { fileInfo, children, onDelete } = props;
+  const { t } = useTranslation();
 
   const handleConfirm = () => {
     Modal.confirm({
-      title: '删除',
+      title: t('contextMenu.delete'),
       content: (
         <div>
-          <h4> 删除操作不能恢复，确定删除选中的文件或文件夹吗？</h4>
-          <div> 删除对象：{fileInfo.name}</div>
+          <h4>{t('common.deleteWarning')}</h4>
+          <div>
+            {t('common.name')}: {fileInfo.name}
+          </div>
         </div>
       ),
-      okText: '确定',
-      cancelText: '取消',
+      okText: t('common.confirm'),
+      cancelText: t('common.cancel'),
       closable: false,
       maskClosable: false,
       onOk: () => {

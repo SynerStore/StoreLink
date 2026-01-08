@@ -7,7 +7,14 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { Buffer } from 'node:buffer';
 
-import { isDirectory, isObjectFolder, readDirectoryRecursive, getTempPath, streamToPromise, streamOnProgress } from '@/main/utils';
+import {
+  isDirectory,
+  isObjectFolder,
+  readDirectoryRecursive,
+  getTempPath,
+  streamToPromise,
+  streamOnProgress,
+} from '@/main/utils';
 import { TStoreObject } from '@/types';
 
 export const formatObjects = (objects: S3._Object[], prefix: string): TStoreObject[] => {

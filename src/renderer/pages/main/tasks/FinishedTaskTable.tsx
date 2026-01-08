@@ -1,25 +1,22 @@
-import { Button, Input, Space, Table } from 'antd';
+import { Button, Space, Table } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
-
-const InputSearch = Input.Search;
+import { useTranslation } from 'react-i18next';
 
 const FinishedTaskTable = () => {
-  const { tasks, handleDelete } = useTasks(
-    [ETaskStatus.COMPLETED],
-    []
-  );
+  const { t } = useTranslation();
+  const { tasks, handleDelete } = useTasks([ETaskStatus.COMPLETED], []);
 
   const columns = [
     {
-      title: '类型',
+      title: t('common.type'),
       dataIndex: 'type',
       render: (type: ETaskType) => type,
     },
     {
-      title: '文件',
+      title: t('common.file'),
       dataIndex: 'params',
       render: (params: any) => {
         if (params?.localPaths) return params.localPaths.join(', ');
@@ -33,22 +30,22 @@ const FinishedTaskTable = () => {
       },
     },
     {
-      title: '大小',
+      title: t('common.size'),
       dataIndex: 'size',
       render: (size: number) => calculateSize(size),
     },
     {
-      title: '完成时间',
+      title: t('tasks.endTime'),
       dataIndex: 'endTime',
-      render: (endTime: string) => endTime ? new Date(endTime).toLocaleString() : '-',
+      render: (endTime: string) => (endTime ? new Date(endTime).toLocaleString() : '-'),
     },
     {
-      title: '操作',
+      title: t('common.actions'),
       dataIndex: 'actions',
       render: (_: any, record: any) => (
         <Space>
           <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.taskId)}>
-            删除
+            {t('common.delete')}
           </Button>
         </Space>
       ),
@@ -60,7 +57,7 @@ const FinishedTaskTable = () => {
       {/* <div className="task-table-options">
         <Space>
         </Space>
-        <InputSearch size="small" allowClear placeholder="搜索" style={{ width: 280 }} />
+        <InputSearch size="small" allowClear placeholder={t('common.search')} style={{ width: 280 }} />
       </div> */}
       <Table columns={columns} dataSource={tasks} rowKey="taskId" pagination={false} />
     </div>

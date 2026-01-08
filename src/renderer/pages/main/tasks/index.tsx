@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import PageWrapper from '@/renderer/components/PageWrapper';
 import DownloadingTaskTable from './DownloadingTaskTable';
@@ -16,33 +17,34 @@ export enum ETaskManageTab {
 }
 
 const Tasks: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<ETaskManageTab>(ETaskManageTab.Downloading);
 
   const items = [
     {
       key: ETaskManageTab.Downloading,
-      label: '下载中',
+      label: t('tasks.tabs.downloading'),
       children: <DownloadingTaskTable />,
     },
     {
       key: ETaskManageTab.Uploading,
-      label: '上传中',
+      label: t('tasks.tabs.uploading'),
       children: <UploadingTaskTable />,
     },
     {
       key: ETaskManageTab.Finished,
-      label: '已完成',
+      label: t('tasks.tabs.finished'),
       children: <FinishedTaskTable />,
     },
     {
       key: ETaskManageTab.Failed,
-      label: '已失败',
+      label: t('tasks.tabs.failed'),
       children: <FailedTaskTable />,
     },
   ];
 
   return (
-    <PageWrapper title="任务管理">
+    <PageWrapper title={t('tasks.manageTitle')}>
       <Tabs
         type="card"
         activeKey={activeTab}

@@ -23,12 +23,16 @@ class TaskManager {
   private init() {
     // Load incomplete tasks from DB
     try {
-      const rows = db.prepare(`
+      const rows = db
+        .prepare(
+          `
         SELECT * FROM tasks
         WHERE status IN (?, ?, ?)
-      `).all(ETaskStatus.PENDING, ETaskStatus.RUNNING, ETaskStatus.PAUSED) as any[];
+      `,
+        )
+        .all(ETaskStatus.PENDING, ETaskStatus.RUNNING, ETaskStatus.PAUSED) as any[];
 
-      rows.forEach(row => {
+      rows.forEach((row) => {
         const params: TaskEntityParams = {
           ...row,
           params: JSON.parse(row.params),
@@ -70,22 +74,23 @@ class TaskManager {
             status === ETaskStatus.COMPLETED
               ? 'completed'
               : status === ETaskStatus.FAILED
-              ? `failed: ${err || ''}`
-              : 'canceled';
+                ? `failed: ${err || ''}`
+                : 'canceled';
           logAction({
             action: 'task_status',
             message: `${task.method} ${msg}`,
             meta: { connectionId: task.connectionId, taskId: task.taskId },
           });
         }
-      }
+      },
     );
   }
 
   private updateTaskInDb(task: TaskEntity) {
     try {
       const row = task.toRow();
-      db.prepare(`
+      db.prepare(
+        `
         INSERT OR REPLACE INTO tasks (
           taskId, type, connectionId, method, params, status,
           progress, speed, size, startTime, endTime, createTime, errorMessage
@@ -93,7 +98,8 @@ class TaskManager {
           @taskId, @type, @connectionId, @method, @params, @status,
           @progress, @speed, @size, @startTime, @endTime, @createTime, @errorMessage
         )
-      `).run(row);
+      `,
+      ).run(row);
     } catch (err) {
       console.error('Failed to update task in DB:', err);
     }
@@ -173,9 +179,9 @@ class TaskManager {
       query += ' ORDER BY createTime DESC';
 
       const rows = db.prepare(query).all(...args) as any[];
-      return rows.map(row => ({
+      return rows.map((row) => ({
         ...row,
-        params: JSON.parse(row.params)
+        params: JSON.parse(row.params),
       }));
     } catch (err) {
       console.error('Failed to get tasks:', err);

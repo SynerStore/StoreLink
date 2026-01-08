@@ -146,7 +146,7 @@ class WebDAVStore implements IStorageHandler {
   // // 获取资源地址
   async getSourceUrl(params: GetSourceUrlParams) {
     try {
-      const result = await getSourceUrl(this.client,this.config, params);
+      const result = await getSourceUrl(this.client, this.config, params);
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);

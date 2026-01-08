@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 
 type SecurePasswordInputProps = {
@@ -19,6 +20,7 @@ type SecurePasswordInputProps = {
 const maskText = (len: number, ch: string = '*') => ch.repeat(Math.max(1, Math.min(len, 256)));
 
 const SecurePasswordInput = (props: SecurePasswordInputProps) => {
+  const { t } = useTranslation();
   const {
     value,
     defaultValue,
@@ -82,8 +84,7 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
     onCopy: handleCopy,
     onChange: handleChange,
     disabled,
-    placeholder:
-      (mode === 'edit' && initialHasValue && !touchedRef.current ? masked : undefined) || placeholder,
+    placeholder: (mode === 'edit' && initialHasValue && !touchedRef.current ? masked : undefined) || placeholder,
     value: visible ? internal : mode === 'edit' && initialHasValue && !touchedRef.current ? '' : internal,
   };
 
@@ -103,16 +104,14 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
   if (multiline) {
     return (
       <div>
-        <Input.TextArea
-          autoSize={{ minRows: 3, maxRows: 6 }}
-          {...inputProps}
-          value={visible ? internal : ''}
-        />
+        <Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }} {...inputProps} value={visible ? internal : ''} />
         <div style={{ display: 'flex', alignItems: 'center', marginTop: 4 }}>
           <span style={{ marginLeft: 8 }}>{suffix}</span>
         </div>
         {mode === 'edit' && initialHasValue ? (
-          <div style={{ marginTop: 4, fontSize: 12, color: 'var(--text-color-secondary)' }}>编辑模式：未修改将保留原值</div>
+          <div style={{ marginTop: 4, fontSize: 12, color: 'var(--text-color-secondary)' }}>
+            编辑模式：未修改将保留原值
+          </div>
         ) : null}
       </div>
     );
@@ -120,13 +119,11 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
 
   return (
     <div>
-      <Input
-        type={visible ? 'text' : 'password'}
-        {...inputProps}
-        suffix={suffix}
-      />
+      <Input type={visible ? 'text' : 'password'} {...inputProps} suffix={suffix} />
       {mode === 'edit' && initialHasValue ? (
-        <div style={{ marginTop: 4, fontSize: 12, color: 'var(--text-color-secondary)' }}>编辑模式：未修改将保留原值</div>
+        <div style={{ marginTop: 4, fontSize: 12, color: 'var(--text-color-secondary)' }}>
+          {t('common.editModePasswordHint')}
+        </div>
       ) : null}
     </div>
   );

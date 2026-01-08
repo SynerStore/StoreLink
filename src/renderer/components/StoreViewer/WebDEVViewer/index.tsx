@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
-import { LeftOutlined, RightOutlined, DownOutlined, UnorderedListOutlined, AppstoreOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
+import {
+  LeftOutlined,
+  RightOutlined,
+  DownOutlined,
+  UnorderedListOutlined,
+  AppstoreOutlined,
+  StarOutlined,
+  StarFilled,
+} from '@ant-design/icons';
 import { debounce } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
@@ -26,6 +35,7 @@ const WebDevViewer = (props: WebDevViewerProps) => {
   const { loading, setLoading } = useLoading(false);
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
+  const { t } = useTranslation();
 
   const display = useMemo(() => {
     return tabData?.display || ETabDisplay.LIST;
@@ -152,9 +162,9 @@ const WebDevViewer = (props: WebDevViewerProps) => {
   }, []);
 
   const menuItems = [
-    { key: 'copy', label: '复制到' },
-    { key: 'move', label: '移动到' },
-    { key: 'remove', label: '删除' },
+    { key: 'copy', label: t('contextMenu.copyTo') },
+    { key: 'move', label: t('contextMenu.moveTo') },
+    { key: 'remove', label: t('contextMenu.delete') },
   ];
 
   return (
@@ -189,29 +199,22 @@ const WebDevViewer = (props: WebDevViewerProps) => {
       </div>
       <div className="viewer-actions">
         <Space size={4}>
-          <Button  type="primary" onClick={handleUpload}>
-            上传
+          <Button type="primary" onClick={handleUpload}>
+            {t('common.upload')}
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button >
-              新建目录
-            </Button>
+            <Button>{t('storeViewer.createFolder')}</Button>
           </FolderCreateWrap>
-          <Button >
-            下载
-          </Button>
-          <Dropdown
-            trigger={['click']}
-            menu={{ items: menuItems }}
-          >
-            <Button >
-              更多 <DownOutlined />
+          <Button>{t('common.download')}</Button>
+          <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+            <Button>
+              {t('common.more')} <DownOutlined />
             </Button>
           </Dropdown>
         </Space>
         <Space size={4}>
-          <Input.Search style={{ width: '240px' }} />
-          <Button onClick={handleGetObjects}> 刷新 </Button>
+          <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
+          <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
           <RadioGroup value={display} onChange={handleDisplayChange}>
             <Radio.Button value="list" style={{ fontSize: 'medium' }}>
               <UnorderedListOutlined />
@@ -251,7 +254,10 @@ const WebDevViewer = (props: WebDevViewerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
-        <span>已选 0 项，已拉取 {dataList.length} 项 </span>
+        <span>
+          {t('storeViewer.footer.selectedCount', { count: 0 })},
+          {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
+        </span>
       </div>
     </div>
   );

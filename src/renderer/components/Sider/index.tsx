@@ -14,6 +14,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTabsStore } from '@/renderer/store';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 export type SiderProps = {
   onFold: () => void;
@@ -24,6 +25,7 @@ const Sider = (props: SiderProps) => {
   const { selectTab } = useTabsStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const isHome = location.pathname === '/';
   const isTasks = location.pathname.startsWith('/tasks');
@@ -34,16 +36,16 @@ const Sider = (props: SiderProps) => {
     <aside className="sider">
       <div className="sider-top">
         {fold ? (
-          <Tooltip title="展开侧边栏">
+          <Tooltip title={t('sider.expand')}>
             <MenuUnfoldOutlined onClick={onFold} />
           </Tooltip>
         ) : (
-          <Tooltip title="收起侧边栏">
+          <Tooltip title={t('sider.collapse')}>
             <MenuFoldOutlined onClick={onFold} />
           </Tooltip>
         )}
         <Divider style={{ margin: '8px 0px' }} />
-        <Tooltip title="首页">
+        <Tooltip title={t('common.home')}>
           <HomeOutlined
             className={isHome ? 'active' : undefined}
             onClick={() => {
@@ -56,13 +58,13 @@ const Sider = (props: SiderProps) => {
       <div className="sider-bottom">
         <Divider style={{ margin: '8px 0px' }} />
         <Space vertical size={16}>
-          <Tooltip title="任务">
+          <Tooltip title={t('tasks.title')}>
             <SwapOutlined className={isTasks ? 'active' : undefined} onClick={() => navigate('/tasks')} />
           </Tooltip>
           {/* <Tooltip title="定时任务">
             <CalendarOutlined className={isSettingPage ? 'active' : undefined} onClick={() => navigate('/setting')} />
           </Tooltip> */}
-          <Tooltip title="日志">
+          <Tooltip title={t('logs.title')}>
             <ProfileOutlined className={isLogs ? 'active' : undefined} onClick={() => navigate('/logs')} />
           </Tooltip>
           {/* <Tooltip title="工具">
@@ -71,7 +73,7 @@ const Sider = (props: SiderProps) => {
               onClick={() => navigate('/setting')}
             />
           </Tooltip> */}
-          <Tooltip title="设置">
+          <Tooltip title={t('settings.title')}>
             <SettingOutlined className={isSettingPage ? 'active' : undefined} onClick={() => navigate('/setting')} />
           </Tooltip>
         </Space>

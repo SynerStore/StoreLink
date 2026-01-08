@@ -1,5 +1,6 @@
 import { useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
@@ -15,6 +16,7 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
   const { loading, setLoading } = useLoading();
   const { addConnection } = useConfigStore();
   const { mode = 'create', initial, onSubmit } = props;
+  const { t } = useTranslation();
 
   useImperativeHandle(ref, () => {
     return {
@@ -33,7 +35,10 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
   }, [initial]);
   const handleTest = async () => {
     setLoading(true);
-    const res = (form?.validateFields ? await form.validateFields(['address', 'username', 'password']) : form.getFieldsValue(true)) || {};
+    const res =
+      (form?.validateFields
+        ? await form.validateFields(['address', 'username', 'password'])
+        : form.getFieldsValue(true)) || {};
     const result = await storeConnect({
       type: StoreTypes.WEBDAV,
       config: {
@@ -42,7 +47,6 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
         password: res.password ?? initial?.config?.password,
       },
     });
-    console.log(result);
     setLoading(false);
   };
 
@@ -65,22 +69,22 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
     return addConnection(connection);
   };
   return (
-    <Form form={form}  autoComplete="off">
-      <FormItem label="连接名称" name="name">
+    <Form form={form} autoComplete="off">
+      <FormItem label={t('connection.name')} name="name">
         <Input />
       </FormItem>
-      <FormItem label="服务器地址" name="address">
+      <FormItem label={t('connection.address')} name="address">
         <Input />
       </FormItem>
-      <FormItem label="账号" name="username">
+      <FormItem label={t('connection.username')} name="username">
         <Input />
       </FormItem>
-      <FormItem label="密码" name="password">
+      <FormItem label={t('connection.password')} name="password">
         <SecurePasswordInput mode={mode} maskedLength={initial?.config?.password?.length} maskChar="*" />
       </FormItem>
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>
-          链接测试
+          {t('connection.testConnection')}
         </Button>
       </FormItem>
     </Form>

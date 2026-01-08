@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './index.css';
 
 type ListProps<T> = {
@@ -43,13 +44,18 @@ function BaseList<T = any>(props: ListProps<T>) {
     height,
     itemHeight,
     overscan = 6,
-    emptyText = '暂无数据',
+    emptyText,
     virtualizationThreshold = 200,
   } = props;
+  const { t } = useTranslation();
   const classes = ['list', bordered ? 'list-bordered' : '', `list-${size}`, className].filter(Boolean).join(' ');
+  const emptyTextValue = emptyText ?? t('common.noData');
 
   const total = dataSource.length;
-  const enabled = useMemo(() => !!height && !!itemHeight && total > virtualizationThreshold, [height, itemHeight, total, virtualizationThreshold]);
+  const enabled = useMemo(
+    () => !!height && !!itemHeight && total > virtualizationThreshold,
+    [height, itemHeight, total, virtualizationThreshold],
+  );
   const viewportRef = useRef<HTMLDivElement>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const viewCount = enabled ? Math.ceil((height as number) / (itemHeight as number)) : total;
@@ -57,7 +63,10 @@ function BaseList<T = any>(props: ListProps<T>) {
   const effectiveOverscan = enabled ? Math.max(overscan, Math.ceil(viewCount * 0.5)) : 0;
   const endIndex = enabled ? Math.min(total, startIndex + viewCount + effectiveOverscan) : total;
   const offsetY = enabled ? startIndex * (itemHeight as number) : 0;
-  const slice = useMemo(() => (enabled ? dataSource.slice(startIndex, endIndex) : dataSource), [enabled, dataSource, startIndex, endIndex]);
+  const slice = useMemo(
+    () => (enabled ? dataSource.slice(startIndex, endIndex) : dataSource),
+    [enabled, dataSource, startIndex, endIndex],
+  );
 
   useEffect(() => {
     setScrollTop(0);
@@ -85,7 +94,7 @@ function BaseList<T = any>(props: ListProps<T>) {
   if (!renderItem && !children) {
     return (
       <div className={classes} style={style}>
-        <div className="list-empty">{emptyText}</div>
+        <div className="list-empty">{emptyTextValue}</div>
       </div>
     );
   }
@@ -106,7 +115,7 @@ function BaseList<T = any>(props: ListProps<T>) {
             })}
           </div>
         </div>
-        {total === 0 ? <div className="list-empty">{emptyText}</div> : null}
+        {total === 0 ? <div className="list-empty">{emptyTextValue}</div> : null}
       </div>
     );
   }

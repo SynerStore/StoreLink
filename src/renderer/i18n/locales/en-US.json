@@ -3,6 +3,8 @@
     "loading": "Loading...",
     "confirm": "Confirm",
     "cancel": "Cancel",
+    "prev": "Previous",
+    "next": "Next",
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
@@ -17,6 +19,7 @@
     "rename": "Rename",
     "copy": "Copy",
     "refresh": "Refresh",
+    "more": "More",
     "back": "Back",
     "forward": "Forward",
     "home": "Home",
@@ -24,6 +27,9 @@
     "close": "Close",
     "open": "Open",
     "view": "View",
+    "hide": "Hide",
+    "show": "Show",
+    "editModePasswordHint": "Edit mode: value preserved if not modified",
     "detail": "Detail",
     "name": "Name",
     "size": "Size",
@@ -31,17 +37,25 @@
     "modified": "Modified",
     "created": "Created",
     "folder": "Folder",
-    "file": "File"
+    "file": "File",
+    "actions": "Actions",
+    "noData": "No data",
+    "deleteWarning": "Deletion cannot be undone. Delete selected items?"
   },
   "fileViewer": {
     "loadingTip": "Loading resource, please wait...",
     "unsupportedFile": "This document cannot be viewed",
+    "downloadStarted": "Download started",
     "imageViewer": {
       "rotateLeft": "Rotate Left",
       "rotateRight": "Rotate Right",
       "zoomIn": "Zoom In",
       "zoomOut": "Zoom Out",
       "originalSize": "Original Size"
+    },
+    "markdownViewer": {
+      "sourceText": "Source",
+      "preview": "Preview"
     }
   },
   "storeSider": {
@@ -50,7 +64,9 @@
     "addConnection": "Add Connection",
     "editConnection": "Edit Connection",
     "deleteConnection": "Delete Connection",
-    "confirmDelete": "Are you sure to delete this connection?"
+    "confirmDelete": "Are you sure to delete this connection?",
+    "reconnect": "Reconnect",
+    "connecting": "Connecting"
   },
   "storeViewer": {
     "listView": "List View",
@@ -61,7 +77,15 @@
     "pathNavigation": "Path Navigation",
     "emptyFolder": "Folder is empty",
     "loadingFiles": "Loading files...",
-    "storageClass": "Storage Class"
+    "storageClass": "Storage Class",
+    "footer": {
+      "selectedCount": "Selected {{count}} items",
+      "loadedCount": "Loaded {{count}} items"
+    }
+  },
+  "sider": {
+    "expand": "Expand sidebar",
+    "collapse": "Collapse sidebar"
   },
   "contextMenu": {
     "download": "Download",
@@ -87,10 +111,19 @@
     "appearance": "Appearance",
     "storage": "Storage"
   },
+  "logs": {
+    "title": "Logs",
+    "normal": "Normal Log",
+    "error": "Error Log",
+    "lines": "{{count}} lines"
+  },
   "tasks": {
     "title": "Tasks",
     "upload": "Upload",
     "download": "Download",
+    "status": "Status",
+    "progress": "Progress",
+    "speed": "Speed",
     "pending": "Pending",
     "running": "Running",
     "completed": "Completed",
@@ -99,25 +132,45 @@
     "pause": "Pause",
     "resume": "Resume",
     "cancel": "Cancel",
-    "retry": "Retry"
+    "retry": "Retry",
+    "endTime": "Completed Time",
+    "errorMessage": "Error Message",
+    "manageTitle": "Task Management",
+    "tabs": {
+      "downloading": "Downloading",
+      "uploading": "Uploading",
+      "finished": "Finished",
+      "failed": "Failed"
+    }
   },
   "connection": {
     "title": "Connection Configuration",
     "name": "Connection Name",
     "type": "Storage Type",
+    "address": "Server Address",
+    "addressPlaceholder": "e.g., 192.168.1.10 or nas.example.com",
     "host": "Host",
     "port": "Port",
     "username": "Username",
     "password": "Password",
+    "enableHttps": "Enable HTTPS",
+    "privateKey": "Private Key",
+    "passphrase": "Passphrase",
+    "localRoot": "Local Directory",
+    "localRootPlaceholder": "Enter local path",
+    "showHiddenFiles": "Show hidden files",
     "accessKey": "Access Key",
     "secretKey": "Secret Key",
     "bucket": "Bucket",
     "region": "Region",
     "endpoint": "Endpoint",
+    "endpointTooltip": "Optional, default is AWS S3",
     "testConnection": "Test Connection",
     "saveConnection": "Save Connection",
     "connectionSuccess": "Connection successful",
-    "connectionFailed": "Connection failed"
+    "connectionFailed": "Connection failed",
+    "bucketFillHint": "Click Test Connection to auto-fill buckets",
+    "bucketMultipleHint": "You can enter multiple buckets"
   },
   "errors": {
     "networkError": "Network Error",
@@ -127,6 +180,17 @@
     "uploadFailed": "Upload Failed",
     "downloadFailed": "Download Failed",
     "deleteFailed": "Delete Failed",
-    "renameFailed": "Rename Failed"
+    "renameFailed": "Rename Failed",
+    "loadDirFailed": "Failed to load directories: {{message}}"
+  },
+  "fileTransfer": {
+    "move": "Move",
+    "copy": "Copy",
+    "title": "{{mode}} {{count}} items",
+    "source": "Source",
+    "targetStorage": "Target Storage",
+    "selectTargetStorage": "Please select a target storage",
+    "targetPath": "Target Path",
+    "selectFolderBelow": "Please select a folder below"
   }
 }

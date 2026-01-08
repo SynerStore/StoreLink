@@ -28,11 +28,7 @@ function ContextMenu(props: ContextMenuProps) {
   }));
 
   return (
-    <Dropdown
-      menu={{ items }}
-      trigger={['contextMenu']}
-      placement="bottomLeft"
-    >
+    <Dropdown menu={{ items }} trigger={['contextMenu']} placement="bottomLeft">
       {children}
     </Dropdown>
   );

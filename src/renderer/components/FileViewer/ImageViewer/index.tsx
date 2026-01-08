@@ -8,6 +8,7 @@ import {
   ExpandOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import { events, downloadViewerSource } from '@/renderer/utils';
 import { PreviewScales, defaultScales } from '@/renderer/utils';
@@ -24,6 +25,7 @@ const ImageViewer = (props: ImageViewerProps) => {
   const refImage = useRef<any>();
   const [rotate, setRotate] = useState(0);
   const [scale, setScale] = useState(1);
+  const { t } = useTranslation();
   const ROTATE_STEP = 90;
 
   const previewScales = useMemo(() => {
@@ -57,51 +59,51 @@ const ImageViewer = (props: ImageViewerProps) => {
       setScale(newScale);
     }
   };
-  
+
   const onDownload = async () => {
     if (!src) return;
     const localDir = await events.getSingleDirPath({});
     if (!localDir) return;
     await downloadViewerSource(id, { src, localPath: localDir });
-    message.success('已开始下载');
+    message.success(t('fileViewer.downloadStarted'));
   };
 
   const defaultActions = [
     {
       key: 'rotateRight',
-      name: '向右旋转',
+      name: t('fileViewer.imageViewer.rotateRight'),
       content: <RotateRightOutlined />,
       onClick: onRotateRight,
     },
     {
       key: 'rotateLeft',
-      name: '向左旋转',
+      name: t('fileViewer.imageViewer.rotateLeft'),
       content: <RotateLeftOutlined />,
       onClick: onRotateLeft,
     },
     {
       key: 'zoomIn',
-      name: '放大',
+      name: t('fileViewer.imageViewer.zoomIn'),
       content: <ZoomInOutlined />,
       onClick: onZoomIn,
       disabled: scale === previewScales.maxScale,
     },
     {
       key: 'zoomOut',
-      name: '缩小',
+      name: t('fileViewer.imageViewer.zoomOut'),
       content: <ZoomOutOutlined />,
       onClick: onZoomOut,
       disabled: scale === previewScales.minScale,
     },
     {
       key: 'originalSize',
-      name: '原始尺寸',
+      name: t('fileViewer.imageViewer.originalSize'),
       content: <ExpandOutlined />,
       onClick: onResetScale,
     },
     {
       key: 'download',
-      name: '下载',
+      name: t('common.download'),
       content: <DownloadOutlined />,
       onClick: onDownload,
     },

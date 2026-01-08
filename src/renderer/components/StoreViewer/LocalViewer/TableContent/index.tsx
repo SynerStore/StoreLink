@@ -23,7 +23,19 @@ export type TableContentProps = {
 
 const TableContent = (props: TableContentProps) => {
   const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 196 - 55);
-  const { data, connectionId, onPrefixChange, onFileView, loading, onRename, onDelete, onSelectionChange, selectedKeys, onMoveTo, onCopyTo } = props;
+  const {
+    data,
+    connectionId,
+    onPrefixChange,
+    onFileView,
+    loading,
+    onRename,
+    onDelete,
+    onSelectionChange,
+    selectedKeys,
+    onMoveTo,
+    onCopyTo,
+  } = props;
   const { t } = useTranslation();
 
   const handleFileClick = (record: TStoreObject) => {
@@ -35,9 +47,9 @@ const TableContent = (props: TableContentProps) => {
   };
 
   const handleRowDragStart = (e: React.DragEvent<HTMLElement>, selectedRows: TStoreObject[]) => {
-    const dragData = selectedRows.map(row => ({
+    const dragData = selectedRows.map((row) => ({
       connectionId,
-      ...row
+      ...row,
     }));
     e.dataTransfer.setData('application/json', JSON.stringify(dragData));
     e.dataTransfer.effectAllowed = 'copyMove';
@@ -58,9 +70,7 @@ const TableContent = (props: TableContentProps) => {
             onMoveTo={onMoveTo}
             onCopyTo={onCopyTo}
           >
-            <div
-              className="file-item"
-            >
+            <div className="file-item">
               {record.isDirectory ? (
                 <Fragment>
                   <FileIcon type="folder" /> <span>{text}</span>
@@ -111,7 +121,12 @@ const TableContent = (props: TableContentProps) => {
         size="small"
         bordered={false}
         loading={loading}
-        rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange, selectedRowKeys: selectedKeys }}
+        rowSelection={{
+          type: 'checkbox',
+          columnWidth: 40,
+          onChange: handleSelectChange,
+          selectedRowKeys: selectedKeys,
+        }}
         scroll={{ y: tableScrollHight }}
         dataSource={data}
         pagination={false}

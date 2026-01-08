@@ -11,16 +11,16 @@ export * from './adapters/store';
 export const storeRequestRegistry = () => {
   ipcMain.handle(EChannels.storeRequest, async (_event: any, data: any) => {
     const { id, method, params } = data;
-    
+
     // Methods that should be handled as background tasks
     const taskTypeMap: Record<string, ETaskType> = {
-      'get': ETaskType.DOWNLOAD,
-      'put': ETaskType.UPLOAD,
-      'delete': ETaskType.DELETE,
-      'deleteMulti': ETaskType.DELETE,
-      'putFolder': ETaskType.CREATE_DIR,
-      'rename': ETaskType.RENAME,
-      'copy': ETaskType.COPY 
+      get: ETaskType.DOWNLOAD,
+      put: ETaskType.UPLOAD,
+      delete: ETaskType.DELETE,
+      deleteMulti: ETaskType.DELETE,
+      putFolder: ETaskType.CREATE_DIR,
+      rename: ETaskType.RENAME,
+      copy: ETaskType.COPY,
     };
 
     if (taskTypeMap[method]) {
@@ -31,7 +31,7 @@ export const storeRequestRegistry = () => {
         method: method,
         params: params,
         size: 0,
-        status: ETaskStatus.PENDING
+        status: ETaskStatus.PENDING,
       });
       return { code: 0, msg: 'Task started', data: task };
     }

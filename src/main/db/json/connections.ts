@@ -126,9 +126,7 @@ export async function importConnections(filePath: string, merge: boolean = false
   const data = await fs.readJSON(filePath);
   const cur = getConnectionsData();
   const imported = encryptConnectionSensitive((data?.connections as any[]) || []);
-  const next = merge
-    ? { connections: [...cur.connections, ...imported] }
-    : { connections: imported };
+  const next = merge ? { connections: [...cur.connections, ...imported] } : { connections: imported };
   await setConnectionsData(next);
   return next;
 }
@@ -136,7 +134,7 @@ export async function importConnections(filePath: string, merge: boolean = false
 export async function updateConnectionCollected(params: { id: string; isCollected: boolean }) {
   const data = getConnectionsData();
   const next = (data.connections || []).map((c: any) =>
-    c.id === params.id ? { ...c, isCollected: params.isCollected } : c
+    c.id === params.id ? { ...c, isCollected: params.isCollected } : c,
   );
   await setConnectionsData({ connections: next });
   logAction({
@@ -158,7 +156,7 @@ export async function updateConnection(connection: any) {
           config: { ...(c?.config || {}), ...(payload?.config || {}) },
           updateDate: new Date().toLocaleString(),
         }
-      : c
+      : c,
   );
   await setConnectionsData({ connections: next });
   logAction({

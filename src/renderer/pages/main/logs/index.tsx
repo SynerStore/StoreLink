@@ -1,11 +1,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Space, DatePicker, Select, Button, Pagination, Typography } from 'antd';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import { events } from '@/renderer/utils';
 import { PageWrapper, List } from '@/renderer/components';
 import './index.css';
 
 const Logs = () => {
+  const { t } = useTranslation();
   const [logs, setLogs] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [logsLimit, setLogsLimit] = useState<number>(50);
@@ -58,7 +60,7 @@ const Logs = () => {
 
   return (
     <PageWrapper
-      title="操作日志"
+      title={t('logs.title')}
       actions={
         <Space size={8}>
           <DatePicker
@@ -77,8 +79,8 @@ const Logs = () => {
               fetchLogs(selectedDate || undefined, logsLimit, 1, val);
             }}
             options={[
-              { label: '普通日志', value: 'normal' },
-              { label: '错误日志', value: 'error' },
+              { label: t('logs.normal'), value: 'normal' },
+              { label: t('logs.error'), value: 'error' },
             ]}
           />
           <Select
@@ -89,48 +91,48 @@ const Logs = () => {
               setLogsLimit(n);
             }}
             options={[
-              { label: '10条', value: '10' },
-              { label: '50条', value: '50' },
-              { label: '100条', value: '100' },
+              { label: t('logs.lines', { count: 10 }), value: '10' },
+              { label: t('logs.lines', { count: 50 }), value: '50' },
+              { label: t('logs.lines', { count: 100 }), value: '100' },
             ]}
           />
-          <Button onClick={() => fetchLogs(selectedDate || undefined, logsLimit, 1, kind)}>刷新</Button>
+          <Button onClick={() => fetchLogs(selectedDate || undefined, logsLimit, 1, kind)}>{t('common.refresh')}</Button>
         </Space>
       }
     >
       <div ref={containerRef} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <List
-        size="small"
-        bordered
-        height={listHeight}
-        itemHeight={28}
-        overscan={10}
-        className="log-list"
-        dataSource={logs}
-        renderItem={(line: string, index: number) => {
-          const isError = /error/i.test(line);
-          const isWarn = !isError && /warn/i.test(line);
-          const color = isError ? '#ff4d4f' : isWarn ? '#fa8c16' : 'inherit';
-          return (
-            <List.Item key={index}>
-              <Typography.Text style={{ color }}>{line}</Typography.Text>
-            </List.Item>
-          );
-        }}
-      />
-      <div ref={footerRef} style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
-        <Pagination
+        <List
           size="small"
-          current={page}
-          total={total}
-          pageSize={logsLimit}
-          showSizeChanger={false}
-          onChange={(p) => {
-            setPage(p);
-            fetchLogs(selectedDate || undefined, logsLimit, p, kind);
+          bordered
+          height={listHeight}
+          itemHeight={28}
+          overscan={10}
+          className="log-list"
+          dataSource={logs}
+          renderItem={(line: string, index: number) => {
+            const isError = /error/i.test(line);
+            const isWarn = !isError && /warn/i.test(line);
+            const color = isError ? '#ff4d4f' : isWarn ? '#fa8c16' : 'inherit';
+            return (
+              <List.Item key={index}>
+                <Typography.Text style={{ color }}>{line}</Typography.Text>
+              </List.Item>
+            );
           }}
         />
-      </div>
+        <div ref={footerRef} style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+          <Pagination
+            size="small"
+            current={page}
+            total={total}
+            pageSize={logsLimit}
+            showSizeChanger={false}
+            onChange={(p) => {
+              setPage(p);
+              fetchLogs(selectedDate || undefined, logsLimit, p, kind);
+            }}
+          />
+        </div>
       </div>
     </PageWrapper>
   );

@@ -35,9 +35,10 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
         }
 
         const index = prev.findIndex((t) => t.taskId === updatedTask.taskId);
-        
+
         // Check if the updated task still matches the filters
-        const matchesStatus = !statusFilters || statusFilters.length === 0 || statusFilters.includes(updatedTask.status);
+        const matchesStatus =
+          !statusFilters || statusFilters.length === 0 || statusFilters.includes(updatedTask.status);
         const matchesType = !typeFilters || typeFilters.length === 0 || typeFilters.includes(updatedTask.type);
 
         if (!matchesStatus || !matchesType) {

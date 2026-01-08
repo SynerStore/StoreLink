@@ -73,10 +73,7 @@ const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
   }, [minItemWidth, maxItemWidth, columnGap, padding]);
 
   // 使用 lodash 的 debounce 创建防抖函数
-  const debouncedResize = useMemo(
-    () => debounce(calculateLayout, 100),
-    [calculateLayout],
-  );
+  const debouncedResize = useMemo(() => debounce(calculateLayout, 100), [calculateLayout]);
 
   // 组件卸载时取消 debounce
   useEffect(() => {
@@ -111,7 +108,6 @@ const ResponsiveGrid: React.FC<ResponsiveGridProps> = ({
 
   // 处理子元素
   const childrenArray = React.Children.toArray(children);
-
 
   const containerStyle: CSSProperties = {
     display: 'flex',

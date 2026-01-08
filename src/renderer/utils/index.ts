@@ -6,7 +6,7 @@ export * from './window';
 export * from './env';
 export * from './style';
 export * from './viewer';
-export * from "./getScale"
-export * from "./copyToClipboard"
-export * from "./theme"
+export * from './getScale';
+export * from './copyToClipboard';
+export * from './theme';
 export * from './task';

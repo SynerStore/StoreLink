@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
-import { LeftOutlined, RightOutlined, DownOutlined, UnorderedListOutlined, AppstoreOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
+import {
+  LeftOutlined,
+  RightOutlined,
+  DownOutlined,
+  UnorderedListOutlined,
+  AppstoreOutlined,
+  StarOutlined,
+  StarFilled,
+} from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
@@ -27,6 +36,7 @@ const S3Viewer = (props: S3ViwerProps) => {
   const { loading, setLoading } = useLoading(false);
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
+  const { t } = useTranslation();
 
   const display = useMemo(() => {
     return data?.display || ETabDisplay.LIST;
@@ -90,7 +100,7 @@ const S3Viewer = (props: S3ViwerProps) => {
         connectionId,
         'get',
         { bucketName: bucketName, prefix: curPrefix, key: record.key, localPath: localPath },
-        record.size
+        record.size,
       );
     }
   };
@@ -129,7 +139,7 @@ const S3Viewer = (props: S3ViwerProps) => {
         bucketName,
         key: record.key,
       },
-      record.size
+      record.size,
     );
   };
 
@@ -158,9 +168,9 @@ const S3Viewer = (props: S3ViwerProps) => {
   }, []);
 
   const menuItems = [
-    { key: 'copy', label: '复制到' },
-    { key: 'move', label: '移动到' },
-    { key: 'remove', label: '删除' },
+    { key: 'copy', label: t('contextMenu.copyTo') },
+    { key: 'move', label: t('contextMenu.moveTo') },
+    { key: 'remove', label: t('contextMenu.delete') },
   ];
 
   return (
@@ -194,29 +204,22 @@ const S3Viewer = (props: S3ViwerProps) => {
       </div>
       <div className="viewer-actions">
         <Space size={4}>
-          <Button type="primary" onClick={handleUpload} >
-            上传
+          <Button type="primary" onClick={handleUpload}>
+            {t('common.upload')}
           </Button>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button >
-              新建目录
-            </Button>
+            <Button>{t('storeViewer.createFolder')}</Button>
           </FolderCreateWrap>
-          <Button >
-            下载
-          </Button>
-          <Dropdown
-            trigger={['click']}
-            menu={{ items: menuItems }}
-          >
-            <Button >
-              更多 <DownOutlined style={{ fontSize: 'medium' }} />
+          <Button>{t('common.download')}</Button>
+          <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+            <Button>
+              {t('common.more')} <DownOutlined style={{ fontSize: 'medium' }} />
             </Button>
           </Dropdown>
         </Space>
         <Space size={4}>
           <Input.Search style={{ width: '240px' }} />
-          <Button onClick={handleGetObjects}> 刷新 </Button>
+          <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
           <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)}>
             <Radio.Button value="list" style={{ fontSize: 'medium' }}>
               <UnorderedListOutlined />
@@ -256,7 +259,10 @@ const S3Viewer = (props: S3ViwerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
-        <span>已选 0 项，已拉取 {dataList.length} 项 </span>
+        <span>
+          {t('storeViewer.footer.selectedCount', { count: 0 })},
+          {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
+        </span>
       </div>
     </div>
   );

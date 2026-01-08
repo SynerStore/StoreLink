@@ -6,5 +6,5 @@ export * from './response';
 export * from './fs';
 export * from './stream';
 export * from './crypto';
-export * from "./devtool"
-export * from "./secret"
+export * from './devtool';
+export * from './secret';

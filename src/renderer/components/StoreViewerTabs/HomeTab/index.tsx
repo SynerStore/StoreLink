@@ -8,12 +8,14 @@ import { ETaskStatus } from '@/types';
 import dayjs from 'dayjs';
 import { events } from '@/renderer/utils';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 const HomeTab = () => {
   const { connections, initializeData } = useConfigStore();
   const { tasks, refresh } = useTasks();
   const [activeStoreCount, setActiveStoreCount] = useState<number>(0);
   const { activeTab } = useTabsStore();
+  const { t } = useTranslation();
 
   const totalConnections = connections.length;
   const runningCount = useMemo(() => {
@@ -85,30 +87,30 @@ const HomeTab = () => {
   return (
     <div className="home-tab">
       <div className="home-tab-header">
-        <h2>StoreLink</h2>
+        <h2>{t('home.title')}</h2>
         <StoreConnectModal>
           <Button type="primary" icon={<PlusOutlined style={{ fontSize: 'medium' }} />}>
-            添加连接
+            {t('storeSider.addConnection')}
           </Button>
         </StoreConnectModal>
       </div>
       <div className="home-tab-dashbord">
         <Card hoverable className="home-tab-dashbord-card">
-          <Statistic title="当前链接数" value={totalConnections} />
+          <Statistic title={t('home.stats.connections')} value={totalConnections} />
         </Card>
         <Card hoverable className="home-tab-dashbord-card">
-          <Statistic title="正在进行的任务" value={runningCount} />
+          <Statistic title={t('home.stats.running')} value={runningCount} />
         </Card>
         <Card hoverable className="home-tab-dashbord-card">
-          <Statistic title="激活的存储实例" value={activeStoreCount} />
+          <Statistic title={t('home.stats.activeStores')} value={activeStoreCount} />
         </Card>
         <Card hoverable className="home-tab-dashbord-card">
-          <Statistic title="今日完成任务" value={todayCompleted} />
+          <Statistic title={t('home.stats.todayCompleted')} value={todayCompleted} />
         </Card>
       </div>
       <div className="home-tab-content" style={{ marginTop: 16 }}>
         <div style={{ marginTop: 16 }}>
-          <Card title="我的收藏链接">
+          <Card title={t('home.favorites.title')}>
             {favoriteConnections.length > 0 ? (
               <List
                 bordered={false}
@@ -122,7 +124,7 @@ const HomeTab = () => {
                       </span>
                       <Tag color="blue">{item.brand}</Tag>
                       <Button type="text" onClick={() => toggleFavorite(item.id)}>
-                        ★ 取消收藏
+                        ★ {t('home.favorites.remove')}
                       </Button>
                     </Space>
                   </List.Item>
@@ -130,14 +132,14 @@ const HomeTab = () => {
               />
             ) : (
               <Space size={8} vertical>
-                <span>暂无收藏链接</span>
+                <span>{t('home.favorites.empty')}</span>
               </Space>
             )}
           </Card>
         </div>
         <div style={{ marginTop: 16 }}>
           <Card
-            title="操作日志"
+            title={t('home.logs.title')}
             extra={
               <Space size={8}>
                 <DatePicker
@@ -156,12 +158,12 @@ const HomeTab = () => {
                     setLogsLimit(n);
                   }}
                   options={[
-                    { label: '10条', value: '10' },
-                    { label: '50条', value: '50' },
-                    { label: '100条', value: '100' },
+                    { label: t('home.logs.limit', { count: 10 }), value: '10' },
+                    { label: t('home.logs.limit', { count: 50 }), value: '50' },
+                    { label: t('home.logs.limit', { count: 100 }), value: '100' },
                   ]}
                 />
-                <Button onClick={() => fetchLogs(selectedDate || undefined)}>刷新</Button>
+                <Button onClick={() => fetchLogs(selectedDate || undefined)}>{t('common.refresh')}</Button>
               </Space>
             }
           >

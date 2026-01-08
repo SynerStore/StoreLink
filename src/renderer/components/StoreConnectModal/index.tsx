@@ -1,5 +1,6 @@
 import { Fragment, useState, useRef } from 'react';
 import { Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import StoreSelection from './StoreSelection';
 import StoreConnectForm from './StoreConnectForm';
@@ -17,6 +18,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
   const [activeBrand, setActiveBrand] = useState('');
   const [step, setStep] = useState(0);
   const { addTab } = useTabsStore();
+  const { t } = useTranslation();
 
   const handleNext = () => {
     setStep(step + 1);
@@ -44,7 +46,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
   return (
     <Fragment>
       <Modal
-        title="添加连接"
+        title={t('storeSider.addConnection')}
         closable={false}
         maskClosable={false}
         open={isModalOpen}
@@ -52,8 +54,8 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
         width={620}
         onCancel={step === 0 ? handleCancel : handlePrev}
         onOk={step === 0 ? handleNext : handleOk}
-        cancelText={step === 0 ? '取消' : '上一步'}
-        okText={step === 0 ? '下一步' : '确定'}
+        cancelText={step === 0 ? t('common.cancel') : t('common.prev')}
+        okText={step === 0 ? t('common.next') : t('common.confirm')}
       >
         {step === 0 ? (
           <StoreSelection activeBrand={activeBrand} onActive={setActiveBrand} />

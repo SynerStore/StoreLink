@@ -1,7 +1,14 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import mime from 'mime-types';
-import { filesSort, getTempPath, streamToPromise, getMd5ByString, isObjectFolder, readDirectoryRecursive } from '@/main/utils';
+import {
+  filesSort,
+  getTempPath,
+  streamToPromise,
+  getMd5ByString,
+  isObjectFolder,
+  readDirectoryRecursive,
+} from '@/main/utils';
 import { TStoreObject } from '@/types';
 
 export type SynologyClient = {
@@ -55,7 +62,9 @@ export async function list(client: SynologyClient, params: ListParams) {
       onlywritable: false,
     });
     const arr = formatShares(res?.data?.shares || []);
-    const safe = arr.map((it) => ({ ...it, name: (it.name as string) || '' })) as Array<{ name: string; isDirectory: boolean } & any>;
+    const safe = arr.map((it) => ({ ...it, name: (it.name as string) || '' })) as Array<
+      { name: string; isDirectory: boolean } & any
+    >;
     return filesSort(safe) as any[];
   }
   const res = await client.FileStation.getFileList({
@@ -68,7 +77,9 @@ export async function list(client: SynologyClient, params: ListParams) {
     sort_direction: 'ASC',
   });
   const arr = formatFiles(res?.data?.files || []);
-  const safe = arr.map((it) => ({ ...it, name: (it.name as string) || '' })) as Array<{ name: string; isDirectory: boolean } & any>;
+  const safe = arr.map((it) => ({ ...it, name: (it.name as string) || '' })) as Array<
+    { name: string; isDirectory: boolean } & any
+  >;
   return filesSort(safe) as any[];
 }
 

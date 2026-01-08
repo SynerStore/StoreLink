@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Spin } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import MarkdownViewer from './MarkdownViewer';
 import PdfViewer from './PdfViewer';
@@ -17,6 +18,7 @@ export type FileViewerProps = {
   id: string;
 };
 const FileViewer = (props: FileViewerProps) => {
+  const { t } = useTranslation();
   const { loading, setLoading } = useLoading();
   const [sourceUrl, setSourceUrl] = useState('');
   const [content, setContent] = useState('');
@@ -55,11 +57,16 @@ const FileViewer = (props: FileViewerProps) => {
   }, [type]);
 
   return (
-    <Spin className="file-viewer-spin" spinning={loading} tip="资源加载中，请耐心等待...">
+    <Spin className="file-viewer-spin" spinning={loading} tip={t('fileViewer.loadingTip')}>
       {ViewerComponent ? (
-        React.createElement(ViewerComponent as any, { id: props.id, src: sourceUrl, content: content, mime: props?.mime })
+        React.createElement(ViewerComponent as any, {
+          id: props.id,
+          src: sourceUrl,
+          content: content,
+          mime: props?.mime,
+        })
       ) : (
-        <div> 该文档无法查看</div>
+        <div> {t('fileViewer.unsupportedFile')}</div>
       )}
     </Spin>
   );

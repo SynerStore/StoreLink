@@ -1,25 +1,25 @@
-import { Button, Input, Space, Table, Progress, Tag } from 'antd';
+import { Button, Space, Table, Progress, Tag } from 'antd';
 import { DeleteOutlined, PauseOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
-
-const InputSearch = Input.Search;
+import { useTranslation } from 'react-i18next';
 
 const UploadingTaskTable = () => {
+  const { t } = useTranslation();
   const { tasks, handlePause, handleResume, handleDelete } = useTasks(
     [ETaskStatus.PENDING, ETaskStatus.RUNNING, ETaskStatus.PAUSED],
-    [ETaskType.UPLOAD, ETaskType.DELETE, ETaskType.RENAME, ETaskType.COPY, ETaskType.CREATE_DIR]
+    [ETaskType.UPLOAD, ETaskType.DELETE, ETaskType.RENAME, ETaskType.COPY, ETaskType.CREATE_DIR],
   );
 
   const columns = [
     {
-      title: '类型',
+      title: t('common.type'),
       dataIndex: 'type',
       render: (type: ETaskType) => type,
     },
     {
-      title: '文件',
+      title: t('common.file'),
       dataIndex: 'params',
       render: (params: any) => {
         if (params?.localPaths) return params.localPaths.join(', ');
@@ -33,44 +33,61 @@ const UploadingTaskTable = () => {
       },
     },
     {
-      title: '大小',
+      title: t('common.size'),
       dataIndex: 'size',
       render: (size: number) => calculateSize(size),
     },
     {
-      title: '进度',
+      title: t('tasks.progress'),
       dataIndex: 'progress',
       render: (progress: number) => <Progress percent={progress} size="small" />,
     },
     {
-      title: '速度',
+      title: t('tasks.speed'),
       dataIndex: 'speed',
       render: (speed: number) => `${calculateSize(speed)}/s`,
     },
     {
-      title: '状态',
+      title: t('tasks.status'),
       dataIndex: 'status',
       render: (status: ETaskStatus) => {
         const color = status === ETaskStatus.RUNNING ? 'blue' : status === ETaskStatus.PAUSED ? 'orange' : 'default';
-        return <Tag color={color}>{status}</Tag>;
-      }
+        const key =
+          status === ETaskStatus.PAUSED
+            ? 'paused'
+            : status === ETaskStatus.RUNNING
+              ? 'running'
+              : status === ETaskStatus.PENDING
+                ? 'pending'
+                : status === ETaskStatus.COMPLETED
+                  ? 'completed'
+                  : status === ETaskStatus.FAILED
+                    ? 'failed'
+                    : 'canceled';
+        return <Tag color={color}>{t(`tasks.${key}`)}</Tag>;
+      },
     },
     {
-      title: '操作',
+      title: t('common.actions'),
       dataIndex: 'actions',
       render: (_: any, record: any) => (
         <Space>
           {record.status === ETaskStatus.RUNNING ? (
             <Button size="small" icon={<PauseOutlined />} onClick={() => handlePause(record.taskId)}>
-              暂停
+              {t('tasks.pause')}
             </Button>
           ) : (
-            <Button size="small" type="primary" icon={<PlayCircleOutlined />} onClick={() => handleResume(record.taskId)}>
-              开始
+            <Button
+              size="small"
+              type="primary"
+              icon={<PlayCircleOutlined />}
+              onClick={() => handleResume(record.taskId)}
+            >
+              {t('tasks.resume')}
             </Button>
           )}
           <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.taskId)}>
-            删除
+            {t('common.delete')}
           </Button>
         </Space>
       ),

@@ -13,7 +13,9 @@
 
   .anticon {
     cursor: pointer;
-    transition: color 0.2s ease, transform 0.2s ease;
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
   }
 
   .anticon:hover {

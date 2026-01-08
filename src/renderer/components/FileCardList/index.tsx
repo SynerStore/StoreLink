@@ -7,8 +7,10 @@ import { FileIcon, FileContextMenu, ResponsiveGrid } from '@/renderer/components
 import { calculateSize } from '@/renderer/utils';
 import { FileCardListProps, rangeSelectKeys, toggleSelectionKey } from './types';
 import styles from './styles.module.css';
+import { useTranslation } from 'react-i18next';
 
 const FileCardList: React.FC<FileCardListProps> = (props) => {
+  const { t } = useTranslation();
   const {
     data,
     connectionId,
@@ -47,13 +49,10 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
       }
       onSelectionChange?.(newKeys);
     },
-    [onSelectionChange, propSelectedKeys]
+    [onSelectionChange, propSelectedKeys],
   );
 
-  const getIndex = useCallback(
-    (key: React.Key) => data.findIndex((d) => (d.key as React.Key) === key),
-    [data]
-  );
+  const getIndex = useCallback((key: React.Key) => data.findIndex((d) => (d.key as React.Key) === key), [data]);
 
   const handleFileClick = (record: any) => {
     if (record.isDirectory) {
@@ -172,7 +171,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
 
   const intersects = (
     r1: { x: number; y: number; w: number; h: number },
-    r2: { x: number; y: number; w: number; h: number }
+    r2: { x: number; y: number; w: number; h: number },
   ) => {
     return !(r2.x > r1.x + r1.w || r2.x + r2.w < r1.x || r2.y > r1.y + r1.h || r2.y + r2.h < r1.y);
   };
@@ -241,19 +240,25 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
               data={item}
               onDetail={() => {}}
               onRename={onRename}
-                    onDelete={onDelete}
-                    onDownload={onDownload}
-                    onMoveTo={onMoveTo}
-                    onCopyTo={onCopyTo}
-                  >
+              onDelete={onDelete}
+              onDownload={onDownload}
+              onMoveTo={onMoveTo}
+              onCopyTo={onCopyTo}
+            >
               <Tooltip
                 placement="bottom"
                 trigger="click"
                 title={
                   <div>
-                    <div>名称:{item.name}</div>
-                    <div>大小:{calculateSize(item.size as number)}</div>
-                    <div>修改时间:{dayjs(item.lastModified).format('YYYY-MM-DD HH:mm:ss')}</div>
+                    <div>
+                      {t('common.name')}:{item.name}
+                    </div>
+                    <div>
+                      {t('common.size')}:{calculateSize(item.size as number)}
+                    </div>
+                    <div>
+                      {t('common.modified')}:{dayjs(item.lastModified).format('YYYY-MM-DD HH:mm:ss')}
+                    </div>
                   </div>
                 }
               >

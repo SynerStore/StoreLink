@@ -7,6 +7,7 @@ import { storeRequest } from '@/renderer/utils';
 import { TStoreObject } from '@/types';
 import FolderIcon from '@/renderer/assets/file-icons/folder.svg';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 interface FileTransferModalProps {
   visible: boolean;
@@ -33,6 +34,7 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   // 初始化目标连接为源连接，当模态框打开时
   useEffect(() => {
@@ -72,10 +74,10 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
           setTreeData((origin) => updateTreeData(origin, prefix, nodes));
         }
       } else {
-        message.error(`加载目录失败: ${res.message || '未知错误'}`);
+        message.error(t('errors.loadDirFailed', { message: res.message || t('errors.unknownError') }));
       }
     } catch (error: any) {
-      message.error(`加载目录失败: ${error.message || error}`);
+      message.error(t('errors.loadDirFailed', { message: error.message || t('errors.unknownError') }));
     } finally {
       setLoading(false);
     }
@@ -177,17 +179,26 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
 
   return (
     <Modal
-      title={`${mode === 'move' ? '移动' : '复制'} ${files.length} 项`}
+      title={t('fileTransfer.title', {
+        mode: t(mode === 'move' ? 'fileTransfer.move' : 'fileTransfer.copy'),
+        count: files.length,
+      })}
       open={visible}
       onCancel={onCancel}
       onOk={handleOk}
       confirmLoading={confirmLoading}
       width={600}
     >
-      <div className="transfer-modal-info">来源: {files.length > 0 ? files[0].key : ''} ...</div>
+      <div className="transfer-modal-info">
+        {t('fileTransfer.source')}: {files.length > 0 ? files[0].key : ''} ...
+      </div>
 
       <Form form={form} layout="vertical">
-        <Form.Item name="targetConnectionId" label="目标存储" rules={[{ required: true, message: '请选择目标存储' }]}>
+        <Form.Item
+          name="targetConnectionId"
+          label={t('fileTransfer.targetStorage')}
+          rules={[{ required: true, message: t('fileTransfer.selectTargetStorage') }]}
+        >
           <Select style={{ width: '100%' }} onChange={handleConnectionChange}>
             {connections.map((conn: any) => (
               <Select.Option key={conn.id} value={conn.id}>
@@ -197,8 +208,8 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
           </Select>
         </Form.Item>
 
-        <Form.Item name="targetPath" label="目标路径">
-          <Input readOnly placeholder="请在下方选择文件夹" />
+        <Form.Item name="targetPath" label={t('fileTransfer.targetPath')}>
+          <Input readOnly placeholder={t('fileTransfer.selectFolderBelow')} />
         </Form.Item>
       </Form>
 

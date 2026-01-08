@@ -15,4 +15,3 @@ const Home: React.FC<HomeProps> = ({ fold }) => {
 };
 
 export default Home;
-

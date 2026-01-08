@@ -1,5 +1,6 @@
 import { Tooltip } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import './index.css';
 
@@ -10,6 +11,7 @@ export type TxtViewerProps = {
 };
 
 const TxtViewer = (props: TxtViewerProps) => {
+  const { t } = useTranslation();
   const { content } = props;
   const handleCopy = () => {
     navigator.clipboard.writeText(content as string);
@@ -19,7 +21,7 @@ const TxtViewer = (props: TxtViewerProps) => {
     <div className="txt-viewer">
       <div className="txt-viewer-toolbar">
         <div className="txt-viewer-toolbar-item">
-          <Tooltip title="复制">
+          <Tooltip title={t('common.copy')}>
             <div className="txt-viewer-toolbar-item-btn" onClick={handleCopy}>
               <CopyOutlined />
             </div>

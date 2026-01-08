@@ -1,25 +1,22 @@
-import { Button, Input, Space, Table, Tag } from 'antd';
+import { Button, Space, Table, Tag } from 'antd';
 import { DeleteOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
-
-const InputSearch = Input.Search;
+import { useTranslation } from 'react-i18next';
 
 const FailedTaskTable = () => {
-  const { tasks, handleResume, handleDelete } = useTasks(
-    [ETaskStatus.FAILED, ETaskStatus.CANCELED],
-    []
-  );
+  const { t } = useTranslation();
+  const { tasks, handleResume, handleDelete } = useTasks([ETaskStatus.FAILED, ETaskStatus.CANCELED], []);
 
   const columns = [
     {
-      title: '类型',
+      title: t('common.type'),
       dataIndex: 'type',
       render: (type: ETaskType) => type,
     },
     {
-      title: '文件',
+      title: t('common.file'),
       dataIndex: 'params',
       render: (params: any) => {
         if (params?.localPaths) return params.localPaths.join(', ');
@@ -33,30 +30,44 @@ const FailedTaskTable = () => {
       },
     },
     {
-      title: '大小',
+      title: t('common.size'),
       dataIndex: 'size',
       render: (size: number) => calculateSize(size),
     },
     {
-      title: '错误信息',
+      title: t('tasks.errorMessage'),
       dataIndex: 'errorMessage',
       render: (msg: string) => <span style={{ color: 'red' }}>{msg || '-'}</span>,
     },
     {
-      title: '状态',
+      title: t('tasks.status'),
       dataIndex: 'status',
-      render: (status: ETaskStatus) => <Tag color="red">{status}</Tag>,
+      render: (status: ETaskStatus) => {
+        const key =
+          status === ETaskStatus.CANCELED
+            ? 'canceled'
+            : status === ETaskStatus.FAILED
+              ? 'failed'
+              : status === ETaskStatus.PENDING
+                ? 'pending'
+                : status === ETaskStatus.RUNNING
+                  ? 'running'
+                  : status === ETaskStatus.PAUSED
+                    ? 'paused'
+                    : 'completed';
+        return <Tag color="red">{t(`tasks.${key}`)}</Tag>;
+      },
     },
     {
-      title: '操作',
+      title: t('common.actions'),
       dataIndex: 'actions',
       render: (_: any, record: any) => (
         <Space>
-           <Button size="small" type="primary" icon={<PlayCircleOutlined />} onClick={() => handleResume(record.taskId)}>
-              重试
-            </Button>
+          <Button size="small" type="primary" icon={<PlayCircleOutlined />} onClick={() => handleResume(record.taskId)}>
+            {t('tasks.retry')}
+          </Button>
           <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.taskId)}>
-            删除
+            {t('common.delete')}
           </Button>
         </Space>
       ),
@@ -68,7 +79,7 @@ const FailedTaskTable = () => {
       {/* <div className="task-table-options">
         <Space>
         </Space>
-        <InputSearch size="small" allowClear placeholder="搜索" style={{ width: 280 }} />
+        <InputSearch size="small" allowClear placeholder={t('common.search')} style={{ width: 280 }} />
       </div> */}
       <Table columns={columns} dataSource={tasks} rowKey="taskId" pagination={false} />
     </div>

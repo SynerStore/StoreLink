@@ -1,5 +1,7 @@
+import { useTranslation } from 'react-i18next';
 const Empty = () => {
-  return <div>上传文件、新建目录</div>;
+  const { t } = useTranslation();
+  return <div>{t('storeViewer.emptyFolder')}</div>;
 };
 
 export default Empty;

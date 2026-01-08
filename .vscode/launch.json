@@ -14,8 +14,7 @@
       "sourceMaps": true,
       "outFiles": ["${workspaceFolder}/build/**/*.js"],
       "preLaunchTask": "npm: dev:main"
-    }
-    ,
+    },
     {
       "name": "Attach 主进程（npm start）",
       "type": "node",

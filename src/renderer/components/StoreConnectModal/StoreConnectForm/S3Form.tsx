@@ -1,5 +1,6 @@
 import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
@@ -17,6 +18,7 @@ const S3Form = forwardRef((props: Props, ref) => {
   const { addConnection } = useConfigStore();
   const { loading, setLoading } = useLoading();
   const { mode = 'create', initial, onSubmit } = props;
+  const { t } = useTranslation();
 
   useImperativeHandle(ref, () => {
     return {
@@ -36,8 +38,9 @@ const S3Form = forwardRef((props: Props, ref) => {
   const handleTest = async () => {
     setLoading(true);
     const res =
-      (form?.validateFields ? await form.validateFields(['endpoint', 'accessKeyId', 'secretAccessKey']) : form.getFieldsValue(true)) ||
-      {};
+      (form?.validateFields
+        ? await form.validateFields(['endpoint', 'accessKeyId', 'secretAccessKey'])
+        : form.getFieldsValue(true)) || {};
     const result = await storeConnect({
       type: StoreTypes.S3,
       config: {
@@ -87,7 +90,7 @@ const S3Form = forwardRef((props: Props, ref) => {
 
   return (
     <Form form={form} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
-      <FormItem label="连接名称" name="name">
+      <FormItem label={t('connection.name')} name="name">
         <Input />
       </FormItem>
       <FormItem label="Endpoint" name="endpoint" tooltip="可选，默认为 AWS S3">
@@ -103,11 +106,7 @@ const S3Form = forwardRef((props: Props, ref) => {
       >
         <SecurePasswordInput mode={mode} maskedLength={initial?.config?.secretAccessKey?.length} maskChar="*" />
       </FormItem>
-      <FormItem
-        label="Bucket Name"
-        name="bucketName"
-        extra="点击连接测试自动填充账号下的 Bucket"
-      >
+      <FormItem label="Bucket Name" name="bucketName" extra={t('connection.bucketFillHint')}>
         <Select allowClear mode="tags">
           {buckets.map((bucket: any) => (
             <Option key={bucket.name} value={bucket.name}>
@@ -119,7 +118,7 @@ const S3Form = forwardRef((props: Props, ref) => {
 
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>
-          连接测试
+          {t('connection.testConnection')}
         </Button>
       </FormItem>
     </Form>

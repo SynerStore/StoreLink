@@ -1,5 +1,6 @@
 import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
@@ -18,6 +19,7 @@ const OssForm = forwardRef((props: Props, ref) => {
   const [connectStatus, setConnectStatus] = useState<StoreConnectStatus>(StoreConnectStatus.unexec);
   const { loading, setLoading } = useLoading();
   const { mode = 'create', initial, onSubmit } = props;
+  const { t } = useTranslation();
 
   useImperativeHandle(ref, () => {
     return {
@@ -36,7 +38,10 @@ const OssForm = forwardRef((props: Props, ref) => {
   }, [initial]);
   const handleTest = async () => {
     setLoading(true);
-    const res = (form?.validateFields ? await form.validateFields(['accessKeyId', 'secretAccessKey']) : form.getFieldsValue(true)) || {};
+    const res =
+      (form?.validateFields
+        ? await form.validateFields(['accessKeyId', 'secretAccessKey'])
+        : form.getFieldsValue(true)) || {};
     const result = await storeConnect({
       type: StoreTypes.OSS,
       config: {
@@ -81,7 +86,7 @@ const OssForm = forwardRef((props: Props, ref) => {
 
   return (
     <Form form={form} autoComplete="off">
-      <FormItem label="连接名称" name="name">
+      <FormItem label={t('connection.name')} name="name">
         <Input />
       </FormItem>
       <FormItem label="Access Key" name="accessKeyId" rules={[{ required: true }]}>
@@ -97,8 +102,8 @@ const OssForm = forwardRef((props: Props, ref) => {
       <FormItem
         label="Bucket Name"
         name="bucketName"
-        extra="点击连接测试自动填充账号下的 Bucket"
-        tooltip="可以输入多个Bucket"
+        extra={t('connection.bucketFillHint')}
+        tooltip={t('connection.bucketMultipleHint')}
       >
         <Select allowClear mode="tags">
           {buckets.map((bucket: any) => (
@@ -108,9 +113,9 @@ const OssForm = forwardRef((props: Props, ref) => {
           ))}
         </Select>
       </FormItem>
-      <FormItem >
+      <FormItem>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>
-          连接测试
+          {t('connection.testConnection')}
         </Button>
         {/* <span>成功</span> */}
       </FormItem>

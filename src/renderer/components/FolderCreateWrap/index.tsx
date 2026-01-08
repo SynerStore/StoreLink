@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react';
 import { Modal, Form, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export type FolderCreateWrapProps = {
   onCreateFolder: (val: string) => void;
@@ -9,6 +10,7 @@ const FileRenameWrap = (props: FolderCreateWrapProps) => {
   const { onCreateFolder, children } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
+  const { t } = useTranslation();
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
@@ -22,18 +24,20 @@ const FileRenameWrap = (props: FolderCreateWrapProps) => {
   return (
     <Fragment>
       <Modal
-        title="新建目录"
+        title={t('storeViewer.createFolder')}
         closable={false}
         maskClosable={false}
         style={{ width: 520 }}
         open={isModalOpen}
         centered
+        okText={t('common.confirm')}
+        cancelText={t('common.cancel')}
         onOk={handleOk}
         onCancel={() => setIsModalOpen(false)}
       >
         <Form initialValues={{ folderName: '' }} form={form}>
-          <Form.Item label="目录名称" name="folderName" rules={[{ required: true, message: '请输入目录名称!' }]}>
-            <Input placeholder="请输入目录名称" />
+          <Form.Item label={t('common.name')} name="folderName" rules={[{ required: true }]}>
+            <Input placeholder={t('storeViewer.createFolder')} />
           </Form.Item>
         </Form>
       </Modal>

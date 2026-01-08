@@ -2,6 +2,7 @@
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { Tooltip } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import './index.css';
 
@@ -12,6 +13,7 @@ export type TxtViewerProps = {
 };
 
 const SyntaxHighlightViewer = (props: TxtViewerProps) => {
+  const { t } = useTranslation();
   const { content } = props;
 
   const handleCopy = () => {
@@ -22,7 +24,7 @@ const SyntaxHighlightViewer = (props: TxtViewerProps) => {
     <div className="syntax-highlight-viewer">
       <div className="syntax-highlight-viewer-toolbar">
         <div className="syntax-highlight-viewer-toolbar-item">
-          <Tooltip title="复制">
+          <Tooltip title={t('common.copy')}>
             <div className="syntax-highlight-viewer-toolbar-item-btn" onClick={handleCopy}>
               <CopyOutlined />
             </div>

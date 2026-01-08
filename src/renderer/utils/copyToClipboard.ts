@@ -37,7 +37,7 @@ async function copyByClipboard(text: string) {
           console.error('copyByClipboard error', error.message);
           reject(false);
         });
-    } catch (error:any) {
+    } catch (error: any) {
       console.error('copyByClipboard error', error.message);
       reject(false);
     }

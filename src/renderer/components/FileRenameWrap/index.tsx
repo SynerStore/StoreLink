@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import { Modal, Form, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 export type FileRenameWrapProps = {
   onRename: (val: string) => void;
@@ -10,6 +11,7 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
   const { name, onRename, children } = props;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
+  const { t } = useTranslation();
   const handleOk = async () => {
     // 空值校验、重复名称校验等
     try {
@@ -31,21 +33,23 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
   return (
     <Fragment>
       <Modal
-        title="重命名"
+        title={t('common.rename')}
         closable={false}
         maskClosable={false}
         open={isModalOpen}
         centered
         style={{ width: 520 }}
+        okText={t('common.confirm')}
+        cancelText={t('common.cancel')}
         onOk={handleOk}
         onCancel={handleCancel}
       >
         <Form initialValues={{ newName: name }} form={form}>
-          <Form.Item label="原名称">
+          <Form.Item label={t('common.name')}>
             <span> {name} </span>
           </Form.Item>
-          <Form.Item label="重命名" name="newName" rules={[{ required: true, message: '请输入重命名!' }]}>
-            <Input placeholder="请输入重命名" />
+          <Form.Item label={t('common.rename')} name="newName" rules={[{ required: true }]}>
+            <Input placeholder={t('common.rename')} />
           </Form.Item>
         </Form>
       </Modal>

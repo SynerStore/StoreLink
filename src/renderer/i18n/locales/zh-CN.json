@@ -3,6 +3,8 @@
     "loading": "加载中...",
     "confirm": "确认",
     "cancel": "取消",
+    "prev": "上一步",
+    "next": "下一步",
     "delete": "删除",
     "edit": "编辑",
     "add": "添加",
@@ -17,6 +19,7 @@
     "rename": "重命名",
     "copy": "复制",
     "refresh": "刷新",
+    "more": "更多",
     "back": "返回",
     "forward": "前进",
     "home": "首页",
@@ -24,6 +27,9 @@
     "close": "关闭",
     "open": "打开",
     "view": "查看",
+    "hide": "隐藏",
+    "show": "显示",
+    "editModePasswordHint": "编辑模式：未修改将保留原值",
     "detail": "详情",
     "name": "名称",
     "size": "大小",
@@ -31,17 +37,25 @@
     "modified": "修改时间",
     "created": "创建时间",
     "folder": "文件夹",
-    "file": "文件"
+    "file": "文件",
+    "actions": "操作",
+    "noData": "暂无数据",
+    "deleteWarning": "删除操作不能恢复，确定删除选中项吗？"
   },
   "fileViewer": {
     "loadingTip": "资源加载中，请耐心等待...",
     "unsupportedFile": "该文档无法查看",
+    "downloadStarted": "已开始下载",
     "imageViewer": {
       "rotateLeft": "向左旋转",
       "rotateRight": "向右旋转",
       "zoomIn": "放大",
       "zoomOut": "缩小",
       "originalSize": "原始大小"
+    },
+    "markdownViewer": {
+      "sourceText": "源文本",
+      "preview": "预览"
     }
   },
   "storeSider": {
@@ -50,7 +64,9 @@
     "addConnection": "添加连接",
     "editConnection": "编辑连接",
     "deleteConnection": "删除连接",
-    "confirmDelete": "确认删除此连接吗？"
+    "confirmDelete": "确认删除此连接吗？",
+    "reconnect": "重新连接",
+    "connecting": "正在连接"
   },
   "storeViewer": {
     "listView": "列表视图",
@@ -61,7 +77,15 @@
     "pathNavigation": "路径导航",
     "emptyFolder": "文件夹为空",
     "loadingFiles": "正在加载文件...",
-    "storageClass": "存储类型"
+    "storageClass": "存储类型",
+    "footer": {
+      "selectedCount": "已选 {{count}} 项",
+      "loadedCount": "已拉取 {{count}} 项"
+    }
+  },
+  "sider": {
+    "expand": "展开侧边栏",
+    "collapse": "收起侧边栏"
   },
   "contextMenu": {
     "download": "下载",
@@ -87,10 +111,19 @@
     "appearance": "外观",
     "storage": "存储"
   },
+  "logs": {
+    "title": "日志",
+    "normal": "普通日志",
+    "error": "错误日志",
+    "lines": "{{count}}条"
+  },
   "tasks": {
     "title": "任务",
     "upload": "上传",
     "download": "下载",
+    "status": "状态",
+    "progress": "进度",
+    "speed": "速度",
     "pending": "等待中",
     "running": "进行中",
     "completed": "已完成",
@@ -99,25 +132,45 @@
     "pause": "暂停",
     "resume": "继续",
     "cancel": "取消",
-    "retry": "重试"
+    "retry": "重试",
+    "endTime": "完成时间",
+    "errorMessage": "错误信息",
+    "manageTitle": "任务管理",
+    "tabs": {
+      "downloading": "下载中",
+      "uploading": "上传中",
+      "finished": "已完成",
+      "failed": "已失败"
+    }
   },
   "connection": {
     "title": "连接配置",
     "name": "连接名称",
     "type": "存储类型",
+    "address": "服务器地址",
+    "addressPlaceholder": "例如：192.168.1.10 或 nas.example.com",
     "host": "主机地址",
     "port": "端口",
     "username": "用户名",
     "password": "密码",
+    "enableHttps": "启用 HTTPS",
+    "privateKey": "私钥",
+    "passphrase": "口令",
+    "localRoot": "本机目录",
+    "localRootPlaceholder": "输入本机路径",
+    "showHiddenFiles": "显示隐藏文件",
     "accessKey": "访问密钥",
     "secretKey": "密钥",
     "bucket": "存储桶",
     "region": "区域",
     "endpoint": "端点",
+    "endpointTooltip": "可选，默认为 AWS S3",
     "testConnection": "测试连接",
     "saveConnection": "保存连接",
     "connectionSuccess": "连接成功",
-    "connectionFailed": "连接失败"
+    "connectionFailed": "连接失败",
+    "bucketFillHint": "点击连接测试自动填充账号下的 Bucket",
+    "bucketMultipleHint": "可以输入多个Bucket"
   },
   "errors": {
     "networkError": "网络错误",
@@ -127,6 +180,17 @@
     "uploadFailed": "上传失败",
     "downloadFailed": "下载失败",
     "deleteFailed": "删除失败",
-    "renameFailed": "重命名失败"
+    "renameFailed": "重命名失败",
+    "loadDirFailed": "加载目录失败: {{message}}"
+  },
+  "fileTransfer": {
+    "move": "移动",
+    "copy": "复制",
+    "title": "{{mode}} {{count}} 项",
+    "source": "来源",
+    "targetStorage": "目标存储",
+    "selectTargetStorage": "请选择目标存储",
+    "targetPath": "目标路径",
+    "selectFolderBelow": "请在下方选择文件夹"
   }
 }

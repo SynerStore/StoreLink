@@ -12,6 +12,12 @@ const resources = {
   'en-US': {
     translation: enUS,
   },
+  en: {
+    translation: enUS,
+  },
+  zh: {
+    translation: zhCN,
+  },
 };
 
 i18n

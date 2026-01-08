@@ -1,6 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import { Tabs } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 // import { IconSplitColumn } from '@/renderer/components/Icons';
 import { useTabsStore } from '@/renderer/store';
@@ -10,6 +11,7 @@ import HomeTab from './HomeTab';
 import './index.css';
 
 const StoreViewerTabs = () => {
+  const { t } = useTranslation();
   const { tabs, activeTab, removeTab, selectTab, updateTab }: any = useTabsStore();
 
   const items = useMemo(() => {
@@ -17,7 +19,7 @@ const StoreViewerTabs = () => {
       label: (
         <span>
           <HomeOutlined style={{ marginRight: 4 }} />
-          Home
+          {t('common.home')}
         </span>
       ),
       key: 'home',

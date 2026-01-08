@@ -9,6 +9,7 @@ import { useConfigStore, useTabsStore, ETabDisplay } from '@/renderer/store';
 import { StoreTypes } from '@/types';
 import { storeRequest, storeRemove } from '@/renderer/utils';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 const Search = Input.Search;
 
@@ -20,6 +21,7 @@ const StoreSider = (props: StoreSiderProps) => {
   const { connections, removeConnection } = useConfigStore();
   const { activeTab, addTab, removeTab } = useTabsStore();
   const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const connection: any = connections.find((item: any) => item.id === activeTab);
@@ -63,7 +65,7 @@ const StoreSider = (props: StoreSiderProps) => {
                     render: () => (
                       <ConnectionEditWrap connection={connection}>
                         <Space size={6}>
-                          <EditOutlined /> 编辑
+                          <EditOutlined /> {t('storeSider.editConnection')}
                         </Space>
                       </ConnectionEditWrap>
                     ),
@@ -73,7 +75,7 @@ const StoreSider = (props: StoreSiderProps) => {
                     : [
                         {
                           render: () => (
-                            <Tooltip title="重新连接">
+                            <Tooltip title={t('storeSider.reconnect')}>
                               <span
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -90,7 +92,7 @@ const StoreSider = (props: StoreSiderProps) => {
                                       transform: isConnecting ? 'rotate(180deg)' : 'none',
                                     }}
                                   />
-                                  重新连接
+                                  {t('storeSider.reconnect')}
                                 </Space>
                               </span>
                             </Tooltip>
@@ -101,7 +103,7 @@ const StoreSider = (props: StoreSiderProps) => {
                     render: () => (
                       <ConnectionDeleteWrap onDelete={handleDelete} connection={{ key: id, ...connection }}>
                         <Space size={6}>
-                          <DeleteOutlined /> 删除
+                          <DeleteOutlined /> {t('storeSider.deleteConnection')}
                         </Space>
                       </ConnectionDeleteWrap>
                     ),
@@ -110,7 +112,7 @@ const StoreSider = (props: StoreSiderProps) => {
               >
                 <span style={{ width: '100%', display: 'inline-flex', alignItems: 'center' }}>
                   {isConnecting ? (
-                    <Tooltip title="连接中">
+                    <Tooltip title={t('storeSider.connecting')}>
                       <span
                         style={{
                           display: 'inline-block',
@@ -181,7 +183,7 @@ const StoreSider = (props: StoreSiderProps) => {
   return (
     <div className="store-sider" style={{ visibility: fold ? 'hidden' : 'visible' }}>
       <div className="store-sider-tip">
-        <span>存储库</span>
+        <span>{t('storeSider.title')}</span>
         <StoreConnectModal>
           <div className="store-sider-tip-add">
             <PlusOutlined style={{ fontSize: 'medium' }} />
@@ -189,7 +191,7 @@ const StoreSider = (props: StoreSiderProps) => {
         </StoreConnectModal>
       </div>
       <div className="store-sider-search">
-        <Search />
+        <Search placeholder={t('storeSider.searchPlaceholder')} />
       </div>
 
       <div className="store-sider-content">

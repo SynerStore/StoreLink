@@ -5,6 +5,7 @@ import { storeConnect } from '@/renderer/utils';
 import { StoreTypes, StoreBrands } from '@/types';
 import { useConfigStore } from '@/renderer/store';
 import { SecurePasswordInput } from '@/renderer/components';
+import { useTranslation } from 'react-i18next';
 
 const FormItem = Form.Item;
 
@@ -14,6 +15,7 @@ const SynologyForm = forwardRef((props: Props, ref) => {
   const { loading, setLoading } = useLoading();
   const { addConnection } = useConfigStore();
   const { mode = 'create', initial, onSubmit } = props;
+  const { t } = useTranslation();
 
   useImperativeHandle(ref, () => {
     return {
@@ -35,7 +37,10 @@ const SynologyForm = forwardRef((props: Props, ref) => {
 
   const handleTest = async () => {
     setLoading(true);
-    const res = (form?.validateFields ? await form.validateFields(['address', 'username', 'password']) : form.getFieldsValue(true)) || {};
+    const res =
+      (form?.validateFields
+        ? await form.validateFields(['address', 'username', 'password'])
+        : form.getFieldsValue(true)) || {};
     const result = await storeConnect({
       type: StoreTypes.SYNOLOGY,
       config: {
@@ -73,27 +78,27 @@ const SynologyForm = forwardRef((props: Props, ref) => {
 
   return (
     <Form form={form} autoComplete="off">
-      <FormItem label="连接名称" name="name">
+      <FormItem label={t('connection.name')} name="name">
         <Input />
       </FormItem>
-      <FormItem label="服务器地址" name="address" rules={[{ required: true, message: '请输入服务器地址' }]}>
-        <Input placeholder="例如：192.168.1.10 或 nas.example.com" />
+      <FormItem label={t('connection.address')} name="address" rules={[{ required: true }]}>
+        <Input placeholder={t('connection.addressPlaceholder')} />
       </FormItem>
-      <FormItem label="账号" name="username" rules={[{ required: true, message: '请输入账号' }]}>
+      <FormItem label={t('connection.username')} name="username" rules={[{ required: true }]}>
         <Input />
       </FormItem>
-      <FormItem label="密码" name="password" rules={[{ required: true, message: '请输入密码' }]}>
+      <FormItem label={t('connection.password')} name="password" rules={[{ required: true }]}>
         <SecurePasswordInput mode={mode} maskedLength={initial?.config?.password?.length} maskChar="*" />
       </FormItem>
-      <FormItem label="启用 HTTPS" name="useHttps" valuePropName="checked" initialValue={true}>
+      <FormItem label={t('connection.enableHttps')} name="useHttps" valuePropName="checked" initialValue={true}>
         <Switch />
       </FormItem>
-      <FormItem label="端口" name="port" initialValue={5001}>
+      <FormItem label={t('connection.port')} name="port" initialValue={5001}>
         <Input />
       </FormItem>
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>
-          链接测试
+          {t('connection.testConnection')}
         </Button>
       </FormItem>
     </Form>

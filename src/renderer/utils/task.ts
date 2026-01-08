@@ -6,13 +6,7 @@ export const taskRequest = async (action: string, params: any) => {
   return await window.electronBridge.dispatch(EChannels.taskRequest, { action, params });
 };
 
-export const createTask = async (
-  type: any,
-  connectionId: string,
-  method: string,
-  params: any,
-  size: number = 0
-) => {
+export const createTask = async (type: any, connectionId: string, method: string, params: any, size: number = 0) => {
   return await taskRequest('create', {
     type,
     connectionId,

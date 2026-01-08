@@ -50,12 +50,12 @@ export const useConfigStore = create<DataState>()(
           updateDate: new Date().toLocaleString(),
         }));
         await events.addConnection(newConnections);
-        await get().initializeData()
+        await get().initializeData();
         return newConnections; // 返回新增 connect 用于创建 tab
       },
       removeConnection: async (id: string) => {
         await events.removeConnection(id);
-        await get().initializeData()
+        await get().initializeData();
       },
       updateConnection: async (connection: Connection) => {
         await events.updateConnection(connection);

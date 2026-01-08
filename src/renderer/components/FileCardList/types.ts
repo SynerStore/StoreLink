@@ -20,11 +20,7 @@ export type FileCardListProps = {
   rowGap?: number;
 };
 
-export const rangeSelectKeys = (
-  items: TStoreObject[],
-  anchor: React.Key,
-  current: React.Key
-): React.Key[] => {
+export const rangeSelectKeys = (items: TStoreObject[], anchor: React.Key, current: React.Key): React.Key[] => {
   const findIndex = (key: React.Key) => items.findIndex((d) => (d.key as React.Key) === key);
   const a = findIndex(anchor);
   const b = findIndex(current);

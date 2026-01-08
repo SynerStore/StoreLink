@@ -1,6 +1,6 @@
 import Store from 'electron-store';
 
-import { getUserDataPath ,getDownloadsPath} from '@/main/utils';
+import { getUserDataPath, getDownloadsPath } from '@/main/utils';
 
 export interface ISettingData {
   downloadPath: string;
@@ -9,7 +9,6 @@ export interface ISettingData {
 export const DEFAULT_SETTING_DATA: ISettingData = {
   downloadPath: getDownloadsPath(),
 };
-
 
 // 应用配置
 export const settingStore = new Store<ISettingData>({

@@ -16,33 +16,29 @@ export interface FileTableProps<T> extends Omit<TableProps<T>, 'rowSelection'> {
 }
 
 export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
-  const { 
-    dataSource = [], 
-    rowSelection, 
-    onRowDragStart, 
-    onRowDoubleClick,
-    columns,
-    ...restProps 
-  } = props;
+  const { dataSource = [], rowSelection, onRowDragStart, onRowDoubleClick, columns, ...restProps } = props;
 
   const [internalSelectedKeys, setInternalSelectedKeys] = useState<React.Key[]>([]);
   const [lastSelectedKey, setLastSelectedKey] = useState<React.Key | null>(null);
   const [focusedKey, setFocusedKey] = useState<React.Key | null>(null);
-  
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const clickDebounce = useMemo(() => debounce((fn: Function) => fn(), 200), []);
 
   // 获取行键值的辅助函数
-  const getRowKey = useCallback((record: T, index?: number): React.Key => {
-    if (typeof restProps.rowKey === 'function') {
-      return restProps.rowKey(record, index);
-    }
-    if (typeof restProps.rowKey === 'string') {
-      return (record as any)[restProps.rowKey];
-    }
-    // 未提供 rowKey 时的回退（通常 antd 需要显式 rowKey 或 key 属性）
-    return (record as any).key;
-  }, [restProps.rowKey]);
+  const getRowKey = useCallback(
+    (record: T, index?: number): React.Key => {
+      if (typeof restProps.rowKey === 'function') {
+        return restProps.rowKey(record, index);
+      }
+      if (typeof restProps.rowKey === 'string') {
+        return (record as any)[restProps.rowKey];
+      }
+      // 未提供 rowKey 时的回退（通常 antd 需要显式 rowKey 或 key 属性）
+      return (record as any).key;
+    },
+    [restProps.rowKey],
+  );
 
   // 受控与非受控选择逻辑
   const selectedKeys = useMemo(() => {
@@ -53,7 +49,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     if (!rowSelection?.selectedRowKeys) {
       setInternalSelectedKeys(newKeys);
     }
-    
+
     if (rowSelection?.onChange) {
       const selectedRows = dataSource.filter((item, index) => newKeys.includes(getRowKey(item, index)));
       rowSelection.onChange(newKeys, selectedRows);
@@ -71,7 +67,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     if (event.ctrlKey || event.metaKey) {
       // 切换选中状态
       if (newSelectedKeys.includes(key)) {
-        newSelectedKeys = newSelectedKeys.filter(k => k !== key);
+        newSelectedKeys = newSelectedKeys.filter((k) => k !== key);
       } else {
         newSelectedKeys.push(key);
       }
@@ -124,7 +120,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     } else {
       return;
     }
-    
+
     if (nextIndex === -1) nextIndex = 0; // 无焦点时默认聚焦第一行
 
     const nextKey = getRowKey(dataSource[nextIndex], nextIndex);
@@ -137,7 +133,9 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     if (e.shiftKey) {
       // 扩展选区
       if (lastSelectedKey === null) {
-        setLastSelectedKey(getRowKey(dataSource[currentIndex >= 0 ? currentIndex : 0], currentIndex >= 0 ? currentIndex : 0));
+        setLastSelectedKey(
+          getRowKey(dataSource[currentIndex >= 0 ? currentIndex : 0], currentIndex >= 0 ? currentIndex : 0),
+        );
       }
 
       const anchorKey = lastSelectedKey || getRowKey(dataSource[0], 0);
@@ -189,12 +187,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
   };
 
   return (
-    <div 
-      className="file-table-wrapper" 
-      tabIndex={0} 
-      onKeyDown={handleKeyDown}
-      ref={wrapperRef}
-    >
+    <div className="file-table-wrapper" tabIndex={0} onKeyDown={handleKeyDown} ref={wrapperRef}>
       <Table
         {...restProps}
         dataSource={dataSource}
@@ -216,7 +209,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
               onRowDoubleClick?.(record);
               userOnRow.onDoubleClick?.(e);
             },
-            draggable: true, 
+            draggable: true,
             onDragStart: (e) => {
               handleDragStart(e, record, index || 0);
               userOnRow.onDragStart?.(e);

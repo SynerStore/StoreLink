@@ -16,15 +16,15 @@ export const errorLogger = log.create({ logId: 'error' });
 function rotateLog(filePath: string, kind: 'normal' | 'error') {
   try {
     if (!fs.existsSync(filePath)) return;
-    
+
     const stat = fs.statSync(filePath);
     const fileDate = dayjs(stat.mtime).format('YYYY-MM-DD');
     const today = dayjs().format('YYYY-MM-DD');
-    
+
     if (fileDate !== today) {
       const archiveName = kind === 'error' ? `${fileDate}.error.log` : `${fileDate}.log`;
       const archivePath = path.join(LOG_DIR, archiveName);
-      
+
       if (!fs.existsSync(archivePath)) {
         fs.renameSync(filePath, archivePath);
       } else {

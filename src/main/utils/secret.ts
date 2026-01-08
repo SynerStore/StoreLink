@@ -8,7 +8,7 @@ const ALG = 'aes-256-cbc';
 const BASE_SECRET = Object.freeze(
   process.env.STORELINK_SECRET && process.env.STORELINK_SECRET.length >= 16
     ? process.env.STORELINK_SECRET
-    : machineIdSync()
+    : machineIdSync(),
 );
 
 function deriveKey(secret: string, salt: CryptoJS.lib.WordArray) {

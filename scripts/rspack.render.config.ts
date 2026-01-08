@@ -63,7 +63,7 @@ const rspackConfig: Configuration = {
           },
         ],
       },
-  
+
       {
         test: /\.(png|svg|webp|jpe?g|gif)(\?.*)?$/i,
         type: 'asset',

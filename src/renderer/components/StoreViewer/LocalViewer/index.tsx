@@ -18,6 +18,7 @@ import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import { TStoreObject } from '@/types';
 import './index.css';
+import { useTranslation } from 'react-i18next';
 
 const RadioGroup = Radio.Group;
 
@@ -34,6 +35,7 @@ const LocalViewer = (props: LocalViewerProps) => {
   const [curPrefix, setCurPrefix] = useState<string>('');
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
+  const { t } = useTranslation();
 
   const [transferModalVisible, setTransferModalVisible] = useState(false);
   const [transferMode, setTransferMode] = useState<'move' | 'copy'>('copy');
@@ -176,9 +178,9 @@ const LocalViewer = (props: LocalViewerProps) => {
   }, []);
 
   const menuItems = [
-    { key: 'copy', label: '复制到' },
-    { key: 'move', label: '移动到' },
-    { key: 'remove', label: '删除' },
+    { key: 'copy', label: t('contextMenu.copyTo') },
+    { key: 'move', label: t('contextMenu.moveTo') },
+    { key: 'remove', label: t('contextMenu.delete') },
   ];
 
   return (
@@ -213,18 +215,18 @@ const LocalViewer = (props: LocalViewerProps) => {
       <div className="viewer-actions">
         <Space size={4}>
           <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button>新建目录</Button>
+            <Button>{t('storeViewer.createFolder')}</Button>
           </FolderCreateWrap>
-          <Button>下载</Button>
+          <Button>{t('common.download')}</Button>
           <Dropdown trigger={['click']} menu={{ items: menuItems }}>
             <Button>
-              更多 <DownOutlined />
+              {t('common.more')} <DownOutlined />
             </Button>
           </Dropdown>
         </Space>
         <Space size={4}>
-          <Input.Search style={{ width: '240px' }} />
-          <Button onClick={handleGetObjects}> 刷新 </Button>
+          <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
+          <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
           <RadioGroup value={display} onChange={handleDisplayChange}>
             <Radio.Button value="list" style={{ fontSize: 'medium' }}>
               <UnorderedListOutlined />
@@ -270,7 +272,10 @@ const LocalViewer = (props: LocalViewerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
-        <span>已选 {selectedKeys.length} 项，已拉取 {dataList.length} 项 </span>
+        <span>
+          {t('storeViewer.footer.selectedCount', { count: selectedKeys.length })}，
+          {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
+        </span>
       </div>
       <FileTransferModal
         visible={transferModalVisible}

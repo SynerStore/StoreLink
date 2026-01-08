@@ -1,5 +1,6 @@
 import { useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Switch } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { FolderOutlined } from '@ant-design/icons';
 
 import { StoreTypes } from '@/types';
@@ -13,6 +14,7 @@ const LocalForm = forwardRef((props: Props, ref) => {
   const [form] = Form.useForm();
   const { addConnection } = useConfigStore();
   const { mode = 'create', initial, onSubmit } = props;
+  const { t } = useTranslation();
 
   const handleSelectLocalDirPath = async () => {
     const dirPath = await events.getSingleDirPath();
@@ -55,10 +57,10 @@ const LocalForm = forwardRef((props: Props, ref) => {
 
   return (
     <Form form={form} autoComplete="off">
-      <FormItem label="连接名称" name="name">
+      <FormItem label={t('connection.name')} name="name">
         <Input />
       </FormItem>
-      <FormItem label="本机目录" name="root">
+      <FormItem label={t('connection.localRoot')} name="root">
         <Input
           addonAfter={
             <FolderOutlined
@@ -71,10 +73,15 @@ const LocalForm = forwardRef((props: Props, ref) => {
             />
           }
           allowClear
-          placeholder="输入本机路径"
+          placeholder={t('connection.localRootPlaceholder')}
         />
       </FormItem>
-      <FormItem label="显示隐藏文件" name="isShowHiddenFiles" valuePropName="checked" rules={[{ type: 'boolean' }]}>
+      <FormItem
+        label={t('connection.showHiddenFiles')}
+        name="isShowHiddenFiles"
+        valuePropName="checked"
+        rules={[{ type: 'boolean' }]}
+      >
         <Switch />
       </FormItem>
     </Form>

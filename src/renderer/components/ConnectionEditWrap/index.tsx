@@ -2,6 +2,7 @@ import { Fragment, useMemo, useRef, useState } from 'react';
 import { Modal } from 'antd';
 import StoreConnectForm from '@/renderer/components/StoreConnectModal/StoreConnectForm';
 import { useConfigStore } from '@/renderer/store';
+import { useTranslation } from 'react-i18next';
 
 export type ConnectionEditWrapProps = {
   connection: { key: string; label: string };
@@ -14,6 +15,7 @@ const ConnectionEditWrap = (props: ConnectionEditWrapProps) => {
   const formRef = useRef<any>(null);
   const [open, setOpen] = useState(false);
   const { connections, updateConnection, initializeData } = useConfigStore();
+  const { t } = useTranslation();
 
   const target = useMemo(() => {
     return connections.find((c: any) => c.id === connection.key);
@@ -32,7 +34,7 @@ const ConnectionEditWrap = (props: ConnectionEditWrapProps) => {
   return (
     <Fragment>
       <Modal
-        title="编辑连接"
+        title={t('storeSider.editConnection')}
         closable={false}
         maskClosable={false}
         open={open}
@@ -40,12 +42,10 @@ const ConnectionEditWrap = (props: ConnectionEditWrapProps) => {
         width={620}
         onCancel={() => setOpen(false)}
         onOk={handleOk}
-        okText="确定"
-        cancelText="取消"
+        okText={t('common.confirm')}
+        cancelText={t('common.cancel')}
       >
-        {target ? (
-          <StoreConnectForm brand={target.brand} mode="edit" initial={target} ref={formRef} />
-        ) : null}
+        {target ? <StoreConnectForm brand={target.brand} mode="edit" initial={target} ref={formRef} /> : null}
       </Modal>
       <span onClick={() => setOpen(true)}>{children}</span>
     </Fragment>

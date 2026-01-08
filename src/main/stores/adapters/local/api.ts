@@ -67,7 +67,7 @@ export async function listDir(root: string, params: ListParams) {
         isHiddenFile: dirent.name.startsWith('.'), // Simple check
       } as TStoreObject;
     });
-    
+
   return filesSort(folders);
 }
 
@@ -157,7 +157,7 @@ export async function copyFile(root: string, params: CopyFileParams) {
   // sourceKey is the full path of the source file
   const fileName = path.basename(sourceKey);
   const destPath = path.join(targetPath, fileName);
-  
+
   // Ensure target directory exists (though targetPath should be valid)
   // Check if it's move or copy? This function is named copyFile.
   await fs.copy(sourceKey, destPath);

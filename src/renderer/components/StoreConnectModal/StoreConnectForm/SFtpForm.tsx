@@ -1,5 +1,6 @@
 import { useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
 import { StoreTypes, StoreBrands } from '@/types';
@@ -13,6 +14,7 @@ const SFtpForm = forwardRef((props: Props, ref) => {
   const { loading, setLoading } = useLoading();
   const { addConnection } = useConfigStore();
   const { mode = 'create', initial, onSubmit } = props;
+  const { t } = useTranslation();
 
   useImperativeHandle(ref, () => {
     return {
@@ -74,30 +76,30 @@ const SFtpForm = forwardRef((props: Props, ref) => {
 
   return (
     <Form form={form} autoComplete="off">
-      <FormItem label="连接名称" name="name">
+      <FormItem label={t('connection.name')} name="name">
         <Input />
       </FormItem>
-      <FormItem label="主机" name="host" rules={[{ required: true }]}>
+      <FormItem label={t('connection.host')} name="host" rules={[{ required: true }]}>
         <Input />
       </FormItem>
-      <FormItem label="端口" name="port" rules={[{ required: true }]} initialValue="22">
+      <FormItem label={t('connection.port')} name="port" rules={[{ required: true }]} initialValue="22">
         <Input />
       </FormItem>
-      <FormItem label="账号" name="username" rules={[{ required: true }]}>
+      <FormItem label={t('connection.username')} name="username" rules={[{ required: true }]}>
         <Input />
       </FormItem>
-      <FormItem label="密码" name="password">
+      <FormItem label={t('connection.password')} name="password">
         <SecurePasswordInput mode={mode} maskedLength={initial?.config?.password?.length} maskChar="*" />
       </FormItem>
-      <FormItem label="私钥" name="privateKey">
+      <FormItem label={t('connection.privateKey')} name="privateKey">
         <SecurePasswordInput mode={mode} multiline maskedLength={initial?.config?.privateKey?.length} maskChar="*" />
       </FormItem>
-      <FormItem label="口令" name="passphrase">
+      <FormItem label={t('connection.passphrase')} name="passphrase">
         <SecurePasswordInput mode={mode} maskedLength={initial?.config?.passphrase?.length} maskChar="*" />
       </FormItem>
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>
-          链接测试
+          {t('connection.testConnection')}
         </Button>
       </FormItem>
     </Form>

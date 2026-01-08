@@ -121,7 +121,7 @@ export default class TaskEntity {
       startTime: this.startTime ?? null,
       endTime: this.endTime ?? null,
       createTime: this.createTime,
-      errorMessage: this.errorMessage ?? null
+      errorMessage: this.errorMessage ?? null,
     };
   }
 }

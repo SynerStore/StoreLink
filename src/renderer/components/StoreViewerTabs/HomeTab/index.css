@@ -25,7 +25,9 @@
         border-radius: var(--border-radius-base);
         box-shadow: var(--shadow-card);
         background: var(--home-card-bg-dark, var(--home-card-bg-light));
-        transition: box-shadow 0.25s ease, transform 0.2s ease;
+        transition:
+          box-shadow 0.25s ease,
+          transform 0.2s ease;
       }
       .ant-card:hover {
         box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
