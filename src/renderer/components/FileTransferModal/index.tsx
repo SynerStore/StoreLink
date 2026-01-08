@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Select, Tree, Input, message } from 'antd';
+import { Modal, Select, Tree, Input, message, Form } from 'antd';
 import { FolderOutlined, HddOutlined } from '@ant-design/icons';
 import { useConfigStore } from '@/renderer/store';
 import { storeRequest } from '@/renderer/utils';
@@ -23,6 +23,7 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
   onCancel,
   onOk,
 }) => {
+  const [form] = Form.useForm();
   const { connections } = useConfigStore();
   const [targetConnectionId, setTargetConnectionId] = useState<string>(sourceConnectionId);
   const [treeData, setTreeData] = useState<any[]>([]);
@@ -36,8 +37,12 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
       setTargetConnectionId(sourceConnectionId);
       setSelectedPath('');
       setTreeData([]);
+      form.setFieldsValue({
+        targetConnectionId: sourceConnectionId,
+        targetPath: '',
+      });
     }
-  }, [visible, sourceConnectionId]);
+  }, [visible, sourceConnectionId, form]);
 
   // Load root folders when target connection changes
   useEffect(() => {
@@ -80,10 +85,10 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
             setTreeData((origin) => updateTreeData(origin, prefix, nodes));
         }
       } else {
-        message.error(`Load folders failed: ${res.message || 'Unknown error'}`);
+        message.error(`加载目录失败: ${res.message || '未知错误'}`);
       }
     } catch (error: any) {
-      message.error(`Load folders failed: ${error.message || error}`);
+      message.error(`加载目录失败: ${error.message || error}`);
     } finally {
       setLoading(false);
     }
@@ -106,22 +111,25 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
   };
 
   const handleOk = async () => {
-    if (!targetConnectionId) {
-        message.error('Please select a target storage');
-        return;
-    }
-    // For root path, selectedPath might be empty string which is valid
-    setConfirmLoading(true);
     try {
-        await onOk(targetConnectionId, selectedPath);
+      const values = await form.validateFields();
+      setConfirmLoading(true);
+      await onOk(values.targetConnectionId, values.targetPath);
+    } catch (error) {
+      console.error('Validation failed:', error);
     } finally {
-        setConfirmLoading(false);
+      setConfirmLoading(false);
     }
+  };
+
+  const handleConnectionChange = (value: string) => {
+    setTargetConnectionId(value);
+    form.setFieldsValue({ targetConnectionId: value });
   };
 
   return (
     <Modal
-      title={`${mode === 'move' ? 'Move' : 'Copy'} ${files.length} items`}
+      title={`${mode === 'move' ? '移动' : '复制'} ${files.length} 项`}
       open={visible}
       onCancel={onCancel}
       onOk={handleOk}
@@ -129,37 +137,45 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
       width={600}
     >
       <div className="transfer-modal-info">
-        From: {files.length > 0 ? files[0].key : ''} ...
+        来源: {files.length > 0 ? files[0].key : ''} ...
       </div>
 
-      <div style={{ marginBottom: 10 }}>
-        <span>Target Storage: </span>
-        <Select
-          style={{ width: '100%' }}
-          value={targetConnectionId}
-          onChange={setTargetConnectionId}
+      <Form form={form} layout="vertical">
+        <Form.Item
+          name="targetConnectionId"
+          label="目标存储"
+          rules={[{ required: true, message: '请选择目标存储' }]}
         >
-          {connections.map((conn: any) => (
-            <Select.Option key={conn.id} value={conn.id}>
-              <HddOutlined /> {conn.name} ({conn.brand})
-            </Select.Option>
-          ))}
-        </Select>
-      </div>
+          <Select
+            style={{ width: '100%' }}
+            onChange={handleConnectionChange}
+          >
+            {connections.map((conn: any) => (
+              <Select.Option key={conn.id} value={conn.id}>
+                <HddOutlined /> {conn.name} ({conn.brand})
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
 
-      <div>
-        <span>Target Path: </span>
-        <Input value={selectedPath} readOnly placeholder="Select a folder below" />
-      </div>
+        <Form.Item
+          name="targetPath"
+          label="目标路径"
+        >
+          <Input readOnly placeholder="请在下方选择文件夹" />
+        </Form.Item>
+      </Form>
 
       <div className="transfer-modal-tree">
         <Tree
           loadData={onLoadData}
           treeData={treeData}
           onSelect={(keys, info) => {
-              if (keys.length > 0) {
-                  setSelectedPath(keys[0] as string);
-              }
+            if (keys.length > 0) {
+              const path = keys[0] as string;
+              setSelectedPath(path);
+              form.setFieldsValue({ targetPath: path });
+            }
           }}
           showIcon
           blockNode
