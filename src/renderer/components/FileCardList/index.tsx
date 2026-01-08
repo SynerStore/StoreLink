@@ -1,6 +1,7 @@
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import { Tooltip } from 'antd';
+import { debounce } from 'lodash-es';
 
 import { FileIcon, FileContextMenu, ResponsiveGrid } from '@/renderer/components';
 import { calculateSize } from '@/renderer/utils';
@@ -28,6 +29,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   } = props;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const clickDebounce = useMemo(() => debounce((fn: Function) => fn(), 200), []);
   const [internalSelectedKeys, setInternalSelectedKeys] = useState<React.Key[]>([]);
   const selectedKeys = propSelectedKeys !== undefined ? propSelectedKeys : internalSelectedKeys;
 
@@ -262,8 +264,15 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
                   data-info={item}
                   data-key={item.key as React.Key}
                   data-selected={selectedKeys.includes(item.key as React.Key) ? 'true' : 'false'}
-                  onClick={(e) => handleItemClick(item, e)}
-                  onDoubleClick={() => handleFileClick(item)}
+                  onClick={(e) => {
+                    clickDebounce(() => {
+                      handleItemClick(item, e);
+                    });
+                  }}
+                  onDoubleClick={() => {
+                    clickDebounce.cancel();
+                    handleFileClick(item);
+                  }}
                   onDragStart={(e) => handleDragStart(e, item)}
                 >
                   {item.isDirectory ? (

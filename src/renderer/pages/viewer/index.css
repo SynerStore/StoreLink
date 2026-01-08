@@ -12,6 +12,7 @@
 }
 
 .main {
+  width: 100vw;
   height: calc(100vh - var(--header-height));
   display: flex;
   background: var(--content-bg-dark, var(--content-bg-light));

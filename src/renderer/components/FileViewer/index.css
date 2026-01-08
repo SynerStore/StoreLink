@@ -1,11 +1,28 @@
 .file-viewer-spin {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
   width: 100%;
   height: 100%;
-  .ant-spin-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+}
+
+.file-viewer-spin .ant-spin-nested-loading {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.file-viewer-spin .ant-spin-container {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
 }

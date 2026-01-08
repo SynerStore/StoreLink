@@ -1,5 +1,9 @@
 .file-table-wrapper {
   outline: none;
+
+  .ant-table-body {
+    overflow-y: auto !important;
+  }
 }
 
 .file-table-wrapper .ant-table-row {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
+import { debounce } from 'lodash-es';
 import './index.css';
 
 export interface FileTableProps<T> extends Omit<TableProps<T>, 'rowSelection'> {
@@ -29,6 +30,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
   const [focusedKey, setFocusedKey] = useState<React.Key | null>(null);
   
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const clickDebounce = useMemo(() => debounce((fn: Function) => fn(), 200), []);
 
   // 获取行键值的辅助函数
   const getRowKey = useCallback((record: T, index?: number): React.Key => {
@@ -204,10 +206,13 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
           return {
             ...userOnRow,
             onClick: (e) => {
-              onRowClick(record, index || 0, e);
-              userOnRow.onClick?.(e);
+              clickDebounce(() => {
+                onRowClick(record, index || 0, e);
+                userOnRow.onClick?.(e);
+              });
             },
             onDoubleClick: (e) => {
+              clickDebounce.cancel();
               onRowDoubleClick?.(record);
               userOnRow.onDoubleClick?.(e);
             },
