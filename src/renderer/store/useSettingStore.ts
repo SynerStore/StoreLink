@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
+import { events } from '@/renderer/utils';
+
 export enum EnumTheme {
   LIGHT = 'light',
   DARK = 'dark',
@@ -18,7 +20,8 @@ type DataType = {
     theme: EnumTheme;
     downloadPath: string;
   };
-  update: (params: { [key: string]: any }) => void;
+  initializeData: () => Promise<void>;
+  update: (params: { [key: string]: any }) => Promise<void>;
 };
 
 // 设置配置信息
@@ -28,9 +31,24 @@ export const useSettingStore = create<DataType>()(
       settings: {
         lang: EnumLang.ZH_CN, // zh-CN | en-US
         theme: EnumTheme.LIGHT, // light | dark
+        downloadPath: '',
       },
 
-      update: (params) => {
+      initializeData: async () => {
+        const data = await events.getSettingData();
+        if (!data) return;
+        return set((state: any) => {
+          return {
+            settings: {
+              ...state.settings,
+              ...data,
+            },
+          };
+        });
+      },
+
+      update: async (params) => {
+        await events.setSettingData(params);
         return set((state: any) => {
           return {
             settings: {

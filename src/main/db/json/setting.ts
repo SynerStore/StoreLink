@@ -4,10 +4,14 @@ import { getUserDataPath, getDownloadsPath } from '@/main/utils';
 
 export interface ISettingData {
   downloadPath: string;
+  lang: 'zh-CN' | 'en-US';
+  theme: 'light' | 'dark' | 'system';
 }
 
 export const DEFAULT_SETTING_DATA: ISettingData = {
   downloadPath: getDownloadsPath(),
+  lang: 'zh-CN',
+  theme: 'light',
 };
 
 // 应用配置

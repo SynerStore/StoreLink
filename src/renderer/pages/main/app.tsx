@@ -61,6 +61,7 @@ const App = () => {
   }, [settingStore.settings.theme]);
 
   const handleOnready = () => {
+    settingStore.initializeData();
     configStore.initializeData();
     tabsStore.initializeData();
   };

@@ -34,9 +34,7 @@
     "make:mac": "cross-env MAKE_FOR=mac npm run make",
     "make:win": "cross-env MAKE_FOR=win npm run make",
     "make:linux": "cross-env MAKE_FOR=linux npm run make",
-    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,less,md}\"",
-    "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,less,md}\""
   },
   "devDependencies": {
     "@rspack/cli": "^1.2.6",
