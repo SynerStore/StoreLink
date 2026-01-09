@@ -1,6 +1,6 @@
 {
   "name": "store-link-client",
-  "version": "0.0.1",
+  "version": "0.0.1-beta.1",
   "description": "An App for management your multiple storeage",
   "main": "main.js",
   "keywords": [
