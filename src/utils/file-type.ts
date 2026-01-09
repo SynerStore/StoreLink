@@ -72,6 +72,6 @@ export const isGetFileContent = (mime: string) => {
 // 支持打开的文件类型
 export const isCanOpenFile = (mime: string) => {
   const fileType = getFiletype(mime);
-  const supportedTypes = ['text', 'javascript', 'css', 'markdown', 'image', 'pdf', 'video', 'audio'];
+  const supportedTypes = ['text', 'javascript', 'json', 'css', 'markdown', 'image', 'pdf', 'video', 'audio'];
   return supportedTypes.includes(fileType);
 };

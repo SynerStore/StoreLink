@@ -48,6 +48,8 @@ const FileViewer = (props: FileViewerProps) => {
         return TxtViewer;
       case 'javascript':
       case 'css':
+      case 'yaml':
+      case 'json':
         return SyntaxHighlightViewer;
       case 'markdown':
         return MarkdownViewer;

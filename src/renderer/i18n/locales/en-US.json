@@ -42,6 +42,24 @@
     "noData": "No data",
     "deleteWarning": "Deletion cannot be undone. Delete selected items?"
   },
+  "home": {
+    "title": "Home",
+    "stats": {
+      "connections": "Connections",
+      "running": "Running Tasks",
+      "activeStores": "Active Stores",
+      "todayCompleted": "Completed Today"
+    },
+    "favorites": {
+      "title": "Favorites",
+      "remove": "Remove",
+      "empty": "No favorites"
+    },
+    "logs": {
+      "title": "Logs",
+      "limit": "Last {{count}} lines"
+    }
+  },
   "fileViewer": {
     "loadingTip": "Loading resource, please wait...",
     "unsupportedFile": "This document cannot be viewed",

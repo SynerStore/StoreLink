@@ -42,6 +42,24 @@
     "noData": "暂无数据",
     "deleteWarning": "删除操作不能恢复，确定删除选中项吗？"
   },
+  "home": {
+    "title": "首页",
+    "stats": {
+      "connections": "连接数",
+      "running": "进行中任务",
+      "activeStores": "活跃存储",
+      "todayCompleted": "今日完成"
+    },
+    "favorites": {
+      "title": "收藏的连接",
+      "remove": "取消收藏",
+      "empty": "暂无收藏的连接"
+    },
+    "logs": {
+      "title": "日志",
+      "limit": "最近 {{count}} 条"
+    }
+  },
   "fileViewer": {
     "loadingTip": "资源加载中，请耐心等待...",
     "unsupportedFile": "该文档无法查看",
