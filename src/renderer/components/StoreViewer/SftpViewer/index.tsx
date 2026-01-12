@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
@@ -14,13 +14,12 @@ import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FileDropWrap, ViewInput, FolderCreateWrap, ButtonGroup ,SiderFold} from '@/renderer/components';
+import { FileDropWrap, ViewInput, FolderCreateWrap, ButtonGroup, StoreViewerWrap } from '@/renderer/components';
 import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
 import { createTask } from '@/renderer/utils/task';
 import { ETaskType } from '@/types';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
-import './index.css';
 
 const RadioGroup = Radio.Group;
 
@@ -151,13 +150,13 @@ const SftpViewer = (props: SftpViewerProps) => {
   ];
 
   return (
-    <div className="viewer">
-      <div className="viewer-path">
-        <ButtonGroup>
-          <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
-          <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
-        </ButtonGroup>
-        <div className="viewer-path-input">
+    <StoreViewerWrap
+      headerViewPath={
+        <Space size={6}>
+          <ButtonGroup>
+            <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
+            <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
+          </ButtonGroup>
           <ViewInput
             prefix={connection.config.root}
             addAfter={
@@ -178,37 +177,39 @@ const SftpViewer = (props: SftpViewerProps) => {
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
           />
-        </div>
-      </div>
-      <div className="viewer-actions">
-        <Space size={4}>
-          <Button type="primary" onClick={handleUpload}>
-            {t('common.upload')}
-          </Button>
-          <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button>{t('storeViewer.createFolder')}</Button>
-          </FolderCreateWrap>
-          <Button>{t('common.download')}</Button>
-          <Dropdown trigger={['click']} menu={{ items: menuItems }}>
-            <Button>
-              {t('common.more')} <DownOutlined />
+        </Space>
+      }
+      headerViewActions={
+        <Fragment>
+          <Space size={4}>
+            <Button type="primary" onClick={handleUpload}>
+              {t('common.upload')}
             </Button>
-          </Dropdown>
-        </Space>
-        <Space size={4}>
-          <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
-          <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
-          <RadioGroup value={display} onChange={handleDisplayChange}>
-            <Radio.Button value="list" style={{ fontSize: 'medium' }}>
-              <UnorderedListOutlined />
-            </Radio.Button>
-            <Radio.Button value="card" style={{ fontSize: 'medium' }}>
-              <AppstoreOutlined />
-            </Radio.Button>
-          </RadioGroup>
-        </Space>
-      </div>
-      <div className="viewer-content">
+            <FolderCreateWrap onCreateFolder={handlePutFolder}>
+              <Button>{t('storeViewer.createFolder')}</Button>
+            </FolderCreateWrap>
+            <Button>{t('common.download')}</Button>
+            <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+              <Button>
+                {t('common.more')} <DownOutlined />
+              </Button>
+            </Dropdown>
+          </Space>
+          <Space size={4}>
+            <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
+            <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
+            <RadioGroup value={display} onChange={handleDisplayChange}>
+              <Radio.Button value="list" style={{ fontSize: 'medium' }}>
+                <UnorderedListOutlined />
+              </Radio.Button>
+              <Radio.Button value="card" style={{ fontSize: 'medium' }}>
+                <AppstoreOutlined />
+              </Radio.Button>
+            </RadioGroup>
+          </Space>
+        </Fragment>
+      }
+      content={
         <FileDropWrap onDrop={handlePut}>
           {display === ETabDisplay.LIST ? (
             <TableContent
@@ -235,15 +236,14 @@ const SftpViewer = (props: SftpViewerProps) => {
             />
           ) : null}
         </FileDropWrap>
-      </div>
-      <div className="viewer-footer">
-         <SiderFold />
+      }
+      footer={
         <span>
           {t('storeViewer.footer.selectedCount', { count: 0 })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
         </span>
-      </div>
-    </div>
+      }
+    />
   );
 };
 

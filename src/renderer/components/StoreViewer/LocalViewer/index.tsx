@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
@@ -18,13 +18,12 @@ import {
   FileDropWrap,
   ButtonGroup,
   FileTransferModal,
-  SiderFold,
+  StoreViewerWrap,
 } from '@/renderer/components';
 import { PathHistory, storeRequest, openViewer, events } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
 import { TStoreObject } from '@/types';
-import './index.css';
 import { useTranslation } from 'react-i18next';
 
 const RadioGroup = Radio.Group;
@@ -191,13 +190,14 @@ const LocalViewer = (props: LocalViewerProps) => {
   ];
 
   return (
-    <div className="viewer">
-      <div className="viewer-path">
-        <ButtonGroup>
-          <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
-          <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
-        </ButtonGroup>
-        <div className="viewer-path-input">
+    <StoreViewerWrap
+      headerViewPath={
+        <Space size={6}>
+          <ButtonGroup>
+            <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
+            <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
+          </ButtonGroup>
+
           <ViewInput
             prefix={connection.config.root}
             addAfter={
@@ -217,34 +217,36 @@ const LocalViewer = (props: LocalViewerProps) => {
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
           />
-        </div>
-      </div>
-      <div className="viewer-actions">
-        <Space size={4}>
-          <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button>{t('storeViewer.createFolder')}</Button>
-          </FolderCreateWrap>
-          <Button>{t('common.download')}</Button>
-          <Dropdown trigger={['click']} menu={{ items: menuItems }}>
-            <Button>
-              {t('common.more')} <DownOutlined />
-            </Button>
-          </Dropdown>
         </Space>
-        <Space size={4}>
-          <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
-          <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
-          <RadioGroup value={display} onChange={handleDisplayChange}>
-            <Radio.Button value="list" style={{ fontSize: 'medium' }}>
-              <UnorderedListOutlined />
-            </Radio.Button>
-            <Radio.Button value="card" style={{ fontSize: 'medium' }}>
-              <AppstoreOutlined />
-            </Radio.Button>
-          </RadioGroup>
-        </Space>
-      </div>
-      <div className="viewer-content">
+      }
+      headerViewActions={
+        <Fragment>
+          <Space size={4}>
+            <FolderCreateWrap onCreateFolder={handlePutFolder}>
+              <Button>{t('storeViewer.createFolder')}</Button>
+            </FolderCreateWrap>
+            <Button>{t('common.download')}</Button>
+            <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+              <Button>
+                {t('common.more')} <DownOutlined />
+              </Button>
+            </Dropdown>
+          </Space>
+          <Space size={4}>
+            <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
+            <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
+            <RadioGroup value={display} onChange={handleDisplayChange}>
+              <Radio.Button value="list" style={{ fontSize: 'medium' }}>
+                <UnorderedListOutlined />
+              </Radio.Button>
+              <Radio.Button value="card" style={{ fontSize: 'medium' }}>
+                <AppstoreOutlined />
+              </Radio.Button>
+            </RadioGroup>
+          </Space>
+        </Fragment>
+      }
+      content={
         <FileDropWrap onDrop={handlePut}>
           {display === ETabDisplay.LIST ? (
             <TableContent
@@ -277,23 +279,24 @@ const LocalViewer = (props: LocalViewerProps) => {
             />
           ) : null}
         </FileDropWrap>
-      </div>
-      <div className="viewer-footer">
-        <SiderFold />
+      }
+      footer={
         <span>
           {t('storeViewer.footer.selectedCount', { count: selectedKeys.length })}，
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
         </span>
-      </div>
-      <FileTransferModal
-        visible={transferModalVisible}
-        mode={transferMode}
-        files={transferFiles}
-        sourceConnectionId={connectionId}
-        onCancel={() => setTransferModalVisible(false)}
-        onOk={handleTransfer}
-      />
-    </div>
+      }
+      extra={
+        <FileTransferModal
+          visible={transferModalVisible}
+          mode={transferMode}
+          files={transferFiles}
+          sourceConnectionId={connectionId}
+          onCancel={() => setTransferModalVisible(false)}
+          onOk={handleTransfer}
+        />
+      }
+    />
   );
 };
 

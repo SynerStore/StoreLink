@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
@@ -12,12 +12,11 @@ import {
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, SiderFold } from '@/renderer/components';
+import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, StoreViewerWrap } from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer, createTask } from '@/renderer/utils';
 import { useLoading, useUnmount } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 import { ETaskType } from '@/types';
-import './index.css';
 import { useTranslation } from 'react-i18next';
 
 const RadioGroup = Radio.Group;
@@ -172,22 +171,31 @@ const OssViewer = (props: OssViewerProps) => {
   });
 
   return (
-    <div className="viewer">
-      <div className="viewer-path">
-        <ButtonGroup>
-          <Button disabled={!canBack} icon={<LeftOutlined style={{ fontSize: 'large' }} />} onClick={handlePathBack} />
-          <Button
-            disabled={!canForward}
-            icon={<RightOutlined style={{ fontSize: 'large' }} />}
-            onClick={handlePathForward}
-          />
-        </ButtonGroup>
-        <div className="viewer-path-input">
+    <StoreViewerWrap
+      headerViewPath={
+        <Space size={6}>
+          <ButtonGroup>
+            <Button
+              disabled={!canBack}
+              icon={<LeftOutlined style={{ fontSize: 'large' }} />}
+              onClick={handlePathBack}
+            />
+            <Button
+              disabled={!canForward}
+              icon={<RightOutlined style={{ fontSize: 'large' }} />}
+              onClick={handlePathForward}
+            />
+          </ButtonGroup>
+
           <ViewInput
             prefix={bucketName}
             addAfter={
-              <span onClick={handleToggleCollected}>
-                {isCollected ? (
+              <span
+                onClick={async () => {
+                  await events.updateConnectionCollected({ id: connectionId, isCollected: !connection?.isCollected });
+                }}
+              >
+                {connection?.isCollected ? (
                   <StarFilled style={{ fontSize: 'large', color: 'var(--primary-color)' }} />
                 ) : (
                   <StarOutlined style={{ fontSize: 'large' }} />
@@ -198,37 +206,39 @@ const OssViewer = (props: OssViewerProps) => {
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
           />
-        </div>
-      </div>
-      <div className="viewer-actions">
-        <Space size={4}>
-          <Button type="primary" onClick={handleUpload}>
-            {t('common.upload')}
-          </Button>
-          <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button>{t('storeViewer.createFolder')}</Button>
-          </FolderCreateWrap>
-          <Button>{t('common.download')}</Button>
-          <Dropdown trigger={['click']} menu={{ items: menuItems }}>
-            <Button>
-              {t('common.more')} <DownOutlined style={{ fontSize: 'medium' }} />
+        </Space>
+      }
+      headerViewActions={
+        <Fragment>
+          <Space size={4}>
+            <Button type="primary" onClick={handleUpload}>
+              {t('common.upload')}
             </Button>
-          </Dropdown>
-        </Space>
-        <Space size={4}>
-          <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
-          <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
-          <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)}>
-            <Radio.Button value="list" style={{ fontSize: 'medium' }}>
-              <UnorderedListOutlined />
-            </Radio.Button>
-            <Radio.Button value="card" style={{ fontSize: 'medium' }}>
-              <AppstoreOutlined />
-            </Radio.Button>
-          </RadioGroup>
-        </Space>
-      </div>
-      <div className="viewer-content">
+            <FolderCreateWrap onCreateFolder={handlePutFolder}>
+              <Button>{t('storeViewer.createFolder')}</Button>
+            </FolderCreateWrap>
+            <Button>{t('common.download')}</Button>
+            <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+              <Button>
+                {t('common.more')} <DownOutlined style={{ fontSize: 'medium' }} />
+              </Button>
+            </Dropdown>
+          </Space>
+          <Space size={4}>
+            <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
+            <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
+            <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)}>
+              <Radio.Button value="list" style={{ fontSize: 'medium' }}>
+                <UnorderedListOutlined />
+              </Radio.Button>
+              <Radio.Button value="card" style={{ fontSize: 'medium' }}>
+                <AppstoreOutlined />
+              </Radio.Button>
+            </RadioGroup>
+          </Space>
+        </Fragment>
+      }
+      content={
         <FileDropWrap onDrop={handlePut}>
           {display === ETabDisplay.LIST ? (
             <TableContent
@@ -255,15 +265,14 @@ const OssViewer = (props: OssViewerProps) => {
             />
           ) : null}
         </FileDropWrap>
-      </div>
-      <div className="viewer-footer">
-         <SiderFold />
+      }
+      footer={
         <span>
           {t('storeViewer.footer.selectedCount', { count: 0 })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
         </span>
-      </div>
-    </div>
+      }
+    />
   );
 };
 

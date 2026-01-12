@@ -44,6 +44,8 @@ const StoreViewer = (props: any) => {
       return <SftpViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     case StoreTypes.WEBDAV:
       return <WebDevViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
+    case StoreTypes.SYNOLOGY:
+      return <WebDevViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
 
     default:
       return null;

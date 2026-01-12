@@ -14,3 +14,9 @@ body {
 .vjs-paused.vjs-has-started .vjs-big-play-button {
   display: block;
 }
+
+/* antd 样式重置 */
+
+.ant-tabs-nav{
+  margin-bottom: 6px !important;
+}

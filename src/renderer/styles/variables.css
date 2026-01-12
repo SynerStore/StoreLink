@@ -1,7 +1,7 @@
 /* css 变量  */
 body {
   --header-height: 36px;
-  --sider-width: 48px;
+  --sider-width: 64px;
   --store-sider-width: 230px;
   --viewer-content-height: calc(100vh - 185px);
 
@@ -45,7 +45,7 @@ body {
   --header-bg-light: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
   --sidebar-bg-light: rgba(255, 255, 255, 0.75);
   --home-card-bg-light: linear-gradient(180deg, #ffffff, #fafbff);
-  --content-bg-light: #f7f8fa;
+  --content-bg-light: #fff;
   --sidebar-backdrop-filter: saturate(180%) blur(16px);
   --header-border-color: rgba(60, 98, 205, 0.18);
 

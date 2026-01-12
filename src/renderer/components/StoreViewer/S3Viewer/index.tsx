@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
@@ -13,13 +13,12 @@ import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup ,SiderFold} from '@/renderer/components';
+import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, StoreViewerWrap } from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer } from '@/renderer/utils';
 import { createTask } from '@/renderer/utils/task';
 import { ETaskType } from '@/types';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
-import './index.css';
 
 const RadioGroup = Radio.Group;
 
@@ -174,17 +173,21 @@ const S3Viewer = (props: S3ViwerProps) => {
   ];
 
   return (
-    <div className="viewer">
-      <div className="viewer-path">
-        <ButtonGroup>
-          <Button disabled={!canBack} icon={<LeftOutlined style={{ fontSize: 'large' }} />} onClick={handlePathBack} />
-          <Button
-            disabled={!canForward}
-            icon={<RightOutlined style={{ fontSize: 'large' }} />}
-            onClick={handlePathForward}
-          />
-        </ButtonGroup>
-        <div className="viewer-path-input">
+    <StoreViewerWrap
+      headerViewPath={
+        <Space size={6}>
+          <ButtonGroup>
+            <Button
+              disabled={!canBack}
+              icon={<LeftOutlined style={{ fontSize: 'large' }} />}
+              onClick={handlePathBack}
+            />
+            <Button
+              disabled={!canForward}
+              icon={<RightOutlined style={{ fontSize: 'large' }} />}
+              onClick={handlePathForward}
+            />
+          </ButtonGroup>{' '}
           <ViewInput
             prefix={bucketName}
             addAfter={
@@ -200,37 +203,39 @@ const S3Viewer = (props: S3ViwerProps) => {
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
           />
-        </div>
-      </div>
-      <div className="viewer-actions">
-        <Space size={4}>
-          <Button type="primary" onClick={handleUpload}>
-            {t('common.upload')}
-          </Button>
-          <FolderCreateWrap onCreateFolder={handlePutFolder}>
-            <Button>{t('storeViewer.createFolder')}</Button>
-          </FolderCreateWrap>
-          <Button>{t('common.download')}</Button>
-          <Dropdown trigger={['click']} menu={{ items: menuItems }}>
-            <Button>
-              {t('common.more')} <DownOutlined style={{ fontSize: 'medium' }} />
+        </Space>
+      }
+      headerViewActions={
+        <Fragment>
+          <Space size={4}>
+            <Button type="primary" onClick={handleUpload}>
+              {t('common.upload')}
             </Button>
-          </Dropdown>
-        </Space>
-        <Space size={4}>
-          <Input.Search style={{ width: '240px' }} />
-          <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
-          <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)}>
-            <Radio.Button value="list" style={{ fontSize: 'medium' }}>
-              <UnorderedListOutlined />
-            </Radio.Button>
-            <Radio.Button value="card" style={{ fontSize: 'medium' }}>
-              <AppstoreOutlined />
-            </Radio.Button>
-          </RadioGroup>
-        </Space>
-      </div>
-      <div className="viewer-content">
+            <FolderCreateWrap onCreateFolder={handlePutFolder}>
+              <Button>{t('storeViewer.createFolder')}</Button>
+            </FolderCreateWrap>
+            <Button>{t('common.download')}</Button>
+            <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+              <Button>
+                {t('common.more')} <DownOutlined style={{ fontSize: 'medium' }} />
+              </Button>
+            </Dropdown>
+          </Space>
+          <Space size={4}>
+            <Input.Search style={{ width: '240px' }} />
+            <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
+            <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)}>
+              <Radio.Button value="list" style={{ fontSize: 'medium' }}>
+                <UnorderedListOutlined />
+              </Radio.Button>
+              <Radio.Button value="card" style={{ fontSize: 'medium' }}>
+                <AppstoreOutlined />
+              </Radio.Button>
+            </RadioGroup>
+          </Space>
+        </Fragment>
+      }
+      content={
         <FileDropWrap onDrop={handlePut}>
           {display === ETabDisplay.LIST ? (
             <TableContent
@@ -257,15 +262,14 @@ const S3Viewer = (props: S3ViwerProps) => {
             />
           ) : null}
         </FileDropWrap>
-      </div>
-      <div className="viewer-footer">
-         <SiderFold />
+      }
+      footer={
         <span>
           {t('storeViewer.footer.selectedCount', { count: 0 })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
         </span>
-      </div>
-    </div>
+      }
+    />
   );
 };
 
