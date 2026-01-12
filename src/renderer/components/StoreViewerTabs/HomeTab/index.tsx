@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Space, Card, Statistic, Tag, DatePicker, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { StoreConnectModal, StoreIcon, List } from '@/renderer/components';
+import { StoreConnectModal, StoreIcon, List, StoreViewerWrap } from '@/renderer/components';
 import { useConfigStore, useTabsStore } from '@/renderer/store';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus } from '@/types';
@@ -85,100 +85,104 @@ const HomeTab = () => {
   }, [logsLimit]);
 
   return (
-    <div className="home-tab">
-      <div className="home-tab-header">
-        <h2>{t('home.title')}</h2>
-        <StoreConnectModal>
-          <Button type="primary" icon={<PlusOutlined style={{ fontSize: 'medium' }} />}>
-            {t('storeSider.addConnection')}
-          </Button>
-        </StoreConnectModal>
-      </div>
-      <div className="home-tab-dashbord">
-        <Card hoverable className="home-tab-dashbord-card">
-          <Statistic title={t('home.stats.connections')} value={totalConnections} />
-        </Card>
-        <Card hoverable className="home-tab-dashbord-card">
-          <Statistic title={t('home.stats.running')} value={runningCount} />
-        </Card>
-        <Card hoverable className="home-tab-dashbord-card">
-          <Statistic title={t('home.stats.activeStores')} value={activeStoreCount} />
-        </Card>
-        <Card hoverable className="home-tab-dashbord-card">
-          <Statistic title={t('home.stats.todayCompleted')} value={todayCompleted} />
-        </Card>
-      </div>
-      <div className="home-tab-content" style={{ marginTop: 16 }}>
-        <div style={{ marginTop: 16 }}>
-          <Card title={t('home.favorites.title')}>
-            {favoriteConnections.length > 0 ? (
-              <List
-                bordered={false}
-                dataSource={favoriteConnections}
-                renderItem={(item: any) => (
-                  <List.Item key={item.id} className="home-tab-content-list-item">
-                    <Space size={8}>
-                      <StoreIcon brand={item.brand} size={24} styles={{}} />
-                      <span className="home-tab-content-list-item-name" style={{ fontWeight: 500 }}>
-                        {item.name}
-                      </span>
-                      <Tag color="blue">{item.brand}</Tag>
-                      <Button type="text" onClick={() => toggleFavorite(item.id)}>
-                        ★ {t('home.favorites.remove')}
-                      </Button>
-                    </Space>
-                  </List.Item>
+    <StoreViewerWrap
+      content={
+        <div className="home-tab">
+          <div className="home-tab-header">
+            <h2>{t('home.title')}</h2>
+            <StoreConnectModal>
+              <Button type="primary" icon={<PlusOutlined style={{ fontSize: 'medium' }} />}>
+                {t('storeSider.addConnection')}
+              </Button>
+            </StoreConnectModal>
+          </div>
+          <div className="home-tab-dashbord">
+            <Card hoverable className="home-tab-dashbord-card">
+              <Statistic title={t('home.stats.connections')} value={totalConnections} />
+            </Card>
+            <Card hoverable className="home-tab-dashbord-card">
+              <Statistic title={t('home.stats.running')} value={runningCount} />
+            </Card>
+            <Card hoverable className="home-tab-dashbord-card">
+              <Statistic title={t('home.stats.activeStores')} value={activeStoreCount} />
+            </Card>
+            <Card hoverable className="home-tab-dashbord-card">
+              <Statistic title={t('home.stats.todayCompleted')} value={todayCompleted} />
+            </Card>
+          </div>
+          <div className="home-tab-content" style={{ marginTop: 16 }}>
+            <div style={{ marginTop: 16 }}>
+              <Card title={t('home.favorites.title')}>
+                {favoriteConnections.length > 0 ? (
+                  <List
+                    bordered={false}
+                    dataSource={favoriteConnections}
+                    renderItem={(item: any) => (
+                      <List.Item key={item.id} className="home-tab-content-list-item">
+                        <Space size={8}>
+                          <StoreIcon brand={item.brand} size={24} styles={{}} />
+                          <span className="home-tab-content-list-item-name" style={{ fontWeight: 500 }}>
+                            {item.name}
+                          </span>
+                          <Tag color="blue">{item.brand}</Tag>
+                          <Button type="text" onClick={() => toggleFavorite(item.id)}>
+                            ★ {t('home.favorites.remove')}
+                          </Button>
+                        </Space>
+                      </List.Item>
+                    )}
+                  />
+                ) : (
+                  <Space size={8} vertical>
+                    <span>{t('home.favorites.empty')}</span>
+                  </Space>
                 )}
-              />
-            ) : (
-              <Space size={8} vertical>
-                <span>{t('home.favorites.empty')}</span>
-              </Space>
-            )}
-          </Card>
-        </div>
-        <div style={{ marginTop: 16 }}>
-          <Card
-            title={t('home.logs.title')}
-            extra={
-              <Space size={8}>
-                <DatePicker
-                  value={selectedDate ? dayjs(selectedDate) : undefined}
-                  onChange={(_v: any, dateString: any) => {
-                    const d = typeof dateString === 'string' ? dateString : null;
-                    setSelectedDate(d);
-                    fetchLogs(d || undefined);
-                  }}
+              </Card>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <Card
+                title={t('home.logs.title')}
+                extra={
+                  <Space size={8}>
+                    <DatePicker
+                      value={selectedDate ? dayjs(selectedDate) : undefined}
+                      onChange={(_v: any, dateString: any) => {
+                        const d = typeof dateString === 'string' ? dateString : null;
+                        setSelectedDate(d);
+                        fetchLogs(d || undefined);
+                      }}
+                    />
+                    <Select
+                      style={{ width: 100 }}
+                      value={String(logsLimit)}
+                      onChange={(val) => {
+                        const n = Number(val);
+                        setLogsLimit(n);
+                      }}
+                      options={[
+                        { label: t('home.logs.limit', { count: 10 }), value: '10' },
+                        { label: t('home.logs.limit', { count: 50 }), value: '50' },
+                        { label: t('home.logs.limit', { count: 100 }), value: '100' },
+                      ]}
+                    />
+                    <Button onClick={() => fetchLogs(selectedDate || undefined)}>{t('common.refresh')}</Button>
+                  </Space>
+                }
+              >
+                <List
+                  size="small"
+                  bordered
+                  height={240}
+                  itemHeight={32}
+                  dataSource={logs}
+                  renderItem={(line: string, index: number) => <List.Item key={index}>{line}</List.Item>}
                 />
-                <Select
-                  style={{ width: 100 }}
-                  value={String(logsLimit)}
-                  onChange={(val) => {
-                    const n = Number(val);
-                    setLogsLimit(n);
-                  }}
-                  options={[
-                    { label: t('home.logs.limit', { count: 10 }), value: '10' },
-                    { label: t('home.logs.limit', { count: 50 }), value: '50' },
-                    { label: t('home.logs.limit', { count: 100 }), value: '100' },
-                  ]}
-                />
-                <Button onClick={() => fetchLogs(selectedDate || undefined)}>{t('common.refresh')}</Button>
-              </Space>
-            }
-          >
-            <List
-              size="small"
-              bordered
-              height={240}
-              itemHeight={32}
-              dataSource={logs}
-              renderItem={(line: string, index: number) => <List.Item key={index}>{line}</List.Item>}
-            />
-          </Card>
+              </Card>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 };
 

@@ -96,7 +96,9 @@ const Logs = () => {
               { label: t('logs.lines', { count: 100 }), value: '100' },
             ]}
           />
-          <Button onClick={() => fetchLogs(selectedDate || undefined, logsLimit, 1, kind)}>{t('common.refresh')}</Button>
+          <Button onClick={() => fetchLogs(selectedDate || undefined, logsLimit, 1, kind)}>
+            {t('common.refresh')}
+          </Button>
         </Space>
       }
     >
@@ -120,19 +122,6 @@ const Logs = () => {
             );
           }}
         />
-        <div ref={footerRef} style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
-          <Pagination
-            size="small"
-            current={page}
-            total={total}
-            pageSize={logsLimit}
-            showSizeChanger={false}
-            onChange={(p) => {
-              setPage(p);
-              fetchLogs(selectedDate || undefined, logsLimit, p, kind);
-            }}
-          />
-        </div>
       </div>
     </PageWrapper>
   );

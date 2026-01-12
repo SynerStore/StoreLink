@@ -31,6 +31,7 @@ const Tasks: React.FC = () => {
       label: t('tasks.tabs.uploading'),
       children: <UploadingTaskTable />,
     },
+
     {
       key: ETaskManageTab.Finished,
       label: t('tasks.tabs.finished'),
@@ -46,7 +47,6 @@ const Tasks: React.FC = () => {
   return (
     <PageWrapper title={t('tasks.manageTitle')}>
       <Tabs
-        type="card"
         activeKey={activeTab}
         onChange={(key: string) => setActiveTab(key as ETaskManageTab)}
         items={items}

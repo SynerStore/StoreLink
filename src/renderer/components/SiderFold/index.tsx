@@ -1,25 +1,22 @@
 import { Tooltip } from 'antd';
-
 import { t } from 'i18next';
-
-import { MenuUnfoldOutlined } from '@ant-design/icons';
-import { MenuFoldOutlined } from '@ant-design/icons';
+import { IconFont } from '@/renderer/components';
 import { useWindowStore } from '@/renderer/store';
 
 const SiderFold = () => {
   const { storeSiderfold, toggleStoreSiderfold } = useWindowStore();
 
   return (
-    <div className="sider-fold">
-      {!storeSiderfold ? (
-        <Tooltip title={t('sider.expand')} placement="bottom">
-          <MenuUnfoldOutlined onClick={toggleStoreSiderfold} />
-        </Tooltip>
-      ) : (
-        <Tooltip title={t('sider.collapse')} placement="bottom">
-          <MenuFoldOutlined onClick={toggleStoreSiderfold} />
-        </Tooltip>
-      )}
+    <div
+      className="sider-fold"
+      style={{
+        transform: !storeSiderfold ? 'rotate(180deg)' : 'rotate(0deg)',
+        transition: 'transform 0.3s ease-in-out',
+      }}
+    >
+      <Tooltip title={t('sider.collapse')} placement="bottom">
+        <IconFont style={{ transform: 'rotate(180deg)' }} size={18} type="siderbar" onClick={toggleStoreSiderfold} />
+      </Tooltip>
     </div>
   );
 };

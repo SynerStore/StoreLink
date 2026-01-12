@@ -18,9 +18,16 @@
   }
 
   .viewer-content {
-    height: var(--viewer-content-height);
     overflow: auto;
     padding: 6px 12px;
+  }
+
+  .width-header {
+    height: calc(100vh - 191px);
+  }
+
+  .widthout-header {
+    height: calc(100vh - 114px);
   }
 
   .viewer-footer {
