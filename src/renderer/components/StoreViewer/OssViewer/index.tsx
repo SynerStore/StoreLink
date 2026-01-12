@@ -173,7 +173,7 @@ const OssViewer = (props: OssViewerProps) => {
   return (
     <StoreViewerWrap
       headerViewPath={
-        <Space size={6}>
+        <>
           <ButtonGroup>
             <Button
               disabled={!canBack}
@@ -206,7 +206,7 @@ const OssViewer = (props: OssViewerProps) => {
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
           />
-        </Space>
+        </>
       }
       headerViewActions={
         <Fragment>

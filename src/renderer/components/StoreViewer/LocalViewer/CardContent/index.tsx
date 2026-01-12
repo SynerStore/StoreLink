@@ -2,7 +2,6 @@ import { Spin, Empty } from 'antd';
 
 import { TStoreObject } from '@/types';
 import { FileCardList } from '@/renderer/components';
-import './index.css';
 
 export type CardContentProps = {
   connectionId: string;

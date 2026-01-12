@@ -175,7 +175,7 @@ const S3Viewer = (props: S3ViwerProps) => {
   return (
     <StoreViewerWrap
       headerViewPath={
-        <Space size={6}>
+        <>
           <ButtonGroup>
             <Button
               disabled={!canBack}
@@ -203,7 +203,7 @@ const S3Viewer = (props: S3ViwerProps) => {
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
           />
-        </Space>
+        </>
       }
       headerViewActions={
         <Fragment>

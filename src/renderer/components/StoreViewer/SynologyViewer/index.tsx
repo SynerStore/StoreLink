@@ -169,7 +169,7 @@ const SynologyViewer = (props: SynologyViewerProps) => {
   return (
     <StoreViewerWrap
       headerViewPath={
-        <Space size={6}>
+        <>
           <ButtonGroup>
             <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
             <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
@@ -194,7 +194,7 @@ const SynologyViewer = (props: SynologyViewerProps) => {
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
           />
-        </Space>
+        </>
       }
       headerViewActions={
         <Fragment>

@@ -87,7 +87,7 @@ const FileContextMenu = (props: any) => {
         render: () => (
           <FileRenameWrap name={data.name as string} onRename={(newName: string) => onRename(data, newName)}>
             <Space size={8}>
-              <EditOutlined /> {t('contextMenu.rename')}
+              <EditOutlined />{t('contextMenu.rename')}
             </Space>
           </FileRenameWrap>
         ),

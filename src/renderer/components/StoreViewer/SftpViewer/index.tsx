@@ -152,7 +152,7 @@ const SftpViewer = (props: SftpViewerProps) => {
   return (
     <StoreViewerWrap
       headerViewPath={
-        <Space size={6}>
+        <>
           <ButtonGroup>
             <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
             <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
@@ -177,7 +177,7 @@ const SftpViewer = (props: SftpViewerProps) => {
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
           />
-        </Space>
+        </>
       }
       headerViewActions={
         <Fragment>

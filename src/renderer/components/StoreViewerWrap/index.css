@@ -1,5 +1,4 @@
 .viewer-wrap {
-
   .viewer-header {
     padding: 0px 6px 6px;
     border-bottom: 1px solid var(--border-color);
@@ -10,6 +9,7 @@
     display: flex;
     align-items: center;
     margin-bottom: 6px;
+    gap: 4px;
   }
 
   .viewer-actions {
@@ -20,12 +20,14 @@
   .viewer-content {
     height: var(--viewer-content-height);
     overflow: auto;
+    padding: 6px 12px;
   }
 
   .viewer-footer {
     display: flex;
     justify-content: space-between;
     height: 40px;
+    padding: 0px 12px;
     align-items: center;
     border-top: 1px solid var(--border-color);
   }

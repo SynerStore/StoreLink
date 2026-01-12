@@ -5,7 +5,6 @@ import dayjs from 'dayjs';
 import { EWindowSize, TStoreObject } from '@/types';
 import { FileIcon, FileContextMenu } from '@/renderer/components';
 import { calculateSize } from '@/renderer/utils';
-import './index.css';
 import { useTranslation } from 'react-i18next';
 
 export type TableContentProps = {

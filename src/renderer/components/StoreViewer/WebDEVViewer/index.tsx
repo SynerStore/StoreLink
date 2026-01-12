@@ -169,7 +169,7 @@ const WebDevViewer = (props: WebDevViewerProps) => {
   return (
     <StoreViewerWrap
       headerViewPath={
-        <Space size={6}>
+        <>
           <ButtonGroup>
             <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
             <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
@@ -194,7 +194,7 @@ const WebDevViewer = (props: WebDevViewerProps) => {
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
           />
-        </Space>
+        </>
       }
       headerViewActions={
         <Fragment>

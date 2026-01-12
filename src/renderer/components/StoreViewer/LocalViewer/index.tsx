@@ -192,7 +192,7 @@ const LocalViewer = (props: LocalViewerProps) => {
   return (
     <StoreViewerWrap
       headerViewPath={
-        <Space size={6}>
+        <>
           <ButtonGroup>
             <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
             <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
@@ -217,7 +217,7 @@ const LocalViewer = (props: LocalViewerProps) => {
             onChange={handlePrefixChange}
             style={{ width: '100%' }}
           />
-        </Space>
+        </>
       }
       headerViewActions={
         <Fragment>
