@@ -5,6 +5,7 @@ import LocalViewer from './LocalViewer';
 import SftpViewer from './SftpViewer';
 import OssViewer from './OssViewer';
 import WebDevViewer from './WebDEVViewer';
+import SynologyViewer from './SynologyViewer';
 import { StoreTypes } from '@/types';
 import { useConfigStore } from '@/renderer/store';
 
@@ -45,7 +46,7 @@ const StoreViewer = (props: any) => {
     case StoreTypes.WEBDAV:
       return <WebDevViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     case StoreTypes.SYNOLOGY:
-      return <WebDevViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
+      return <SynologyViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
 
     default:
       return null;
