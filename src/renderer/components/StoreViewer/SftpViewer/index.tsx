@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Space, Input, Dropdown, Menu, Radio } from 'antd';
+import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
   RightOutlined,
@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FileDropWrap, ViewInput, FolderCreateWrap, ButtonGroup } from '@/renderer/components';
+import { FileDropWrap, ViewInput, FolderCreateWrap, ButtonGroup ,SiderFold} from '@/renderer/components';
 import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
 import { createTask } from '@/renderer/utils/task';
 import { ETaskType } from '@/types';
@@ -237,6 +237,7 @@ const SftpViewer = (props: SftpViewerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
+         <SiderFold />
         <span>
           {t('storeViewer.footer.selectedCount', { count: 0 })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}

@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { ViewInput, FileDropWrap, FolderCreateWrap, ButtonGroup } from '@/renderer/components';
+import { ViewInput, FileDropWrap, FolderCreateWrap, ButtonGroup, SiderFold } from '@/renderer/components';
 import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
@@ -254,6 +254,7 @@ const WebDevViewer = (props: WebDevViewerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
+        <SiderFold />
         <span>
           {t('storeViewer.footer.selectedCount', { count: 0 })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}

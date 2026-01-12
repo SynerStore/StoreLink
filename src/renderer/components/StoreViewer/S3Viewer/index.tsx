@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup } from '@/renderer/components';
+import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup ,SiderFold} from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer } from '@/renderer/utils';
 import { createTask } from '@/renderer/utils/task';
 import { ETaskType } from '@/types';
@@ -259,6 +259,7 @@ const S3Viewer = (props: S3ViwerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
+         <SiderFold />
         <span>
           {t('storeViewer.footer.selectedCount', { count: 0 })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}

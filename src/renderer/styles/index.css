@@ -1,23 +1,7 @@
 @import './variables.css';
 @import './reset.css';
+@import './iconfont/iconfont.css';
 
-/* Global center for all Ant Design Modal and Confirm */
-/* .ant-modal-wrap {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-.ant-modal {
-  top: 0 !important;
-  margin: 0 auto !important;
-} */
-/* Ensure confirm dialogs also centered */
-/* .ant-modal-confirm .ant-modal {
-  top: 0 !important;
-} */
-
-/* Do not affect message component positioning */
-/* .ant-modal remains default; no override applied */
 body {
   color: var(--text-primary);
 }

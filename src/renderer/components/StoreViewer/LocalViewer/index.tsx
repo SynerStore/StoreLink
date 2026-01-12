@@ -12,7 +12,14 @@ import {
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, FileTransferModal } from '@/renderer/components';
+import {
+  FolderCreateWrap,
+  ViewInput,
+  FileDropWrap,
+  ButtonGroup,
+  FileTransferModal,
+  SiderFold,
+} from '@/renderer/components';
 import { PathHistory, storeRequest, openViewer, events } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
@@ -272,6 +279,7 @@ const LocalViewer = (props: LocalViewerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
+        <SiderFold />
         <span>
           {t('storeViewer.footer.selectedCount', { count: selectedKeys.length })}，
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}

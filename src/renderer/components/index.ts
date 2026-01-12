@@ -14,6 +14,8 @@ export { default as ContextMenu } from './ContextMenu';
 export type { MenuItem } from './ContextMenu';
 export { default as FileViewer } from './FileViewer';
 export * from './Icons';
+export { default as IconFont } from './IconFont';
+export { default as SiderFold } from './SiderFold';
 export { default as StoreIcon } from './StoreIcon';
 export { default as StoreConnectModal } from './StoreConnectModal';
 export { default as ConnectionDeleteWrap } from './ConnectionDeleteWrap';

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { ConfigProvider, theme, Modal } from 'antd';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import zhCN from 'antd/locale/zh_CN';
@@ -7,9 +7,10 @@ import 'antd/dist/reset.css';
 
 import '@/renderer/i18n';
 import { Header, Sider } from '@/renderer/components';
-import { useConfigStore, useTabsStore, useSettingStore, EnumTheme } from '@/renderer/store';
+import { useConfigStore, useTabsStore, useSettingStore, EnumTheme, useWindowStore } from '@/renderer/store';
 import { updateRootStyleProperty, isInMac, isInWin } from '@/renderer/utils';
 import '@/renderer/styles/index.css';
+
 import Tasks from './tasks';
 import Logs from './logs';
 import Setting from './setting';
@@ -33,7 +34,7 @@ const App = () => {
   const settingStore = useSettingStore();
   const configStore = useConfigStore();
   const tabsStore = useTabsStore();
-  const [storeSiderfold, setStoreSiderfold] = useState(false);
+  const windowStore = useWindowStore();
 
   const locale = useMemo(() => {
     return settingStore.settings.lang === 'zh-CN' ? zhCN : enUS;
@@ -66,11 +67,9 @@ const App = () => {
     tabsStore.initializeData();
   };
 
-  const handleFold = () => {
-    setStoreSiderfold(!storeSiderfold);
-    const newStoreSiderWidth = storeSiderfold ? '230px' : '0px';
-    updateRootStyleProperty('--store-sider-width', newStoreSiderWidth);
-  };
+  useEffect(() => {
+    updateRootStyleProperty('--store-sider-width', windowStore.storeSiderfold ? '0px' : '230px');
+  }, [windowStore.storeSiderfold]);
 
   useEffect(() => {
     __patchModalCentered__();
@@ -93,10 +92,10 @@ const App = () => {
           <div className="container">
             <Header />
             <main className="main">
-              <Sider fold={storeSiderfold} onFold={handleFold} />
+              <Sider />
               <div className="content">
                 <Routes>
-                  <Route path="/" element={<Home fold={storeSiderfold} />} />
+                  <Route path="/" element={<Home fold={windowStore.storeSiderfold} />} />
                   <Route path="/tasks" element={<Tasks />} />
                   <Route path="/logs" element={<Logs />} />
                   <Route path="/setting" element={<Setting />} />

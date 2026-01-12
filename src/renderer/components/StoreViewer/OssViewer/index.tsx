@@ -12,7 +12,7 @@ import {
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup } from '@/renderer/components';
+import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, SiderFold } from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer, createTask } from '@/renderer/utils';
 import { useLoading, useUnmount } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
@@ -257,6 +257,7 @@ const OssViewer = (props: OssViewerProps) => {
         </FileDropWrap>
       </div>
       <div className="viewer-footer">
+         <SiderFold />
         <span>
           {t('storeViewer.footer.selectedCount', { count: 0 })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}

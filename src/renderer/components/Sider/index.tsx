@@ -1,27 +1,12 @@
 import { Space, Divider, Tooltip } from 'antd';
-import {
-  SettingOutlined,
-  MenuFoldOutlined,
-  HomeOutlined,
-  SwapOutlined,
-  MessageOutlined,
-  CalendarOutlined,
-  ToolOutlined,
-  ProfileOutlined,
-  MenuUnfoldOutlined,
-} from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+import { IconFont } from '@/renderer/components';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTabsStore } from '@/renderer/store';
 import './index.css';
-import { useTranslation } from 'react-i18next';
 
-export type SiderProps = {
-  onFold: () => void;
-  fold: boolean;
-};
-const Sider = (props: SiderProps) => {
-  const { onFold, fold } = props;
+const Sider = () => {
   const { selectTab } = useTabsStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,37 +20,43 @@ const Sider = (props: SiderProps) => {
   return (
     <aside className="sider">
       <div className="sider-top">
-        {fold ? (
-          <Tooltip title={t('sider.expand')}>
-            <MenuUnfoldOutlined onClick={onFold} />
-          </Tooltip>
-        ) : (
-          <Tooltip title={t('sider.collapse')}>
-            <MenuFoldOutlined onClick={onFold} />
-          </Tooltip>
-        )}
-        <Divider style={{ margin: '8px 0px' }} />
-        <Tooltip title={t('common.home')}>
-          <HomeOutlined
-            className={isHome ? 'active' : undefined}
+        <Tooltip title={t('common.home')} placement="right">
+          <IconFont
+            className={`action ${isHome ? 'active' : undefined}`}
+            pointer
             onClick={() => {
               selectTab('home');
               navigate('/');
             }}
+            type="home"
           />
         </Tooltip>
       </div>
       <div className="sider-bottom">
         <Divider style={{ margin: '8px 0px' }} />
         <Space vertical size={16}>
-          <Tooltip title={t('tasks.title')}>
-            <SwapOutlined className={isTasks ? 'active' : undefined} onClick={() => navigate('/tasks')} />
+          <Tooltip title={t('tasks.title')} placement="right">
+            <IconFont
+              className={`action ${isTasks ? 'active' : undefined}`}
+              pointer
+              onClick={() => navigate('/tasks')}
+              type="transfer"
+            />
+
+            {/* <SwapOutlined className={isTasks ? 'active' : undefined} onClick={() => navigate('/tasks')} /> */}
           </Tooltip>
           {/* <Tooltip title="定时任务">
             <CalendarOutlined className={isSettingPage ? 'active' : undefined} onClick={() => navigate('/setting')} />
           </Tooltip> */}
-          <Tooltip title={t('logs.title')}>
-            <ProfileOutlined className={isLogs ? 'active' : undefined} onClick={() => navigate('/logs')} />
+          <Tooltip title={t('logs.title')} placement="right">
+            {/* <ProfileOutlined className={isLogs ? 'active' : undefined} onClick={() => navigate('/logs')} /> */}
+
+            <IconFont
+              type="log"
+              className={`action ${isLogs ? 'active' : undefined}`}
+              pointer
+              onClick={() => navigate('/logs')}
+            />
           </Tooltip>
           {/* <Tooltip title="工具">
             <ToolOutlined
@@ -73,8 +64,13 @@ const Sider = (props: SiderProps) => {
               onClick={() => navigate('/setting')}
             />
           </Tooltip> */}
-          <Tooltip title={t('settings.title')}>
-            <SettingOutlined className={isSettingPage ? 'active' : undefined} onClick={() => navigate('/setting')} />
+          <Tooltip title={t('settings.title')} placement="right">
+            <IconFont
+              type="setting"
+              className={`action ${isSettingPage ? 'active' : undefined}`}
+              onClick={() => navigate('/setting')}
+            />
+            {/* <SettingOutlined className={isSettingPage ? 'active' : undefined} onClick={() => navigate('/setting')} /> */}
           </Tooltip>
         </Space>
       </div>
