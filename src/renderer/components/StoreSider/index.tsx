@@ -1,7 +1,8 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { Menu, Input, Space, Tooltip } from 'antd';
-import { groupBy } from 'lodash';
-import { EditOutlined, DeleteOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { groupBy, debounce } from 'lodash';
+import { EditOutlined, DeleteOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import { StoreConnectModal, ConnectionDeleteWrap, ContextMenu, ConnectionEditWrap } from '@/renderer/components';
 import StoreBrandTitle from './StoreBrandTitle';
@@ -9,9 +10,7 @@ import { useConfigStore, useTabsStore, ETabDisplay } from '@/renderer/store';
 import { StoreTypes } from '@/types';
 import { storeRequest, storeRemove } from '@/renderer/utils';
 import './index.css';
-import { useTranslation } from 'react-i18next';
-
-const Search = Input.Search;
+import { filterConnections } from './helper';
 
 export type StoreSiderProps = {
   fold: boolean;
@@ -21,34 +20,13 @@ const StoreSider = (props: StoreSiderProps) => {
   const { connections, removeConnection } = useConfigStore();
   const { activeTab, addTab, removeTab } = useTabsStore();
   const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const [searchKey, setSearchKey] = useState<string>('');
   const { t } = useTranslation();
-
-  useEffect(() => {
-    const connection: any = connections.find((item: any) => item.id === activeTab);
-    if (connection) {
-      const key = connection.brand;
-      setOpenKeys((prev) => {
-        if (prev.includes(key)) return prev;
-        return [...prev, key];
-      });
-    }
-  }, [activeTab, connections]);
-
   const [statuses, setStatuses] = useState<Record<string, 'idle' | 'connecting' | 'success' | 'failed'>>({});
   const retryTimers = useRef<Record<string, any>>({});
-  useEffect(() => {
-    return () => {
-      Object.values(retryTimers.current).forEach((t) => {
-        try {
-          clearTimeout(t);
-        } catch {}
-      });
-      retryTimers.current = {};
-    };
-  }, []);
 
-  const items = useMemo(() => {
-    const groups = groupBy(connections, 'brand');
+  const ConnectionsMemoData = useMemo(() => {
+    const groups = groupBy(filterConnections(connections, searchKey), 'brand');
     return Reflect.ownKeys(groups).map((groupKey: any) => {
       return {
         key: String(groupKey),
@@ -133,7 +111,7 @@ const StoreSider = (props: StoreSiderProps) => {
         }),
       };
     });
-  }, [connections, statuses]);
+  }, [connections, searchKey, statuses]);
 
   const handleClick = (key: string) => {
     const connection: any = connections.find((item: any) => item.id === key);
@@ -153,6 +131,13 @@ const StoreSider = (props: StoreSiderProps) => {
     await removeConnection(data.key);
     removeTab(data.key);
   };
+
+  /**
+   * 搜索链接
+   * */
+  const handleSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchKey(e.target.value);
+  }, 300);
 
   const reconnect = async (child: any, attempt: number = 0) => {
     const id = child.key;
@@ -180,6 +165,28 @@ const StoreSider = (props: StoreSiderProps) => {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      Object.values(retryTimers.current).forEach((t) => {
+        try {
+          clearTimeout(t);
+        } catch {}
+      });
+      retryTimers.current = {};
+    };
+  }, []);
+
+  useEffect(() => {
+    const connection: any = connections.find((item: any) => item.id === activeTab);
+    if (connection) {
+      const key = connection.brand;
+      setOpenKeys((prev) => {
+        if (prev.includes(key)) return prev;
+        return [...prev, key];
+      });
+    }
+  }, [activeTab, connections]);
+
   return (
     <div className="store-sider" style={{ visibility: fold ? 'hidden' : 'visible' }}>
       <div className="store-sider-tip">
@@ -191,7 +198,7 @@ const StoreSider = (props: StoreSiderProps) => {
         </StoreConnectModal>
       </div>
       <div className="store-sider-search">
-        <Search placeholder={t('storeSider.searchPlaceholder')} />
+        <Input prefix={<SearchOutlined />} placeholder={t('storeSider.searchPlaceholder')} allowClear onChange={handleSearch} />
       </div>
 
       <div className="store-sider-content">
@@ -201,7 +208,7 @@ const StoreSider = (props: StoreSiderProps) => {
           onOpenChange={(keys) => setOpenKeys(keys as string[])}
           style={{ width: '100%' }}
           selectedKeys={[activeTab]}
-          items={items as any}
+          items={ConnectionsMemoData as any}
           onClick={({ key }) => handleClick(String(key))}
         />
       </div>

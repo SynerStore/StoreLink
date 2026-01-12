@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FileDropWrap, ViewInput, FolderCreateWrap } from '@/renderer/components';
+import { FileDropWrap, ViewInput, FolderCreateWrap, ButtonGroup } from '@/renderer/components';
 import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
 import { createTask } from '@/renderer/utils/task';
 import { ETaskType } from '@/types';
@@ -153,10 +153,10 @@ const SftpViewer = (props: SftpViewerProps) => {
   return (
     <div className="viewer">
       <div className="viewer-path">
-        <Space size={2}>
+        <ButtonGroup>
           <Button disabled={!canBack} icon={<LeftOutlined />} onClick={handlePathBack} />
           <Button disabled={!canForward} icon={<RightOutlined />} onClick={handlePathForward} />
-        </Space>
+        </ButtonGroup>
         <div className="viewer-path-input">
           <ViewInput
             prefix={connection.config.root}
