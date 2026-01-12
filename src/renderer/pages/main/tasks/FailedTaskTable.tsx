@@ -43,19 +43,7 @@ const FailedTaskTable = () => {
       title: t('tasks.status'),
       dataIndex: 'status',
       render: (status: ETaskStatus) => {
-        const key =
-          status === ETaskStatus.CANCELED
-            ? 'canceled'
-            : status === ETaskStatus.FAILED
-              ? 'failed'
-              : status === ETaskStatus.PENDING
-                ? 'pending'
-                : status === ETaskStatus.RUNNING
-                  ? 'running'
-                  : status === ETaskStatus.PAUSED
-                    ? 'paused'
-                    : 'completed';
-        return <Tag color="red">{t(`tasks.${key}`)}</Tag>;
+        return <Tag color="red">{t(`tasks.${status}`)}</Tag>;
       },
     },
     {

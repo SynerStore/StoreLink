@@ -38,19 +38,7 @@ const DownloadingTaskTable = () => {
       dataIndex: 'status',
       render: (status: ETaskStatus) => {
         const color = status === ETaskStatus.RUNNING ? 'blue' : status === ETaskStatus.PAUSED ? 'orange' : 'default';
-        const key =
-          status === ETaskStatus.PAUSED
-            ? 'paused'
-            : status === ETaskStatus.RUNNING
-              ? 'running'
-              : status === ETaskStatus.PENDING
-                ? 'pending'
-                : status === ETaskStatus.COMPLETED
-                  ? 'completed'
-                  : status === ETaskStatus.FAILED
-                    ? 'failed'
-                    : 'canceled';
-        return <Tag color={color}>{t(`tasks.${key}`)}</Tag>;
+        return <Tag color={color}>{t(`tasks.${status}`)}</Tag>;
       },
     },
     {

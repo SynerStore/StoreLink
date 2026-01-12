@@ -7,15 +7,7 @@ const LOG_DIR = path.join(getUserDataPath(), 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'app.log');
 
 fs.ensureDirSync(LOG_DIR);
-// adapt to electron-log v4/v5
-// @ts-ignore
-if (logger.transports?.file?.resolvePathFn) {
-  // @ts-ignore
-  logger.transports.file.resolvePathFn = () => LOG_FILE;
-} else {
-  // @ts-ignore
-  logger.transports.file.resolvePath = () => LOG_FILE;
-}
+logger.transports.file.resolvePathFn = () => LOG_FILE;
 
 export function logAction(params: { action: string; message?: string; meta?: any; level?: 'info' | 'warn' | 'error' }) {
   const { action, message = '', meta = {}, level = 'info' } = params || {};
