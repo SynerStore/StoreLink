@@ -1,4 +1,5 @@
 import { sucessResponse, errorResponse, isObjectFolder } from '@/main/utils';
+import SynologyApi from '@fett/synology-api';
 import { IStorageHandler } from '../store';
 import {
   list,
@@ -37,7 +38,6 @@ class SynologyStore implements IStorageHandler {
     const protocol = useHttps ? 'https' : 'http';
     const base = server ? server : `${protocol}://${address}${port ? `:${port}` : ''}`;
     try {
-      const SynologyApi = require('@fett/synology-api').default || require('@fett/synology-api');
       this.dsm = new SynologyApi({
         server: base,
         username,

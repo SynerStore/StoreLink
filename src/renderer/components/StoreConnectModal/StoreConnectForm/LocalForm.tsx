@@ -62,7 +62,7 @@ const LocalForm = forwardRef((props: Props, ref) => {
       </FormItem>
       <FormItem label={t('connection.localRoot')} name="root">
         <Input
-          addonAfter={
+          suffix={
             <FolderOutlined
               onClick={handleSelectLocalDirPath}
               style={{
