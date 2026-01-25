@@ -9,12 +9,19 @@ export type StoreViewerProps = {
   content: React.ReactNode;
   footer?: React.ReactNode;
   extra?: React.ReactNode;
+  onContentClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 const StoreViewerWrap = (props: StoreViewerProps) => {
-  const { headerViewPath, headerViewActions, content, footer, extra } = props;
+  const { headerViewPath, headerViewActions, content, footer, extra, onContentClick } = props;
 
   const withHeader = useMemo(() => !!headerViewPath || !!headerViewActions, [headerViewPath, headerViewActions]);
+
+const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  e.stopPropagation();
+  onContentClick?.(e);
+};
+
 
   return (
     <div className="viewer-wrap">
@@ -29,6 +36,7 @@ const StoreViewerWrap = (props: StoreViewerProps) => {
           'width-header': withHeader,
           'widthout-header': !withHeader,
         })}
+        onClick={handleContentClick}
       >
         {content}
       </div>

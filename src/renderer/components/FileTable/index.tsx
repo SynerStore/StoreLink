@@ -61,6 +61,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
 
   // 处理行点击
   const onRowClick = (record: T, index: number, event: React.MouseEvent) => {
+    event.stopPropagation();
     const key = getRowKey(record, index);
     let newSelectedKeys = [...selectedKeys];
 

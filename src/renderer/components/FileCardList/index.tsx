@@ -274,6 +274,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
                   data-key={item.key as React.Key}
                   data-selected={selectedKeys.includes(item.key as React.Key) ? 'true' : 'false'}
                   onClick={(e) => {
+                    e.stopPropagation();
                     clickDebounce(() => {
                       handleItemClick(item, e);
                     });

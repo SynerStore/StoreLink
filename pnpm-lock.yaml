@@ -77,6 +77,9 @@ importers:
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
+      hotkeys-js:
+        specifier: ^4.0.0
+        version: 4.0.0
       i18next:
         specifier: ^25.3.2
         version: 25.7.3(typescript@5.9.3)
@@ -2903,6 +2906,9 @@ packages:
 
   hot-patcher@2.0.1:
     resolution: {integrity: sha512-ECg1JFG0YzehicQaogenlcs2qg6WsXQsxtnbr1i696u5tLUjtJdQAh0u2g0Q5YV45f263Ta1GnUJsc8WIfJf4Q==}
+
+  hotkeys-js@4.0.0:
+    resolution: {integrity: sha512-gIoeqMWYqPIItc4HaseVbtTRpEpBbeufZMUcoWtN62JZdDq3KadS1ijN6wpaDjTzRK7PjT3QOPUcx+yNT0rrZQ==}
 
   hpack.js@2.1.6:
     resolution: {integrity: sha512-zJxVehUdMGIKsRaNt7apO2Gqp0BdqW5yaiGHXXmbpvxgBYVZnAql+BJb4RO5ad2MgpbZKn5G6nMnegrH1FcNYQ==}
@@ -8712,6 +8718,8 @@ snapshots:
       lru-cache: 6.0.0
 
   hot-patcher@2.0.1: {}
+
+  hotkeys-js@4.0.0: {}
 
   hpack.js@2.1.6:
     dependencies:

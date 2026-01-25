@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
+import hotkeys from 'hotkeys-js';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
@@ -166,6 +167,18 @@ const WebDevViewer = (props: WebDevViewerProps) => {
     setPathHistory(instance);
   }, []);
 
+  useEffect(() => {
+    // Cmd + A / Ctrl + A Select All
+    hotkeys('command+a,ctrl+a', (e: KeyboardEvent) => {
+      e.preventDefault();
+      setSelectedKeys(dataList.map((item: any) => item.key));
+    });
+
+    return () => {
+      hotkeys.unbind('command+a,ctrl+a');
+    };
+  }, [dataList]);
+
   const menuItems = [
     { key: 'copy', label: t('contextMenu.copyTo') },
     { key: 'move', label: t('contextMenu.moveTo') },
@@ -174,6 +187,7 @@ const WebDevViewer = (props: WebDevViewerProps) => {
 
   return (
     <StoreViewerWrap
+      onContentClick={() => setSelectedKeys([])}
       headerViewPath={
         <>
           <ButtonGroup>
