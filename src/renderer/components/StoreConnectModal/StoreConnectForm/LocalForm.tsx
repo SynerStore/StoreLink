@@ -58,7 +58,7 @@ const LocalForm = forwardRef((props: Props, ref) => {
   return (
     <Form form={form} autoComplete="off">
       <FormItem label={t('connection.name')} name="name">
-        <Input />
+        <Input placeholder={t('connection.name')} />
       </FormItem>
       <FormItem label={t('connection.localRoot')} name="root">
         <Input

@@ -87,17 +87,22 @@ const OssForm = forwardRef((props: Props, ref) => {
   return (
     <Form form={form} autoComplete="off">
       <FormItem label={t('connection.name')} name="name">
-        <Input />
+        <Input placeholder={t('connection.name')} />
       </FormItem>
       <FormItem label="Access Key" name="accessKeyId" rules={[{ required: true }]}>
-        <Input />
+        <Input placeholder="Access Key" />
       </FormItem>
       <FormItem
         label="Secret Key"
         name="secretAccessKey"
         rules={[{ required: !(mode === 'edit' && !!initial?.config?.secretAccessKey) }]}
       >
-        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.secretAccessKey?.length} maskChar="*" />
+        <SecurePasswordInput
+          mode={mode}
+          maskedLength={initial?.config?.secretAccessKey?.length}
+          maskChar="*"
+          placeholder="Secret Key"
+        />
       </FormItem>
       <FormItem
         label="Bucket Name"
@@ -105,7 +110,7 @@ const OssForm = forwardRef((props: Props, ref) => {
         extra={t('connection.bucketFillHint')}
         tooltip={t('connection.bucketMultipleHint')}
       >
-        <Select allowClear mode="tags">
+        <Select allowClear mode="tags" placeholder="Bucket Name">
           {buckets.map((bucket: any) => (
             <Option key={bucket.name} value={bucket.name}>
               {bucket.name}

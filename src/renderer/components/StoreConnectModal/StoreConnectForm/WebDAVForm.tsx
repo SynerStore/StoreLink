@@ -69,18 +69,23 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
     return addConnection(connection);
   };
   return (
-    <Form form={form} autoComplete="off">
+    <Form form={form} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       <FormItem label={t('connection.name')} name="name">
-        <Input />
+        <Input placeholder={t('connection.name')} />
       </FormItem>
       <FormItem label={t('connection.address')} name="address">
-        <Input />
+        <Input placeholder={t('connection.address')} />
       </FormItem>
       <FormItem label={t('connection.username')} name="username">
-        <Input />
+        <Input placeholder={t('connection.username')} />
       </FormItem>
       <FormItem label={t('connection.password')} name="password">
-        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.password?.length} maskChar="*" />
+        <SecurePasswordInput
+          mode={mode}
+          maskedLength={initial?.config?.password?.length}
+          maskChar="*"
+          placeholder={t('connection.password')}
+        />
       </FormItem>
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>

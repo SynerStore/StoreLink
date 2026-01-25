@@ -75,27 +75,43 @@ const SFtpForm = forwardRef((props: Props, ref) => {
   };
 
   return (
-    <Form form={form} autoComplete="off">
+    <Form form={form} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       <FormItem label={t('connection.name')} name="name">
-        <Input />
+        <Input placeholder={t('connection.name')} />
       </FormItem>
       <FormItem label={t('connection.host')} name="host" rules={[{ required: true }]}>
-        <Input />
+        <Input placeholder={t('connection.host')} />
       </FormItem>
       <FormItem label={t('connection.port')} name="port" rules={[{ required: true }]} initialValue="22">
-        <Input />
+        <Input placeholder={t('connection.port')} />
       </FormItem>
       <FormItem label={t('connection.username')} name="username" rules={[{ required: true }]}>
-        <Input />
+        <Input placeholder={t('connection.username')} />
       </FormItem>
       <FormItem label={t('connection.password')} name="password">
-        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.password?.length} maskChar="*" />
+        <SecurePasswordInput
+          mode={mode}
+          maskedLength={initial?.config?.password?.length}
+          maskChar="*"
+          placeholder={t('connection.password')}
+        />
       </FormItem>
       <FormItem label={t('connection.privateKey')} name="privateKey">
-        <SecurePasswordInput mode={mode} multiline maskedLength={initial?.config?.privateKey?.length} maskChar="*" />
+        <SecurePasswordInput
+          mode={mode}
+          multiline
+          maskedLength={initial?.config?.privateKey?.length}
+          maskChar="*"
+          placeholder={t('connection.privateKey')}
+        />
       </FormItem>
       <FormItem label={t('connection.passphrase')} name="passphrase">
-        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.passphrase?.length} maskChar="*" />
+        <SecurePasswordInput
+          mode={mode}
+          maskedLength={initial?.config?.passphrase?.length}
+          maskChar="*"
+          placeholder={t('connection.passphrase')}
+        />
       </FormItem>
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>

@@ -77,25 +77,25 @@ const SynologyForm = forwardRef((props: Props, ref) => {
   };
 
   return (
-    <Form form={form} autoComplete="off">
-      <FormItem label={t('connection.name')} name="name">
-        <Input />
+    <Form form={form} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
+      <FormItem label={t('connection.name')} name="name" rules={[{ required: true }]}>
+        <Input placeholder={t('connection.name')} />
       </FormItem>
       <FormItem label={t('connection.address')} name="address" rules={[{ required: true }]}>
         <Input placeholder={t('connection.addressPlaceholder')} />
       </FormItem>
       <FormItem label={t('connection.username')} name="username" rules={[{ required: true }]}>
-        <Input />
+        <Input placeholder={t('connection.username')} />
       </FormItem>
       <FormItem label={t('connection.password')} name="password" rules={[{ required: true }]}>
-        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.password?.length} maskChar="*" />
+        <SecurePasswordInput
+          mode={mode}
+          maskedLength={initial?.config?.password?.length}
+          maskChar="*"
+          placeholder={t('connection.password')}
+        />
       </FormItem>
-      <FormItem label={t('connection.enableHttps')} name="useHttps" valuePropName="checked" initialValue={true}>
-        <Switch />
-      </FormItem>
-      <FormItem label={t('connection.port')} name="port" initialValue={5001}>
-        <Input />
-      </FormItem>
+
       <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>
           {t('connection.testConnection')}

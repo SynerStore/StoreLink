@@ -91,23 +91,28 @@ const S3Form = forwardRef((props: Props, ref) => {
   return (
     <Form form={form} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       <FormItem label={t('connection.name')} name="name">
-        <Input />
+        <Input placeholder={t('connection.name')} />
       </FormItem>
       <FormItem label="Endpoint" name="endpoint" tooltip="可选，默认为 AWS S3">
         <Input placeholder="https://s3.amazonaws.com" />
       </FormItem>
       <FormItem label="Access Key" name="accessKeyId" rules={[{ required: true }]}>
-        <Input />
+        <Input placeholder="Access Key" />
       </FormItem>
       <FormItem
         label="Secret Key"
         name="secretAccessKey"
         rules={[{ required: !(mode === 'edit' && !!initial?.config?.secretAccessKey) }]}
       >
-        <SecurePasswordInput mode={mode} maskedLength={initial?.config?.secretAccessKey?.length} maskChar="*" />
+        <SecurePasswordInput
+          mode={mode}
+          maskedLength={initial?.config?.secretAccessKey?.length}
+          maskChar="*"
+          placeholder="Secret Key"
+        />
       </FormItem>
       <FormItem label="Bucket Name" name="bucketName" extra={t('connection.bucketFillHint')}>
-        <Select allowClear mode="tags">
+        <Select allowClear mode="tags" placeholder="Bucket Name">
           {buckets.map((bucket: any) => (
             <Option key={bucket.name} value={bucket.name}>
               {bucket.name}
