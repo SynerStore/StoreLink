@@ -19,6 +19,7 @@ type DataType = {
     lang: EnumLang;
     theme: EnumTheme;
     downloadPath: string;
+    siderWidth: number;
   };
   initializeData: () => Promise<void>;
   update: (params: { [key: string]: any }) => Promise<void>;
@@ -32,6 +33,7 @@ export const useSettingStore = create<DataType>()(
         lang: EnumLang.ZH_CN, // zh-CN | en-US
         theme: EnumTheme.LIGHT, // light | dark
         downloadPath: '',
+        siderWidth: 240,
       },
 
       initializeData: async () => {

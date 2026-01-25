@@ -1,7 +1,10 @@
 .store-sider {
-  width: var(--store-sider-width);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   overflow-x: hidden;
-  border-right: 1px solid var(--border-color);
+  /* border-right: 1px solid var(--border-color); */
   user-select: none;
   background: var(--sidebar-bg-dark, var(--sidebar-bg-light));
   backdrop-filter: var(--sidebar-backdrop-filter);
@@ -19,6 +22,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-shrink: 0;
 
     .store-sider-tip-add {
       font-size: 18px;
@@ -40,10 +44,12 @@
     padding-left: 4px;
     padding-right: 4px;
     margin-bottom: 6px;
+    flex-shrink: 0;
   }
 
   .store-sider-content {
     overflow-y: auto;
-    height: calc(100vh - 112px);
+    flex: 1;
+    height: 0;
   }
 }
