@@ -5,6 +5,7 @@ import { EWindowSize, TStoreObject } from '@/types';
 import { FileIcon, FileContextMenu, FileTable } from '@/renderer/components';
 import { calculateSize } from '@/renderer/utils';
 import { useTranslation } from 'react-i18next';
+import styles from './index.module.css';
 
 export type TableContentProps = {
   connectionId: string;
@@ -69,14 +70,14 @@ const TableContent = (props: TableContentProps) => {
             onMoveTo={onMoveTo}
             onCopyTo={onCopyTo}
           >
-            <div className="file-item">
+            <div className={styles['file-item']}>
               {record.isDirectory ? (
                 <Fragment>
-                  <FileIcon type="folder" /> <span>{text}</span>
+                  <FileIcon type="folder" /> <span className={styles['file-name']}>{text}</span>
                 </Fragment>
               ) : (
                 <Fragment>
-                  <FileIcon mime={record.mime as string} /> <span>{text}</span>
+                  <FileIcon mime={record.mime as string} /> <span className={styles['file-name']}>{text}</span>
                 </Fragment>
               )}
             </div>

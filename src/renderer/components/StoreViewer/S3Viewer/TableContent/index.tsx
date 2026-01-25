@@ -2,10 +2,11 @@ import { Fragment, useLayoutEffect, useState } from 'react';
 import { FileTable } from '@/renderer/components';
 import dayjs from 'dayjs';
 
-import { EWindowSize, EOssStorageClass, TStoreObject } from '@/types';
+import { EWindowSize, TStoreObject } from '@/types';
 import { FileIcon, FileContextMenu } from '@/renderer/components';
 import { calculateSize } from '@/renderer/utils';
 import { useTranslation } from 'react-i18next';
+import styles from './index.module.css';
 
 export type TableContentProps = {
   connectionId: string;
@@ -51,17 +52,17 @@ const TableContent = (props: TableContentProps) => {
           >
             <div
               draggable="true"
-              className="file-item"
+              className={styles['file-item']}
               data-info={dataInfo}
               onDoubleClick={() => handleFileClick(record)}
             >
               {record.isDirectory ? (
                 <Fragment>
-                  <FileIcon type="folder" /> <span>{text}</span>
+                  <FileIcon type="folder" /> <span className={styles['file-name']}>{text}</span>
                 </Fragment>
               ) : (
                 <Fragment>
-                  <FileIcon mime={record.mime as string} /> <span>{text}</span>
+                  <FileIcon mime={record.mime as string} /> <span className={styles['file-name']}>{text}</span>
                 </Fragment>
               )}
             </div>
@@ -83,7 +84,7 @@ const TableContent = (props: TableContentProps) => {
       dataIndex: 'storageClass',
       key: 'storageClass',
       width: 180,
-      render: (val: undefined | EOssStorageClass) => {
+      render: (val: undefined | any) => {
         return val || '--';
       },
     },

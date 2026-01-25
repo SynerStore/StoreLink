@@ -1,0 +1,13 @@
+.file-item {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+
+  .file-name {
+    flex: 1;
+    /* 单行溢出隐藏 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
