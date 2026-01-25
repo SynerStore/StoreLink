@@ -41,6 +41,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   const [lassoing, setLassoing] = useState(false);
   const [lassoStart, setLassoStart] = useState<{ x: number; y: number } | null>(null);
   const [lassoRect, setLassoRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const [lassoSelectedKeys, setLassoSelectedKeys] = useState<React.Key[]>([]);
 
   const triggerSelectionChange = useCallback(
     (newKeys: React.Key[]) => {
@@ -150,7 +151,8 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     }
   };
 
-  const handleDragStart = (_e: React.DragEvent<HTMLDivElement>, item: any) => {
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: any) => {
+    e.stopPropagation();
     const key = item.key as React.Key;
     let currentSelectedKeys = selectedKeys;
     if (!selectedKeys.includes(key)) {
@@ -177,6 +179,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   };
 
   const startLasso = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     const target = e.target as HTMLElement;
     if (target.closest(`.${styles.item}`)) return;
     const bounds = wrapperRef.current?.getBoundingClientRect();
@@ -191,6 +194,9 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     if (!lassoing) return;
     const bounds = wrapperRef.current?.getBoundingClientRect();
     if (!bounds) return;
+
+    let currentSelected: React.Key[] = [];
+
     const handleMove = (e: MouseEvent) => {
       if (!lassoStart) return;
       const cur = { x: e.clientX - bounds.left, y: e.clientY - bounds.top };
@@ -209,12 +215,15 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
           selected.push(keyAttr);
         }
       });
-      triggerSelectionChange(selected);
+      currentSelected = selected;
+      setLassoSelectedKeys(selected);
     };
     const handleUp = () => {
       setLassoing(false);
       setLassoStart(null);
       setLassoRect(null);
+      triggerSelectionChange(currentSelected);
+      setLassoSelectedKeys([]);
     };
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleUp, { once: true });
@@ -265,21 +274,22 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
                 <div
                   draggable="true"
                   className={`${styles.item} ${itemClassName} ${
-                    selectedKeys.includes(item.key as React.Key) ? styles.selected : ''
+                    (lassoing ? lassoSelectedKeys : selectedKeys).includes(item.key as React.Key) ? styles.selected : ''
                   }`}
                   data-info={JSON.stringify({
                     connectionId,
                     key: item.key,
                   })}
                   data-key={item.key as React.Key}
-                  data-selected={selectedKeys.includes(item.key as React.Key) ? 'true' : 'false'}
+                  data-selected={(lassoing ? lassoSelectedKeys : selectedKeys).includes(item.key as React.Key) ? 'true' : 'false'}
                   onClick={(e) => {
                     e.stopPropagation();
                     clickDebounce(() => {
                       handleItemClick(item, e);
                     });
                   }}
-                  onDoubleClick={() => {
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
                     clickDebounce.cancel();
                     handleFileClick(item);
                   }}

@@ -94,7 +94,10 @@ const LocalViewer = (props: LocalViewerProps) => {
     openViewer(connectionId, data);
   };
 
-  const connectionItem = useMemo(() => connections.find((c: any) => c.id === connectionId), [connections, connectionId]);
+  const connectionItem = useMemo(
+    () => connections.find((c: any) => c.id === connectionId),
+    [connections, connectionId],
+  );
 
   const handleToggleCollected = async () => {
     await events.updateConnectionCollected({ id: connectionId, isCollected: !connectionItem?.isCollected });
@@ -204,6 +207,13 @@ const LocalViewer = (props: LocalViewerProps) => {
     };
   }, [dataList]);
 
+  const handleContentClick = () => {
+    // list 下点击空白撤销选中
+    if (display === ETabDisplay.LIST) {
+      setSelectedKeys([]);
+    }
+  };
+
   const menuItems = [
     { key: 'copy', label: t('contextMenu.copyTo') },
     { key: 'move', label: t('contextMenu.moveTo') },
@@ -212,7 +222,7 @@ const LocalViewer = (props: LocalViewerProps) => {
 
   return (
     <StoreViewerWrap
-      onContentClick={() => setSelectedKeys([])}
+      onContentClick={handleContentClick}
       headerViewPath={
         <>
           <ButtonGroup>
