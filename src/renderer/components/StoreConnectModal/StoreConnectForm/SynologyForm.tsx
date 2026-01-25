@@ -81,28 +81,28 @@ const SynologyForm = forwardRef((props: Props, ref) => {
       <FormItem
         label={t('connection.name')}
         name="name"
-        rules={[{  message: t('common.fieldRequired', { field: t('connection.name') }) }]}
+        rules={[{  required: true, message: t('common.fieldRequired', { field: t('connection.name') }) }]}
       >
         <Input placeholder={t('connection.name')} />
       </FormItem>
       <FormItem
         label={t('connection.address')}
         name="address"
-        rules={[{  message: t('common.fieldRequired', { field: t('connection.address') }) }]}
+        rules={[{  required: true, message: t('common.fieldRequired', { field: t('connection.address') }) }]}
       >
         <Input placeholder={t('connection.synologyServer')} />
       </FormItem>
       <FormItem
         label={t('connection.username')}
         name="username"
-        rules={[{  message: t('common.fieldRequired', { field: t('connection.username') }) }]}
+        rules={[{  required: true, message: t('common.fieldRequired', { field: t('connection.username') }) }]}
       >
         <Input placeholder={t('connection.username')} />
       </FormItem>
       <FormItem
         label={t('connection.password')}
         name="password"
-        rules={[{  message: t('common.fieldRequired', { field: t('connection.password') }) }]}
+        rules={[{  required: true, message: t('common.fieldRequired', { field: t('connection.password') }) }]}
       >
         <SecurePasswordInput
           mode={mode}

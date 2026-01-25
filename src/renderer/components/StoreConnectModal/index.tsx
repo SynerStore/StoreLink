@@ -63,7 +63,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
         {step === 0 ? (
           <StoreSelection activeBrand={activeBrand} onActive={setActiveBrand} />
         ) : (
-          <StoreConnectForm brand={activeBrand} ref={formRef} />
+          <StoreConnectForm key={activeBrand} brand={activeBrand} ref={formRef} />
         )}
       </Modal>
       <span onClick={() => setIsModalOpen(true)}>{children}</span>

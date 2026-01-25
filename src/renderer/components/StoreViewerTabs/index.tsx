@@ -3,7 +3,6 @@ import { Tabs } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-// import { IconSplitColumn } from '@/renderer/components/Icons';
 import { useTabsStore } from '@/renderer/store';
 import { EChannels, ETaskStatus } from '@/types';
 import StoreViewer from '../StoreViewer';
