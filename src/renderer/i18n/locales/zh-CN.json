@@ -167,6 +167,7 @@
     "type": "存储类型",
     "address": "服务器地址",
     "addressPlaceholder": "例如：192.168.1.10 或 nas.example.com",
+    "synologyServer": "Synology 服务器地址或者 QuickConnect ID",
     "host": "主机地址",
     "port": "端口",
     "username": "用户名",

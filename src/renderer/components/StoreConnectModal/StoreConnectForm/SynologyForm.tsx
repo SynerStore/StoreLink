@@ -1,5 +1,5 @@
 import { useImperativeHandle, forwardRef, useEffect } from 'react';
-import { Form, Input, Button, Switch } from 'antd';
+import { Form, Input, Button } from 'antd';
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
 import { StoreTypes, StoreBrands } from '@/types';
@@ -81,8 +81,8 @@ const SynologyForm = forwardRef((props: Props, ref) => {
       <FormItem label={t('connection.name')} name="name" rules={[{ required: true }]}>
         <Input placeholder={t('connection.name')} />
       </FormItem>
-      <FormItem label={t('connection.address')} name="address" rules={[{ required: true }]}>
-        <Input placeholder={t('connection.addressPlaceholder')} />
+      <FormItem label={t('connection.server')} name="server" rules={[{ required: true }]}>
+        <Input placeholder={t('connection.synologyServer')} />
       </FormItem>
       <FormItem label={t('connection.username')} name="username" rules={[{ required: true }]}>
         <Input placeholder={t('connection.username')} />

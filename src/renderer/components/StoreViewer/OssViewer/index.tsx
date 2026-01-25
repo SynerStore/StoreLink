@@ -33,6 +33,7 @@ const OssViewer = (props: OssViewerProps) => {
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
   const [curPrefix, setCurPrefix] = useState<string>('');
+  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
 
@@ -66,8 +67,13 @@ const OssViewer = (props: OssViewerProps) => {
     setLoading(false);
     if (res.success) {
       setDataList(res.data.objects);
+      setSelectedKeys([]);
       console.log(res.data);
     }
+  };
+
+  const handleSelectionChange = (keys: React.Key[]) => {
+    setSelectedKeys(keys);
   };
 
   const handlePrefixChange = (value: string) => {
@@ -250,6 +256,8 @@ const OssViewer = (props: OssViewerProps) => {
               onDownload={handleDownload}
               onDelete={handleDelete}
               onRename={handleRename}
+              onSelectionChange={handleSelectionChange}
+              selectedKeys={selectedKeys}
             />
           ) : null}
           {display === ETabDisplay.CARD ? (
@@ -262,13 +270,15 @@ const OssViewer = (props: OssViewerProps) => {
               onDownload={handleDownload}
               onDelete={handleDelete}
               onRename={handleRename}
+              onSelectionChange={handleSelectionChange}
+              selectedKeys={selectedKeys}
             />
           ) : null}
         </FileDropWrap>
       }
       footer={
         <span>
-          {t('storeViewer.footer.selectedCount', { count: 0 })},
+          {t('storeViewer.footer.selectedCount', { count: selectedKeys.length })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
         </span>
       }

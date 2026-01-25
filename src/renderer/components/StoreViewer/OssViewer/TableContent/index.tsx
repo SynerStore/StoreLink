@@ -17,11 +17,24 @@ export type TableContentProps = {
   onDownload: (data: any) => Promise<void>;
   onDelete: (data: any) => Promise<void>;
   onRename: (data: any, newName: string) => Promise<void>;
+  onSelectionChange?: (selectedKeys: React.Key[]) => void;
+  selectedKeys?: React.Key[];
 };
 
 const TableContent = (props: TableContentProps) => {
   const [tableScrollHight, seTableScrollHight] = useState(EWindowSize.height - 251);
-  const { data, onPrefixChange, onFileView, onDownload, loading, onRename, onDelete, connectionId } = props;
+  const {
+    data,
+    onPrefixChange,
+    onFileView,
+    onDownload,
+    loading,
+    onRename,
+    onDelete,
+    connectionId,
+    onSelectionChange,
+    selectedKeys,
+  } = props;
   const { t } = useTranslation();
 
   const handleFileClick = (record: TStoreObject) => {
@@ -33,6 +46,7 @@ const TableContent = (props: TableContentProps) => {
   };
 
   const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: TStoreObject[]) => {
+    onSelectionChange?.(selectedRowKeys);
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
   };
 
@@ -115,7 +129,12 @@ const TableContent = (props: TableContentProps) => {
         size="small"
         bordered={false}
         loading={loading}
-        rowSelection={{ type: 'checkbox', columnWidth: 40, onChange: handleSelectChange }}
+        rowSelection={{
+          type: 'checkbox',
+          columnWidth: 40,
+          onChange: handleSelectChange,
+          selectedRowKeys: selectedKeys,
+        }}
         scroll={{ y: tableScrollHight }}
         dataSource={data}
         pagination={false}

@@ -167,6 +167,7 @@
     "type": "Storage Type",
     "address": "Server Address",
     "addressPlaceholder": "e.g., 192.168.1.10 or nas.example.com",
+    "synologyServer": "Synology Server Address or QuickConnect ID",
     "host": "Host",
     "port": "Port",
     "username": "Username",
