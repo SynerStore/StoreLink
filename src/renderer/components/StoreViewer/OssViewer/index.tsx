@@ -210,11 +210,7 @@ const OssViewer = (props: OssViewerProps) => {
           <ViewInput
             prefix={bucketName}
             addAfter={
-              <span
-                onClick={async () => {
-                  await events.updateConnectionCollected({ id: connectionId, isCollected: !connection?.isCollected });
-                }}
-              >
+              <span onClick={handleToggleCollected}>
                 {connection?.isCollected ? (
                   <StarFilled style={{ fontSize: 'large', color: 'var(--primary-color)' }} />
                 ) : (

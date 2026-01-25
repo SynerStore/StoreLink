@@ -32,7 +32,7 @@ export type SftpViewerProps = {
 const SftpViewer = (props: SftpViewerProps) => {
   const { connectionId, connection, tabData } = props;
   const { updateTab } = useTabsStore();
-  const { initializeData } = useConfigStore();
+  const { connections, initializeData } = useConfigStore();
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
   const [curPrefix, setCurPrefix] = useState<string>('');
@@ -87,6 +87,13 @@ const SftpViewer = (props: SftpViewerProps) => {
   const handleFileView = (data: any) => {
     console.log('查看文件：', data.name);
     openViewer(connectionId, data);
+  };
+
+  const connectionItem = useMemo(() => connections.find((c: any) => c.id === connectionId), [connections, connectionId]);
+
+  const handleToggleCollected = async () => {
+    await events.updateConnectionCollected({ id: connectionId, isCollected: !connectionItem?.isCollected });
+    await initializeData();
   };
 
   const handleDownload = async (record: any) => {
@@ -180,13 +187,8 @@ const SftpViewer = (props: SftpViewerProps) => {
           <ViewInput
             prefix={connection.config.root}
             addAfter={
-              <span
-                onClick={async () => {
-                  await events.updateConnectionCollected({ id: connectionId, isCollected: !connection?.isCollected });
-                  await initializeData();
-                }}
-              >
-                {connection?.isCollected ? (
+              <span onClick={handleToggleCollected}>
+                {connectionItem?.isCollected ? (
                   <StarFilled style={{ fontSize: 'large', color: 'var(--primary-color)' }} />
                 ) : (
                   <StarOutlined style={{ fontSize: 'large' }} />

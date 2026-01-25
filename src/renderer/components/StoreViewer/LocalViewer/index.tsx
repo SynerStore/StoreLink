@@ -23,7 +23,7 @@ import {
 } from '@/renderer/components';
 import { PathHistory, storeRequest, openViewer, events } from '@/renderer/utils';
 import { useLoading } from '@/renderer/hooks';
-import { useTabsStore, Tab, ETabDisplay } from '@/renderer/store';
+import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 import { TStoreObject } from '@/types';
 import { useTranslation } from 'react-i18next';
 
@@ -37,6 +37,7 @@ export type LocalViewerProps = {
 const LocalViewer = (props: LocalViewerProps) => {
   const { connectionId, tabData, connection } = props;
   const { updateTab } = useTabsStore();
+  const { connections, initializeData } = useConfigStore();
   const [dataList, setDataList] = useState([]);
   const { loading, setLoading } = useLoading(false);
   const [curPrefix, setCurPrefix] = useState<string>('');
@@ -91,6 +92,13 @@ const LocalViewer = (props: LocalViewerProps) => {
 
   const handleFileView = (data: any) => {
     openViewer(connectionId, data);
+  };
+
+  const connectionItem = useMemo(() => connections.find((c: any) => c.id === connectionId), [connections, connectionId]);
+
+  const handleToggleCollected = async () => {
+    await events.updateConnectionCollected({ id: connectionId, isCollected: !connectionItem?.isCollected });
+    await initializeData();
   };
 
   const handlePut = async (paths: string[]) => {
@@ -215,12 +223,8 @@ const LocalViewer = (props: LocalViewerProps) => {
           <ViewInput
             prefix={connection.config.root}
             addAfter={
-              <span
-                onClick={async () => {
-                  await events.updateConnectionCollected({ id: connectionId, isCollected: !connection?.isCollected });
-                }}
-              >
-                {connection?.isCollected ? (
+              <span onClick={handleToggleCollected}>
+                {connectionItem?.isCollected ? (
                   <StarFilled style={{ fontSize: 'large', color: 'var(--primary-color)' }} />
                 ) : (
                   <StarOutlined style={{ fontSize: 'large' }} />

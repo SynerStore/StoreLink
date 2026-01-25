@@ -92,9 +92,9 @@ const S3Viewer = (props: S3ViwerProps) => {
     });
   };
   const connection = useMemo(() => connections.find((c: any) => c.id === connectionId), [connections, connectionId]);
-  const isCollected = connection?.isCollected;
+
   const handleToggleCollected = async () => {
-    await events.updateConnectionCollected({ id: connectionId, isCollected: !isCollected });
+    await events.updateConnectionCollected({ id: connectionId, isCollected: !connection?.isCollected });
     await initializeData();
   };
 
@@ -212,7 +212,7 @@ const S3Viewer = (props: S3ViwerProps) => {
             prefix={bucketName}
             addAfter={
               <span onClick={handleToggleCollected}>
-                {isCollected ? (
+                {connection?.isCollected ? (
                   <StarFilled style={{ fontSize: 'large', color: 'var(--primary-color)' }} />
                 ) : (
                   <StarOutlined style={{ fontSize: 'large' }} />
