@@ -75,17 +75,17 @@ const SFtpForm = forwardRef((props: Props, ref) => {
   };
 
   return (
-    <Form form={form} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
+    <Form form={form} validateTrigger="onBlur" autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       <FormItem label={t('connection.name')} name="name">
         <Input placeholder={t('connection.name')} />
       </FormItem>
-      <FormItem label={t('connection.host')} name="host" rules={[{ required: true }]}>
+      <FormItem label={t('connection.host')} name="host" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.host') }) }]}>
         <Input placeholder={t('connection.host')} />
       </FormItem>
-      <FormItem label={t('connection.port')} name="port" rules={[{ required: true }]} initialValue="22">
+      <FormItem label={t('connection.port')} name="port" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.port') }) }]} initialValue="22">
         <Input placeholder={t('connection.port')} />
       </FormItem>
-      <FormItem label={t('connection.username')} name="username" rules={[{ required: true }]}>
+      <FormItem label={t('connection.username')} name="username" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.username') }) }]}>
         <Input placeholder={t('connection.username')} />
       </FormItem>
       <FormItem label={t('connection.password')} name="password">

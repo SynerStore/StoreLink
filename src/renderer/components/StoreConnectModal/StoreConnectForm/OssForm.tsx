@@ -85,17 +85,17 @@ const OssForm = forwardRef((props: Props, ref) => {
   };
 
   return (
-    <Form form={form} autoComplete="off">
+    <Form form={form} validateTrigger="onBlur" autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       <FormItem label={t('connection.name')} name="name">
         <Input placeholder={t('connection.name')} />
       </FormItem>
-      <FormItem label="Access Key" name="accessKeyId" rules={[{ required: true }]}>
+      <FormItem label="Access Key" name="accessKeyId" rules={[{ required: true, message: t('common.fieldRequired', { field: 'Access Key' }) }]}>
         <Input placeholder="Access Key" />
       </FormItem>
       <FormItem
         label="Secret Key"
         name="secretAccessKey"
-        rules={[{ required: !(mode === 'edit' && !!initial?.config?.secretAccessKey) }]}
+        rules={[{ required: !(mode === 'edit' && !!initial?.config?.secretAccessKey), message: t('common.fieldRequired', { field: 'Secret Key' }) }]}
       >
         <SecurePasswordInput
           mode={mode}

@@ -75,17 +75,17 @@ const SynologyForm = forwardRef((props: Props, ref) => {
   };
 
   return (
-    <Form form={form} initialValues={{}} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
-      <FormItem label={t('connection.name')} name="name" rules={[{ required: true }]}>
+    <Form form={form} initialValues={{}} validateTrigger="onBlur" autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
+      <FormItem label={t('connection.name')} name="name" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.name') }) }]}>
         <Input placeholder={t('connection.name')} />
       </FormItem>
-      <FormItem label={t('connection.address')} name="server" rules={[{ required: true }]}>
+      <FormItem label={t('connection.address')} name="server" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.address') }) }]}>
         <Input placeholder={t('connection.synologyServer')} />
       </FormItem>
-      <FormItem label={t('connection.username')} name="username" rules={[{ required: true }]}>
+      <FormItem label={t('connection.username')} name="username" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.username') }) }]}>
         <Input placeholder={t('connection.username')} />
       </FormItem>
-      <FormItem label={t('connection.password')} name="password" rules={[{ required: true }]}>
+      <FormItem label={t('connection.password')} name="password" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.password') }) }]}>
         <SecurePasswordInput
           mode={mode}
           maskedLength={initial?.config?.password?.length}

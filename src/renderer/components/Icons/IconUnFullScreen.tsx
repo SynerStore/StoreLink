@@ -1,8 +1,11 @@
+import { forwardRef } from 'react';
 import { IconProps } from './types';
-export const IconUnFullScreen = (props: IconProps) => {
+
+export const IconUnFullScreen = forwardRef<HTMLSpanElement, IconProps>((props, ref) => {
   const { className = '', style = {}, size = 18, onClick = () => {} } = props;
   return (
     <span
+      ref={ref}
       className={`anticon ${className}`}
       onClick={onClick}
       style={{ display: 'flex', alignItems: 'center', ...style }}
@@ -12,4 +15,4 @@ export const IconUnFullScreen = (props: IconProps) => {
       </svg>
     </span>
   );
-};
+});

@@ -40,7 +40,8 @@
     "file": "File",
     "actions": "Actions",
     "noData": "No data",
-    "deleteWarning": "Deletion cannot be undone. Delete selected items?"
+    "deleteWarning": "Deletion cannot be undone. Delete selected items?",
+    "fieldRequired": "Please input {{field}}"
   },
   "home": {
     "title": "Home",

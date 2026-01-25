@@ -40,7 +40,8 @@
     "file": "文件",
     "actions": "操作",
     "noData": "暂无数据",
-    "deleteWarning": "删除操作不能恢复，确定删除选中项吗？"
+    "deleteWarning": "删除操作不能恢复，确定删除选中项吗？",
+    "fieldRequired": "请输入{{field}}"
   },
   "home": {
     "title": "首页",

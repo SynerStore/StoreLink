@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, forwardRef } from 'react';
 
 export interface IconFontProps extends React.HTMLAttributes<HTMLElement> {
   type: string;
@@ -7,7 +7,7 @@ export interface IconFontProps extends React.HTMLAttributes<HTMLElement> {
   pointer?: boolean;
 }
 
-const IconFont: React.FC<IconFontProps> = ({
+const IconFont = forwardRef<HTMLElement, IconFontProps>(({
   type,
   size,
   color,
@@ -15,14 +15,14 @@ const IconFont: React.FC<IconFontProps> = ({
   style,
   className = '',
   ...restProps
-}) => {
+}, ref) => {
   const styles: CSSProperties = {
     fontSize: size || 'inherit',
     cursor: pointer ? 'pointer' : 'inherit',
     ...style,
   };
 
-  return <i className={`iconfont icon-${type} ${className}`} style={styles} {...restProps} />;
-};
+  return <i ref={ref} className={`iconfont icon-${type} ${className}`} style={styles} {...restProps} />;
+});
 
 export default IconFont;
