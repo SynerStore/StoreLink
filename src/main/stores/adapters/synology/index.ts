@@ -34,12 +34,10 @@ class SynologyStore implements IStorageHandler {
   }
 
   async init(config: any) {
-    const { server, address, username, password, useHttps = true, port = 5001, quickConnectServerType } = config;
-    const protocol = useHttps ? 'https' : 'http';
-    const base = server ? server : `${protocol}://${address}${port ? `:${port}` : ''}`;
+    const { address, username, password, quickConnectServerType } = config;
     try {
       this.dsm = new SynologyApi({
-        server: base,
+        server: address,
         username,
         password,
         quickConnectServerType,

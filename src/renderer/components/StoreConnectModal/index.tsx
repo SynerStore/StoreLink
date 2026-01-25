@@ -35,6 +35,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
   const handleOk = async () => {
     const connections = await formRef.current.onConfirm();
     setIsModalOpen(false);
+    debugger
     const activeConnection = connections[0];
     addTab({
       id: activeConnection.id,

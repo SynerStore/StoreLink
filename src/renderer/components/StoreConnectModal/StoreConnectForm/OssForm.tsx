@@ -36,12 +36,10 @@ const OssForm = forwardRef((props: Props, ref) => {
       });
     }
   }, [initial]);
+
   const handleTest = async () => {
     setLoading(true);
-    const res =
-      (form?.validateFields
-        ? await form.validateFields(['accessKeyId', 'secretAccessKey'])
-        : form.getFieldsValue(true)) || {};
+    const res = await form.validateFields(['accessKeyId', 'secretAccessKey']);
     const result = await storeConnect({
       type: StoreTypes.OSS,
       config: {
@@ -61,7 +59,7 @@ const OssForm = forwardRef((props: Props, ref) => {
   };
   // 确认
   const handleConfirm = async () => {
-    const res = (form?.validateFields ? await form.validateFields() : form.getFieldsValue(true)) || {};
+    const res = await form.validateFields();
     const connections = res.bucketName.map((item: any) => {
       const bucket: any = buckets.find((bucket: any) => bucket.name === item);
       return {
@@ -89,13 +87,22 @@ const OssForm = forwardRef((props: Props, ref) => {
       <FormItem label={t('connection.name')} name="name">
         <Input placeholder={t('connection.name')} />
       </FormItem>
-      <FormItem label="Access Key" name="accessKeyId" rules={[{ required: true, message: t('common.fieldRequired', { field: 'Access Key' }) }]}>
+      <FormItem
+        label="Access Key"
+        name="accessKeyId"
+        rules={[{ required: true, message: t('common.fieldRequired', { field: 'Access Key' }) }]}
+      >
         <Input placeholder="Access Key" />
       </FormItem>
       <FormItem
         label="Secret Key"
         name="secretAccessKey"
-        rules={[{ required: !(mode === 'edit' && !!initial?.config?.secretAccessKey), message: t('common.fieldRequired', { field: 'Secret Key' }) }]}
+        rules={[
+          {
+            required: !(mode === 'edit' && !!initial?.config?.secretAccessKey),
+            message: t('common.fieldRequired', { field: 'Secret Key' }),
+          },
+        ]}
       >
         <SecurePasswordInput
           mode={mode}

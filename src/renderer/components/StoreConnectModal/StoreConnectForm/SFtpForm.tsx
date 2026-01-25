@@ -54,7 +54,7 @@ const SFtpForm = forwardRef((props: Props, ref) => {
   };
 
   const handleConfirm = async () => {
-    const res = (form?.validateFields ? await form.validateFields() : form.getFieldsValue(true)) || {};
+    const res = await form.validateFields();
     const connection = {
       id: initial?.id,
       type: StoreTypes.SFTP,
@@ -79,13 +79,26 @@ const SFtpForm = forwardRef((props: Props, ref) => {
       <FormItem label={t('connection.name')} name="name">
         <Input placeholder={t('connection.name')} />
       </FormItem>
-      <FormItem label={t('connection.host')} name="host" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.host') }) }]}>
+      <FormItem
+        label={t('connection.host')}
+        name="host"
+        rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.host') }) }]}
+      >
         <Input placeholder={t('connection.host')} />
       </FormItem>
-      <FormItem label={t('connection.port')} name="port" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.port') }) }]} initialValue="22">
+      <FormItem
+        label={t('connection.port')}
+        name="port"
+        rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.port') }) }]}
+        initialValue="22"
+      >
         <Input placeholder={t('connection.port')} />
       </FormItem>
-      <FormItem label={t('connection.username')} name="username" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.username') }) }]}>
+      <FormItem
+        label={t('connection.username')}
+        name="username"
+        rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.username') }) }]}
+      >
         <Input placeholder={t('connection.username')} />
       </FormItem>
       <FormItem label={t('connection.password')} name="password">

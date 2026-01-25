@@ -51,11 +51,13 @@ export const formatFiles = (files: any[]): TStoreObject[] => {
 export type ListParams = { prefix: string };
 export async function list(client: SynologyClient, params: ListParams) {
   const { prefix } = params;
+  const fixedPrefix = prefix.replace(/\/$/, ''); // 删除结尾的 /
   if (!client?.FileStation) throw new Error('synology_api_missing');
-  if (!prefix || prefix === '/') {
+  if (!fixedPrefix || fixedPrefix === '/') {
     const res = await client.FileStation.getShareFileList({
       limit: 1000,
       offset: 0,
+      filetype: 'all',
       sort_direction: 'ASC',
       sort_by: 'name',
       additional: ['real_path', 'owner', 'time'],
@@ -68,7 +70,7 @@ export async function list(client: SynologyClient, params: ListParams) {
     return filesSort(safe) as any[];
   }
   const res = await client.FileStation.getFileList({
-    folder_path: prefix,
+    folder_path: fixedPrefix, // 删除结尾的 /
     filetype: 'all',
     additional: ['real_path', 'size', 'owner', 'time', 'perm', 'type'],
     limit: 1000,

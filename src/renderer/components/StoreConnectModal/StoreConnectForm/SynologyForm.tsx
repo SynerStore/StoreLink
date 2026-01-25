@@ -29,26 +29,21 @@ const SynologyForm = forwardRef((props: Props, ref) => {
         name: initial.name,
         address: initial.config.address,
         username: initial.config.username,
-        useHttps: initial.config.useHttps,
-        port: initial.config.port,
+        password: initial.config.password,
       });
     }
   }, [initial]);
 
   const handleTest = async () => {
     setLoading(true);
-    const res =
-      (form?.validateFields
-        ? await form.validateFields(['address', 'username', 'password'])
-        : form.getFieldsValue(true)) || {};
+    const res = await form.validateFields(['address', 'username', 'password']);
+    debugger;
     const result = await storeConnect({
       type: StoreTypes.SYNOLOGY,
       config: {
         address: res.address,
         username: res.username,
         password: res.password ?? initial?.config?.password,
-        useHttps: res.useHttps ?? true,
-        port: res.port ?? 5001,
       },
     });
     console.log(result);
@@ -56,14 +51,14 @@ const SynologyForm = forwardRef((props: Props, ref) => {
   };
 
   const handleConfirm = async () => {
-    const res = (form?.validateFields ? await form.validateFields() : form.getFieldsValue(true)) || {};
+    const res = await form.validateFields();
     const connection = {
       id: initial?.id,
       type: StoreTypes.SYNOLOGY,
       brand: StoreBrands.synology,
       name: res.name || res.server,
       config: {
-        server: res.server,
+        address: res.address,
         username: res.username,
         password: res.password,
       },
@@ -75,17 +70,40 @@ const SynologyForm = forwardRef((props: Props, ref) => {
   };
 
   return (
-    <Form form={form} initialValues={{}} validateTrigger="onBlur" autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
-      <FormItem label={t('connection.name')} name="name" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.name') }) }]}>
+    <Form
+      form={form}
+      initialValues={{}}
+      validateTrigger="onBlur"
+      autoComplete="off"
+      labelCol={{ span: 5 }}
+      wrapperCol={{ span: 19 }}
+    >
+      <FormItem
+        label={t('connection.name')}
+        name="name"
+        rules={[{  message: t('common.fieldRequired', { field: t('connection.name') }) }]}
+      >
         <Input placeholder={t('connection.name')} />
       </FormItem>
-      <FormItem label={t('connection.address')} name="server" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.address') }) }]}>
+      <FormItem
+        label={t('connection.address')}
+        name="address"
+        rules={[{  message: t('common.fieldRequired', { field: t('connection.address') }) }]}
+      >
         <Input placeholder={t('connection.synologyServer')} />
       </FormItem>
-      <FormItem label={t('connection.username')} name="username" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.username') }) }]}>
+      <FormItem
+        label={t('connection.username')}
+        name="username"
+        rules={[{  message: t('common.fieldRequired', { field: t('connection.username') }) }]}
+      >
         <Input placeholder={t('connection.username')} />
       </FormItem>
-      <FormItem label={t('connection.password')} name="password" rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.password') }) }]}>
+      <FormItem
+        label={t('connection.password')}
+        name="password"
+        rules={[{  message: t('common.fieldRequired', { field: t('connection.password') }) }]}
+      >
         <SecurePasswordInput
           mode={mode}
           maskedLength={initial?.config?.password?.length}

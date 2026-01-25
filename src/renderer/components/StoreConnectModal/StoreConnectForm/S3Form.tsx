@@ -62,8 +62,7 @@ const S3Form = forwardRef((props: Props, ref) => {
   };
 
   const handleConfirm = async () => {
-    const res = (form?.validateFields ? await form.validateFields() : form.getFieldsValue(true)) || {};
-    // Ensure bucketName is an array
+    const res = await form.validateFields();
     const bucketNames = Array.isArray(res.bucketName) ? res.bucketName : [res.bucketName];
 
     const connections = bucketNames.map((item: any) => {
@@ -96,13 +95,22 @@ const S3Form = forwardRef((props: Props, ref) => {
       <FormItem label="Endpoint" name="endpoint" tooltip="可选，默认为 AWS S3">
         <Input placeholder="https://s3.amazonaws.com" />
       </FormItem>
-      <FormItem label="Access Key" name="accessKeyId" rules={[{ required: true, message: t('common.fieldRequired', { field: 'Access Key' }) }]}>
+      <FormItem
+        label="Access Key"
+        name="accessKeyId"
+        rules={[{ required: true, message: t('common.fieldRequired', { field: 'Access Key' }) }]}
+      >
         <Input placeholder="Access Key" />
       </FormItem>
       <FormItem
         label="Secret Key"
         name="secretAccessKey"
-        rules={[{ required: !(mode === 'edit' && !!initial?.config?.secretAccessKey), message: t('common.fieldRequired', { field: 'Secret Key' }) }]}
+        rules={[
+          {
+            required: !(mode === 'edit' && !!initial?.config?.secretAccessKey),
+            message: t('common.fieldRequired', { field: 'Secret Key' }),
+          },
+        ]}
       >
         <SecurePasswordInput
           mode={mode}

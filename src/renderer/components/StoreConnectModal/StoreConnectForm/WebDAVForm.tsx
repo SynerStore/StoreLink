@@ -35,10 +35,7 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
   }, [initial]);
   const handleTest = async () => {
     setLoading(true);
-    const res =
-      (form?.validateFields
-        ? await form.validateFields(['address', 'username', 'password'])
-        : form.getFieldsValue(true)) || {};
+    const res = await form.validateFields(['address', 'username', 'password']);
     const result = await storeConnect({
       type: StoreTypes.WEBDAV,
       config: {
@@ -51,7 +48,7 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
   };
 
   const handleConfirm = async () => {
-    const res = (form?.validateFields ? await form.validateFields() : form.getFieldsValue(true)) || {};
+    const res = await form.validateFields();
     const connection = {
       id: initial?.id,
       type: StoreTypes.WEBDAV,

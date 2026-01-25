@@ -45,7 +45,15 @@ const ConnectionEditWrap = (props: ConnectionEditWrapProps) => {
         okText={t('common.confirm')}
         cancelText={t('common.cancel')}
       >
-        {target ? <StoreConnectForm brand={target.brand} mode="edit" initial={target} ref={formRef} /> : null}
+        {target ? (
+          <StoreConnectForm
+            brand={target.brand}
+            mode="edit"
+            initial={target}
+            ref={formRef}
+            onSubmit={(data) => data}
+          />
+        ) : null}
       </Modal>
       <span onClick={() => setOpen(true)}>{children}</span>
     </Fragment>
