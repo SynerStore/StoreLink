@@ -4,7 +4,7 @@ import './index.css';
 export type MenuItem = {
   icon?: React.ReactNode;
   text?: string;
-  onClick?: () => void;
+  onClick?: (arg?: any) => void;
   render?: () => React.ReactNode;
 };
 

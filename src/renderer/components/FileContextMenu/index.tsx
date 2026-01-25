@@ -38,7 +38,10 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         icon: <InfoCircleOutlined />,
         text: t('contextMenu.detail'),
-        onClick: () => onDetail(data),
+        onClick: ({ domEvent }: any) => {
+          domEvent.stopPropagation();
+          onDetail(data);
+        },
       });
     }
 
@@ -46,7 +49,10 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         icon: <EyeOutlined />,
         text: t('contextMenu.open'),
-        onClick: () => onOpen(data),
+        onClick: ({ domEvent }: any) => {
+          domEvent.stopPropagation();
+          onOpen(data);
+        },
       });
     }
 
@@ -54,7 +60,10 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         icon: <DownloadOutlined />,
         text: t('contextMenu.download'),
-        onClick: () => onDownload(data),
+        onClick: ({ domEvent }: any) => {
+          domEvent.stopPropagation();
+          onDownload(data);
+        },
       });
     }
 
@@ -62,7 +71,10 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         icon: <CopyOutlined />,
         text: t('contextMenu.copy'),
-        onClick: () => onCopy(data),
+        onClick: ({ domEvent }: any) => {
+          domEvent.stopPropagation();
+          onCopy(data);
+        },
       });
     }
 
@@ -70,7 +82,10 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         icon: <ExportOutlined />,
         text: t('contextMenu.copyTo'),
-        onClick: () => onCopyTo(data),
+        onClick: ({ domEvent }: any) => {
+          domEvent.stopPropagation();
+          onCopyTo(data);
+        },
       });
     }
 
@@ -78,7 +93,10 @@ const FileContextMenu = (props: any) => {
       baseMenus.push({
         icon: <ScissorOutlined />,
         text: t('contextMenu.moveTo'),
-        onClick: () => onMoveTo(data),
+        onClick: ({ domEvent }: any) => {
+          domEvent.stopPropagation();
+          onMoveTo(data);
+        },
       });
     }
 
@@ -87,10 +105,14 @@ const FileContextMenu = (props: any) => {
         render: () => (
           <FileRenameWrap name={data.name as string} onRename={(newName: string) => onRename(data, newName)}>
             <Space size={8}>
-              <EditOutlined />{t('contextMenu.rename')}
+              <EditOutlined />
+              {t('contextMenu.rename')}
             </Space>
           </FileRenameWrap>
         ),
+        onClick: ({ domEvent }: any) => {
+          domEvent.stopPropagation();
+        },
       });
     }
 
@@ -99,10 +121,14 @@ const FileContextMenu = (props: any) => {
         render: () => (
           <FileDeteleWrap fileInfo={data} onDelete={onDelete}>
             <Space size={8}>
-              <DeleteOutlined /> {t('contextMenu.delete')}
+              <DeleteOutlined />
+              {t('contextMenu.delete')}
             </Space>
           </FileDeteleWrap>
         ),
+        onClick: ({ domEvent }: any) => {
+          domEvent.stopPropagation();
+        },
       });
     }
 

@@ -12,7 +12,8 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const handleOk = async () => {
+  const handleOk = async (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
     // 空值校验、重复名称校验等
     try {
       const values = await form.validateFields();
@@ -23,10 +24,12 @@ const FileRenameWrap: React.FC<FileRenameWrapProps> = (props: FileRenameWrapProp
     }
   };
 
-  const handleOpen = () => {
+  const handleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setIsModalOpen(true);
   };
-  const handleCancel = () => {
+  const handleCancel = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
     setIsModalOpen(false);
   };
 
