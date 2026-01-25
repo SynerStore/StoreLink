@@ -5,7 +5,7 @@ import { useConfigStore } from '@/renderer/store';
 import { useTranslation } from 'react-i18next';
 
 export type ConnectionEditWrapProps = {
-  connection: { key: string; label: string };
+  connection: { id: string; [key: string]: any };
   children?: React.ReactNode;
   onUpdated?: (v: any) => void;
 };
@@ -18,8 +18,8 @@ const ConnectionEditWrap = (props: ConnectionEditWrapProps) => {
   const { t } = useTranslation();
 
   const target = useMemo(() => {
-    return connections.find((c: any) => c.id === connection.key);
-  }, [connections, connection?.key]);
+    return connections.find((c: any) => c.id === connection.id);
+  }, [connections, connection?.id]);
 
   const handleOk = async () => {
     const payload = await formRef.current?.onConfirm?.();
