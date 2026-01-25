@@ -61,13 +61,11 @@ const SynologyForm = forwardRef((props: Props, ref) => {
       id: initial?.id,
       type: StoreTypes.SYNOLOGY,
       brand: StoreBrands.synology,
-      name: res.name || res.address,
+      name: res.name || res.server,
       config: {
-        address: res.address,
+        server: res.server,
         username: res.username,
         password: res.password,
-        useHttps: res.useHttps ?? true,
-        port: res.port ?? 5001,
       },
     };
     if (mode === 'edit' && onSubmit) {
@@ -77,11 +75,11 @@ const SynologyForm = forwardRef((props: Props, ref) => {
   };
 
   return (
-    <Form form={form} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
+    <Form form={form} initialValues={{}} autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       <FormItem label={t('connection.name')} name="name" rules={[{ required: true }]}>
         <Input placeholder={t('connection.name')} />
       </FormItem>
-      <FormItem label={t('connection.server')} name="server" rules={[{ required: true }]}>
+      <FormItem label={t('connection.address')} name="server" rules={[{ required: true }]}>
         <Input placeholder={t('connection.synologyServer')} />
       </FormItem>
       <FormItem label={t('connection.username')} name="username" rules={[{ required: true }]}>

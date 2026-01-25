@@ -49,6 +49,7 @@ const StoreConnectModal = (props: StoreConnectModalProps) => {
         title={t('storeSider.addConnection')}
         closable={false}
         maskClosable={false}
+        forceRender={true} // 强制渲染，解决首次打开时表单校验不通过的问题
         open={isModalOpen}
         centered
         width={620}

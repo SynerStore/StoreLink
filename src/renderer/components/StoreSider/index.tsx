@@ -43,7 +43,8 @@ const StoreSider = (props: StoreSiderProps) => {
                     render: () => (
                       <ConnectionEditWrap connection={connection}>
                         <Space size={6}>
-                          <EditOutlined /> {t('storeSider.editConnection')}
+                          <EditOutlined />
+                          {t('storeSider.editConnection')}
                         </Space>
                       </ConnectionEditWrap>
                     ),
@@ -53,27 +54,25 @@ const StoreSider = (props: StoreSiderProps) => {
                     : [
                         {
                           render: () => (
-                            <Tooltip title={t('storeSider.reconnect')}>
-                              <span
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  reconnect({ key: id, ...connection });
-                                }}
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
-                              >
-                                <Space size={6}>
-                                  <ReloadOutlined
-                                    style={{
-                                      fontSize: 14,
-                                      color: statuses[id] === 'failed' ? 'var(--danger-color)' : 'var(--text-color)',
-                                      transition: 'transform 0.3s ease',
-                                      transform: isConnecting ? 'rotate(180deg)' : 'none',
-                                    }}
-                                  />
-                                  {t('storeSider.reconnect')}
-                                </Space>
-                              </span>
-                            </Tooltip>
+                            <span
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                reconnect({ key: id, ...connection });
+                              }}
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                            >
+                              <Space size={6}>
+                                <ReloadOutlined
+                                  style={{
+                                    fontSize: 14,
+                                    color: statuses[id] === 'failed' ? 'var(--danger-color)' : 'var(--text-color)',
+                                    transition: 'transform 0.3s ease',
+                                    transform: isConnecting ? 'rotate(180deg)' : 'none',
+                                  }}
+                                />
+                                {t('storeSider.reconnect')}
+                              </Space>
+                            </span>
                           ),
                         },
                       ]),
@@ -81,7 +80,8 @@ const StoreSider = (props: StoreSiderProps) => {
                     render: () => (
                       <ConnectionDeleteWrap onDelete={handleDelete} connection={{ key: id, ...connection }}>
                         <Space size={6}>
-                          <DeleteOutlined /> {t('storeSider.deleteConnection')}
+                          <DeleteOutlined />
+                          {t('storeSider.deleteConnection')}
                         </Space>
                       </ConnectionDeleteWrap>
                     ),
@@ -103,7 +103,7 @@ const StoreSider = (props: StoreSiderProps) => {
                       />
                     </Tooltip>
                   ) : null}
-                  <span style={{ marginLeft: isConnecting ? 'clamp(4px, 0.6vw, 8px)' : 0 }}>{connection.name}</span>
+                  <span className="connection-name" style={{ marginLeft: isConnecting ? 'clamp(4px, 0.6vw, 8px)' : 0 }}>{connection.name}</span>
                 </span>
               </ContextMenu>
             ),
@@ -198,7 +198,12 @@ const StoreSider = (props: StoreSiderProps) => {
         </StoreConnectModal>
       </div>
       <div className="store-sider-search">
-        <Input prefix={<SearchOutlined />} placeholder={t('storeSider.searchPlaceholder')} allowClear onChange={handleSearch} />
+        <Input
+          prefix={<SearchOutlined />}
+          placeholder={t('storeSider.searchPlaceholder')}
+          allowClear
+          onChange={handleSearch}
+        />
       </div>
 
       <div className="store-sider-content">
