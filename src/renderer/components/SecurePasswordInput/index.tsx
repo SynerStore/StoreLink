@@ -9,8 +9,6 @@ type SecurePasswordInputProps = {
   onChange?: (v: string | undefined) => void;
   mode?: 'create' | 'edit';
   placeholder?: string;
-  allowPaste?: boolean;
-  allowCopy?: boolean;
   multiline?: boolean;
   disabled?: boolean;
   maskedLength?: number;
@@ -27,8 +25,6 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
     onChange,
     mode = 'create',
     placeholder,
-    allowPaste = false,
-    allowCopy = false,
     multiline = false,
     disabled = false,
     maskedLength,
@@ -59,18 +55,6 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
     onChange?.(next);
   };
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (!allowPaste) {
-      e.preventDefault();
-    }
-  };
-
-  const handleCopy = (e: React.ClipboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (!allowCopy) {
-      e.preventDefault();
-    }
-  };
-
   const maskLen = typeof maskedLength === 'number' ? maskedLength : initialHasValue ? 8 : 0;
   const masked = maskText(maskLen, maskChar);
 
@@ -80,8 +64,6 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
     autoCapitalize: 'off' as any,
     autoCorrect: 'off' as any,
     spellCheck: false,
-    onPaste: handlePaste,
-    onCopy: handleCopy,
     onChange: handleChange,
     disabled,
     placeholder: (mode === 'edit' && initialHasValue && !touchedRef.current ? masked : undefined) || placeholder,
