@@ -68,7 +68,7 @@
     "@aws-sdk/s3-request-presigner": "^3.782.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@fett/synology-api": "^0.1.0",
+    "@fett/synology-api": "^0.1.1",
     "@fett/utils": "^0.0.8",
     "@fontsource/roboto": "^5.2.5",
     "@uiw/react-markdown-preview": "^5.1.3",

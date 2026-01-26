@@ -27,8 +27,8 @@ importers:
         specifier: ^11.14.0
         version: 11.14.1(@emotion/react@11.14.0(@types/react@18.3.27)(react@18.3.1))(@types/react@18.3.27)(react@18.3.1)
       '@fett/synology-api':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.1.1
+        version: 0.1.1
       '@fett/utils':
         specifier: ^0.0.8
         version: 0.0.8
@@ -625,8 +625,8 @@ packages:
   '@emotion/weak-memoize@0.4.0':
     resolution: {integrity: sha512-snKqtPW01tN0ui7yu9rGv69aJXr/a/Ywvl11sUjNtEcRc+ng/mQriFL0wLXMef74iHa/EkftbDzU9F8iFbH+zg==}
 
-  '@fett/synology-api@0.1.0':
-    resolution: {integrity: sha512-kjywNk75fHEeJEFdrlN35cLoqkdOyXfrjzEg+RhmfyhGfYrTiYd7/4TZ/nT4xehjZ+HAC8oCPHiKULWLNliSzw==}
+  '@fett/synology-api@0.1.1':
+    resolution: {integrity: sha512-Ih0B5/8RGiH4BhzXePj5gKbjKJJrjdvkjleigAHiUi88XanFHMfOPJb50J13dT7z7kyqhh8sWQ0P/N+xHXTwlQ==}
     hasBin: true
 
   '@fett/utils@0.0.8':
@@ -5885,7 +5885,7 @@ snapshots:
 
   '@emotion/weak-memoize@0.4.0': {}
 
-  '@fett/synology-api@0.1.0':
+  '@fett/synology-api@0.1.1':
     dependencies:
       axios: 1.13.2
       chalk: 5.6.2

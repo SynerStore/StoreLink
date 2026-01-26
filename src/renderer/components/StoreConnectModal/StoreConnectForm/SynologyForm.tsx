@@ -1,5 +1,5 @@
 import { useImperativeHandle, forwardRef, useEffect } from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Switch } from 'antd';
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
 import { StoreTypes, StoreBrands } from '@/types';
@@ -30,20 +30,21 @@ const SynologyForm = forwardRef((props: Props, ref) => {
         address: initial.config.address,
         username: initial.config.username,
         password: initial.config.password,
+        lanPriority: initial.config.lanPriority ?? true,
       });
     }
   }, [initial]);
 
   const handleTest = async () => {
     setLoading(true);
-    const res = await form.validateFields(['address', 'username', 'password']);
-    debugger;
+    const res = await form.validateFields(['address', 'username', 'password', 'lanPriority']);
     const result = await storeConnect({
       type: StoreTypes.SYNOLOGY,
       config: {
         address: res.address,
         username: res.username,
         password: res.password ?? initial?.config?.password,
+        lanPriority: res.lanPriority,
       },
     });
     console.log(result);
@@ -61,6 +62,7 @@ const SynologyForm = forwardRef((props: Props, ref) => {
         address: res.address,
         username: res.username,
         password: res.password,
+        lanPriority: res.lanPriority,
       },
     };
     if (mode === 'edit' && onSubmit) {
@@ -72,7 +74,7 @@ const SynologyForm = forwardRef((props: Props, ref) => {
   return (
     <Form
       form={form}
-      initialValues={{}}
+      initialValues={{ lanPriority: true }}
       validateTrigger="onBlur"
       autoComplete="off"
       labelCol={{ span: 5 }}
@@ -110,6 +112,9 @@ const SynologyForm = forwardRef((props: Props, ref) => {
           maskChar="*"
           placeholder={t('connection.password')}
         />
+      </FormItem>
+      <FormItem label={t('connection.lanPriority')} name="lanPriority" valuePropName="checked">
+        <Switch />
       </FormItem>
 
       <FormItem wrapperCol={{ offset: 5 }}>

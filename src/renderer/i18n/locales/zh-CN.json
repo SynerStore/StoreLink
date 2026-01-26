@@ -190,7 +190,8 @@
     "connectionSuccess": "连接成功",
     "connectionFailed": "连接失败",
     "bucketFillHint": "点击连接测试自动填充账号下的 Bucket",
-    "bucketMultipleHint": "可以输入多个Bucket"
+    "bucketMultipleHint": "可以输入多个Bucket",
+    "lanPriority": "优先使用局域网"
   },
   "errors": {
     "networkError": "网络错误",

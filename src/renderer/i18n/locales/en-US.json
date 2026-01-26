@@ -190,7 +190,8 @@
     "connectionSuccess": "Connection successful",
     "connectionFailed": "Connection failed",
     "bucketFillHint": "Click Test Connection to auto-fill buckets",
-    "bucketMultipleHint": "You can enter multiple buckets"
+    "bucketMultipleHint": "You can enter multiple buckets",
+    "lanPriority": "Prioritize LAN"
   },
   "errors": {
     "networkError": "Network Error",
