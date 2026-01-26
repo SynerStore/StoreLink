@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
 import { debounce } from 'lodash-es';
@@ -51,13 +51,13 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     }
 
     if (rowSelection?.onChange) {
-      const selectedRows = dataSource.filter((item, index) => newKeys.includes(getRowKey(item, index)));
+      const selectedRows = dataSource.filter((item: T, index: number) => newKeys.includes(getRowKey(item, index)));
       rowSelection.onChange(newKeys, selectedRows);
     }
   };
 
   // 根据键值获取行索引
-  const getIndex = (key: React.Key) => dataSource.findIndex((item, index) => getRowKey(item, index) === key);
+  const getIndex = (key: React.Key) => dataSource.findIndex((item: T, index: number) => getRowKey(item, index) === key);
 
   // 处理行点击
   const onRowClick = (record: T, index: number, event: React.MouseEvent) => {
@@ -81,7 +81,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       if (lastIndex >= 0 && currentIndex >= 0) {
         const start = Math.min(lastIndex, currentIndex);
         const end = Math.max(lastIndex, currentIndex);
-        const rangeKeys = dataSource.slice(start, end + 1).map((item, idx) => getRowKey(item, start + idx));
+        const rangeKeys = dataSource.slice(start, end + 1).map((item: T, idx: number) => getRowKey(item, start + idx));
         newSelectedKeys = rangeKeys;
       }
       setFocusedKey(key);
@@ -107,7 +107,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     // 全选
     if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
       e.preventDefault();
-      triggerSelectionChange(dataSource.map((d, i) => getRowKey(d, i)));
+      triggerSelectionChange(dataSource.map((d: T, i: number) => getRowKey(d, i)));
       return;
     }
 
@@ -144,7 +144,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
 
       const start = Math.min(anchorIndex, nextIndex);
       const end = Math.max(anchorIndex, nextIndex);
-      const rangeKeys = dataSource.slice(start, end + 1).map((item, idx) => getRowKey(item, start + idx));
+      const rangeKeys = dataSource.slice(start, end + 1).map((item: T, idx: number) => getRowKey(item, start + idx));
       triggerSelectionChange(rangeKeys);
     } else {
       // 移动焦点并选中
@@ -165,7 +165,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       setFocusedKey(key);
     }
 
-    const selectedRows = dataSource.filter((item, i) => currentSelectedKeys.includes(getRowKey(item, i)));
+    const selectedRows = dataSource.filter((item: T, i: number) => currentSelectedKeys.includes(getRowKey(item, i)));
 
     // 调用回调
     if (onRowDragStart) {
@@ -178,7 +178,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
   const antdRowSelection: TableProps<T>['rowSelection'] = {
     ...rowSelection,
     selectedRowKeys: selectedKeys,
-    onChange: (keys, rows) => {
+    onChange: (keys: React.Key[], _rows: T[]) => {
       // 处理复选框选择变化
       setLastSelectedKey(keys[keys.length - 1] || null);
       setFocusedKey(keys[keys.length - 1] || null);
@@ -194,26 +194,26 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
         dataSource={dataSource}
         columns={columns}
         rowSelection={antdRowSelection}
-        onRow={(record, index) => {
+        onRow={(record: T, index?: number) => {
           const userOnRow = restProps.onRow ? restProps.onRow(record, index) : {};
           const key = getRowKey(record, index);
           return {
             ...userOnRow,
-            onClick: (e) => {
+            onClick: (e: React.MouseEvent<HTMLElement>) => {
               clickDebounce(() => {
                 onRowClick(record, index || 0, e);
-                userOnRow.onClick?.(e);
+                userOnRow.onClick?.(e as any);
               });
             },
-            onDoubleClick: (e) => {
+            onDoubleClick: (e: React.MouseEvent<HTMLElement>) => {
               clickDebounce.cancel();
               onRowDoubleClick?.(record);
-              userOnRow.onDoubleClick?.(e);
+              userOnRow.onDoubleClick?.(e as any);
             },
             draggable: true,
-            onDragStart: (e) => {
+            onDragStart: (e: React.DragEvent<HTMLElement>) => {
               handleDragStart(e, record, index || 0);
-              userOnRow.onDragStart?.(e);
+              userOnRow.onDragStart?.(e as any);
             },
             className: `${userOnRow.className || ''} ${focusedKey === key ? 'file-table-row-focused' : ''}`,
           };
