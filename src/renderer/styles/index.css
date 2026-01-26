@@ -5,3 +5,15 @@
 body {
   color: var(--text-primary);
 }
+
+.cards-content {
+  height: 100%;
+}
+
+.cards-content .ant-spin-nested-loading {
+  height: 100%;
+}
+
+.cards-content .ant-spin-container {
+  height: 100%;
+}
