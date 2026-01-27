@@ -104,7 +104,12 @@ const SynologyForm = forwardRef((props: Props, ref) => {
       <FormItem
         label={t('connection.password')}
         name="password"
-        rules={[{  required: true, message: t('common.fieldRequired', { field: t('connection.password') }) }]}
+        rules={[
+          {
+            required: !(mode === 'edit' && !!initial?.config?.password),
+            message: t('common.fieldRequired', { field: t('connection.password') }),
+          },
+        ]}
       >
         <SecurePasswordInput
           mode={mode}

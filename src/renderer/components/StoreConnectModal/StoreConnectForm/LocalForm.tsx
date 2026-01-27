@@ -57,10 +57,18 @@ const LocalForm = forwardRef((props: Props, ref) => {
 
   return (
     <Form form={form} validateTrigger="onBlur" autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
-      <FormItem label={t('connection.name')} name="name">
+      <FormItem
+        label={t('connection.name')}
+        name="name"
+        rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.name') }) }]}
+      >
         <Input placeholder={t('connection.name')} />
       </FormItem>
-      <FormItem label={t('connection.localRoot')} name="root">
+      <FormItem
+        label={t('connection.localRoot')}
+        name="root"
+        rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.localRoot') }) }]}
+      >
         <Input
           suffix={
             <FolderOutlined

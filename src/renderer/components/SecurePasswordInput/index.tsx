@@ -31,7 +31,10 @@ const SecurePasswordInput = (props: SecurePasswordInputProps) => {
     maskChar = '*',
   } = props;
 
-  const initialHasValue = useMemo(() => !!(value ?? defaultValue), [value, defaultValue]);
+  const initialHasValue = useMemo(
+    () => !!(value ?? defaultValue) || (mode === 'edit' && typeof maskedLength === 'number' && maskedLength > 0),
+    [value, defaultValue, mode, maskedLength],
+  );
   const [visible, setVisible] = useState(false);
   const [internal, setInternal] = useState<string>(value ?? defaultValue ?? '');
   const touchedRef = useRef(false);

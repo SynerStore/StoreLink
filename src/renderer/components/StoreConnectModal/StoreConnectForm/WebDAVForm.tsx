@@ -67,16 +67,37 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
   };
   return (
     <Form form={form} validateTrigger="onBlur" autoComplete="off" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
-      <FormItem label={t('connection.name')} name="name">
+      <FormItem
+        label={t('connection.name')}
+        name="name"
+        rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.name') }) }]}
+      >
         <Input placeholder={t('connection.name')} />
       </FormItem>
-      <FormItem label={t('connection.address')} name="address">
+      <FormItem
+        label={t('connection.address')}
+        name="address"
+        rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.address') }) }]}
+      >
         <Input placeholder={t('connection.address')} />
       </FormItem>
-      <FormItem label={t('connection.username')} name="username">
+      <FormItem
+        label={t('connection.username')}
+        name="username"
+        rules={[{ required: true, message: t('common.fieldRequired', { field: t('connection.username') }) }]}
+      >
         <Input placeholder={t('connection.username')} />
       </FormItem>
-      <FormItem label={t('connection.password')} name="password">
+      <FormItem
+        label={t('connection.password')}
+        name="password"
+        rules={[
+          {
+            required: !(mode === 'edit' && !!initial?.config?.password),
+            message: t('common.fieldRequired', { field: t('connection.password') }),
+          },
+        ]}
+      >
         <SecurePasswordInput
           mode={mode}
           maskedLength={initial?.config?.password?.length}
