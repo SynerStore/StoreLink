@@ -30,6 +30,7 @@ import {
   putFolder,
   PutFolderParams,
   getSourceUrl,
+  GetSourceUrlParams,
   putObject,
   getService,
 } from './api';
@@ -218,9 +219,9 @@ class CosStore implements IStorageHandler {
     }
   }
 
-  async getSourceUrl(key: string) {
+  async getSourceUrl(params: GetSourceUrlParams) {
     try {
-      const result = await getSourceUrl(this.client, this.bucketName, this.region, key);
+      const result = await getSourceUrl(this.client, this.bucketName, this.region, params.key);
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);

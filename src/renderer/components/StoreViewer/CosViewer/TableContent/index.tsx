@@ -1,11 +1,11 @@
 import { Fragment, useLayoutEffect, useState } from 'react';
-import { FileTable } from '@/renderer/components';
 import dayjs from 'dayjs';
-
-import { EWindowSize, EOssStorageClass, TStoreObject } from '@/types';
-import { FileIcon, FileContextMenu } from '@/renderer/components';
-import { calculateSize } from '@/renderer/utils';
 import { useTranslation } from 'react-i18next';
+
+import { FileTable, FileIcon, FileContextMenu } from '@/renderer/components';
+import { EWindowSize, TStoreObject } from '@/types';
+import { calculateSize } from '@/renderer/utils';
+
 import styles from './index.module.css';
 
 export type TableContentProps = {
