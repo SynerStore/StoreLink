@@ -1,6 +1,7 @@
 export enum StoreTypes {
   S3 = 's3',
   OSS = 'oss',
+  COS = 'cos',
   SFTP = 'sftp',
   LOCAL = 'local',
   WEBDAV = 'webdav',

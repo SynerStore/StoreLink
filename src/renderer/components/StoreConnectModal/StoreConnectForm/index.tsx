@@ -2,6 +2,7 @@ import { useMemo, forwardRef } from 'react';
 
 import S3Form from './S3Form';
 import OssForm from './OssForm';
+import CosForm from './CosForm';
 import SFtpForm from './SFtpForm';
 import LocalForm from './LocalForm';
 import WebDAVForm from './WebDAVForm';
@@ -25,6 +26,8 @@ const StoreConnectForm = forwardRef((props: StoreConnectFormProps, ref) => {
   switch (store.type) {
     case StoreTypes.OSS:
       return <OssForm ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
+    case StoreTypes.COS:
+      return <CosForm ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
     case StoreTypes.S3:
       return <S3Form ref={ref} mode={mode} initial={initial} onSubmit={onSubmit} />;
     case StoreTypes.SFTP:

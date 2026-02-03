@@ -1,6 +1,7 @@
 import S3Store from './adapters/s3';
 import LocalStore from './adapters/local';
 import OssStore from './adapters/oss';
+import CosStore from './adapters/cos';
 import WebDAVStore from './adapters/webdev';
 import SftpStore from './adapters/sftp';
 import SynologyStore from './adapters/synology';
@@ -50,6 +51,9 @@ const createStoreClient = (data: any): any => {
   switch (type) {
     case StoreTypes.OSS:
       storeClient = new OssStore(id, config);
+      break;
+    case StoreTypes.COS:
+      storeClient = new CosStore(id, config);
       break;
     case StoreTypes.S3:
       storeClient = new S3Store(id, config);

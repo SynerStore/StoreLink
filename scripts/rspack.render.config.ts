@@ -44,6 +44,7 @@ const rspackConfig: Configuration = {
     rules: [
       {
         test: /\.(jsx?|tsx?)$/,
+        exclude: [/node_modules/],
         use: [
           {
             loader: 'builtin:swc-loader',

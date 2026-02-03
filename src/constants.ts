@@ -13,7 +13,7 @@ export const StoreDatas = [
   },
   {
     brand: StoreBrands.tencentcloud,
-    type: StoreTypes.S3,
+    type: StoreTypes.COS,
   },
   {
     brand: StoreBrands.huaweicloud,
