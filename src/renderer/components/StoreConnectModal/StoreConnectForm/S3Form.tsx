@@ -67,11 +67,15 @@ const S3Form = forwardRef((props: Props, ref) => {
 
     const connections = bucketNames.map((item: any) => {
       const bucket: any = buckets.find((bucket: any) => bucket.name === item);
+      let connectionName = res.name || bucket?.name || item;
+      if (res.name && bucketNames.length > 1) {
+        connectionName = `${res.name}-${item}`;
+      }
       return {
         id: initial?.id,
         type: StoreTypes.S3,
         brand: 's3',
-        name: res.name || bucket?.name || item,
+        name: connectionName,
         config: {
           accessKeyId: res.accessKeyId ?? initial?.config?.accessKeyId,
           secretAccessKey: res.secretAccessKey ?? initial?.config?.secretAccessKey,

@@ -67,11 +67,15 @@ const CosForm = forwardRef((props: Props, ref) => {
     const res = await form.validateFields();
     const connections = res.bucketName.map((item: any) => {
       const bucket: any = buckets.find((bucket: any) => bucket.name === item);
+      let connectionName = res.name || bucket?.name || item;
+      if (res.name && res.bucketName.length > 1) {
+        connectionName = `${res.name}-${item}`;
+      }
       return {
         id: initial?.id,
         type: StoreTypes.COS,
         brand: 'tencentcloud',
-        name: res.name || bucket?.name || item,
+        name: connectionName,
         config: {
           accessKeyId: res.accessKeyId ?? initial?.config?.accessKeyId,
           secretAccessKey: res.secretAccessKey ?? initial?.config?.secretAccessKey,

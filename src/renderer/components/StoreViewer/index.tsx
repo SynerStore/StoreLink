@@ -4,6 +4,7 @@ import S3Viewer from './S3Viewer';
 import LocalViewer from './LocalViewer';
 import SftpViewer from './SftpViewer';
 import OssViewer from './OssViewer';
+import CosViewer from './CosViewer';
 import WebDevViewer from './WebDEVViewer';
 import SynologyViewer from './SynologyViewer';
 import { StoreTypes } from '@/types';
@@ -39,6 +40,8 @@ const StoreViewer = (props: any) => {
       return <OssViewer data={data} key={data.id} bucketName={data.name} connectionId={data.id} />;
     case StoreTypes.S3:
       return <S3Viewer data={data} key={data.id} bucketName={data.name} connectionId={data.id} />;
+    case StoreTypes.COS:
+      return <CosViewer data={data} key={data.id} bucketName={data.name} connectionId={data.id} />;
     case StoreTypes.LOCAL:
       return <LocalViewer tabData={data} key={data.id} connection={connection} connectionId={data.id} />;
     case StoreTypes.SFTP:
