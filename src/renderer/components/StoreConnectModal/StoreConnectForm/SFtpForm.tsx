@@ -108,7 +108,7 @@ const SFtpForm = forwardRef((props: Props, ref) => {
       <FormItem label={t('connection.password')} name="password">
         <SecurePasswordInput
           mode={mode}
-          maskedLength={initial?.config?.password?.length}
+          maskedLength={initial?.config?.passwordLength || initial?.config?.password?.length}
           maskChar="*"
           placeholder={t('connection.password')}
         />
@@ -117,7 +117,7 @@ const SFtpForm = forwardRef((props: Props, ref) => {
         <SecurePasswordInput
           mode={mode}
           multiline
-          maskedLength={initial?.config?.privateKey?.length}
+          maskedLength={initial?.config?.privateKeyLength || initial?.config?.privateKey?.length}
           maskChar="*"
           placeholder={t('connection.privateKey')}
         />
@@ -125,7 +125,7 @@ const SFtpForm = forwardRef((props: Props, ref) => {
       <FormItem label={t('connection.passphrase')} name="passphrase">
         <SecurePasswordInput
           mode={mode}
-          maskedLength={initial?.config?.passphrase?.length}
+          maskedLength={initial?.config?.passphraseLength || initial?.config?.passphrase?.length}
           maskChar="*"
           placeholder={t('connection.passphrase')}
         />

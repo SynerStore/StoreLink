@@ -37,7 +37,7 @@ export async function setConnectionsData(data: Partial<IConnectionsData>) {
 }
 
 function encryptConnectionSensitive(connections: any[]) {
-  const keys = ['password', 'secretAccessKey', 'accessKeySecret'];
+  const keys = ['password', 'secretAccessKey', 'accessKeySecret', 'privateKey', 'passphrase'];
   return (connections || []).map((c: any) => {
     const cfg = { ...(c?.config || {}) };
     let changed = false;
@@ -45,6 +45,7 @@ function encryptConnectionSensitive(connections: any[]) {
       const v = cfg[k];
       if (v && typeof v === 'string' && !isEncrypted(v)) {
         try {
+          cfg[`${k}Length`] = v.length;
           cfg[k] = encryptPassword(v);
           changed = true;
         } catch (_e) {}
@@ -71,7 +72,7 @@ export async function rotatePasswords(newSecret: string) {
     const curConnections = getConnectionsData().connections || [];
     const next = (curConnections || []).map((c: any) => {
       const cfg = { ...(c?.config || {}) };
-      const keys = ['password', 'secretAccessKey', 'accessKeySecret'];
+      const keys = ['password', 'secretAccessKey', 'accessKeySecret', 'privateKey', 'passphrase'];
       let changed = false;
       keys.forEach((k) => {
         const v = cfg[k];

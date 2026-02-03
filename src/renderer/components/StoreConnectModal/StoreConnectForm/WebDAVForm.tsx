@@ -100,7 +100,7 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
       >
         <SecurePasswordInput
           mode={mode}
-          maskedLength={initial?.config?.password?.length}
+          maskedLength={initial?.config?.passwordLength || initial?.config?.password?.length}
           maskChar="*"
           placeholder={t('connection.password')}
         />

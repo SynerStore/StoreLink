@@ -3,6 +3,7 @@ import { ipcMain } from 'electron';
 import { EChannels, ETaskType, ETaskStatus } from '@/types';
 import { getStoreInstance, storeConnect, storeRemove } from './storeManage';
 import TaskManager from '@/main/tasks/manage';
+import { logAction } from '@/main/events/log';
 
 export * from './storeManage';
 export * from './adapters/store';
@@ -37,6 +38,11 @@ export const storeRequestRegistry = () => {
     }
 
     const store = getStoreInstance(id);
+    logAction({
+      action: 'store_request',
+      message: `${method} executed`,
+      meta: { connectionId: id, method, params },
+    });
     const result = await store[method](params);
     return result;
   });

@@ -70,16 +70,18 @@ class TaskManager {
         if (status === ETaskStatus.COMPLETED || status === ETaskStatus.FAILED || status === ETaskStatus.CANCELED) {
           // Maybe remove from memory map if we don't want to keep history in memory?
           // But user might want to see history.
-          const msg =
-            status === ETaskStatus.COMPLETED
-              ? 'completed'
-              : status === ETaskStatus.FAILED
-                ? `failed: ${err || ''}`
-                : 'canceled';
+          let msg = '';
+          if (status === ETaskStatus.COMPLETED) {
+            msg = 'completed';
+          } else if (status === ETaskStatus.FAILED) {
+            msg = `failed: ${err || ''}`;
+          } else {
+            msg = 'canceled';
+          }
           logAction({
             action: 'task_status',
             message: `${task.method} ${msg}`,
-            meta: { connectionId: task.connectionId, taskId: task.taskId },
+            meta: { connectionId: task.connectionId, taskId: task.taskId, params: task.params },
           });
         }
       },

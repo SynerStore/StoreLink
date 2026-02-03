@@ -30,6 +30,7 @@ const OssForm = forwardRef((props: Props, ref) => {
   useEffect(() => {
     if (initial?.config) {
       form.setFieldsValue({
+        name: initial.name,
         accessKeyId: initial.config.accessKeyId,
         secretAccessKey: initial.config.secretAccessKey,
         bucketName: initial.config.bucketName ? [initial.config.bucketName] : [],
@@ -114,7 +115,7 @@ const OssForm = forwardRef((props: Props, ref) => {
       >
         <SecurePasswordInput
           mode={mode}
-          maskedLength={initial?.config?.secretAccessKey?.length}
+          maskedLength={initial?.config?.secretAccessKeyLength || initial?.config?.secretAccessKey?.length}
           maskChar="*"
           placeholder="Secret Key"
         />

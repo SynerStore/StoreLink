@@ -122,7 +122,7 @@ const S3Form = forwardRef((props: Props, ref) => {
       >
         <SecurePasswordInput
           mode={mode}
-          maskedLength={initial?.config?.secretAccessKey?.length}
+          maskedLength={initial?.config?.secretAccessKeyLength || initial?.config?.secretAccessKey?.length}
           maskChar="*"
           placeholder="Secret Key"
         />
