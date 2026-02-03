@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 
 import { getUserDataPath } from '@/main/utils';
 import { logAction } from '@/main/events/log';
-import { encryptPassword, encryptPasswordWithSecret, isEncrypted, decryptPassword } from '@/main/utils/secret';
+import { encryptPassword, encryptPasswordWithSecret, isEncrypted, decryptPassword, verifySystemAuth } from '@/main/utils/secret';
 import { errorLogger } from '@/main/utils/logger';
 
 export interface IConnectionsData {
@@ -117,9 +117,29 @@ export function removeConnection(id: string) {
 }
 
 export async function exportConnections(dirPath: string) {
+  // Verify system authentication before export
+  await verifySystemAuth();
+
   const data = getConnectionsData();
+  // Decrypt sensitive fields for export
+  const decryptedConnections = (data.connections || []).map((c: any) => {
+    const cfg = { ...(c?.config || {}) };
+    const keys = ['password', 'secretAccessKey', 'accessKeySecret', 'privateKey', 'passphrase'];
+    keys.forEach((k) => {
+      const v = cfg[k];
+      if (v && typeof v === 'string' && isEncrypted(v)) {
+        try {
+          cfg[k] = decryptPassword(v);
+        } catch (e: any) {
+          errorLogger.error('Export decrypt failed:', c?.id, k, e?.message || e);
+        }
+      }
+    });
+    return { ...c, config: cfg };
+  });
+
   const filePath = path.join(dirPath, 'connections.json');
-  await fs.writeJSON(filePath, data, { spaces: 2 });
+  await fs.writeJSON(filePath, { connections: decryptedConnections }, { spaces: 2 });
   return filePath;
 }
 
