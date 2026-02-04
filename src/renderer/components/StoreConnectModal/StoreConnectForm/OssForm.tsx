@@ -134,7 +134,7 @@ const OssForm = forwardRef((props: Props, ref) => {
           ))}
         </Select>
       </FormItem>
-      <FormItem>
+      <FormItem wrapperCol={{ offset: 5 }}> 
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>
           {t('connection.testConnection')}
         </Button>

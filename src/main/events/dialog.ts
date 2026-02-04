@@ -1,4 +1,4 @@
-import { clipboard, dialog, OpenDialogOptions } from 'electron';
+import { BrowserWindow, clipboard, dialog, OpenDialogOptions } from 'electron';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import path from 'node:path';
@@ -124,4 +124,25 @@ export const getClipboardFilePaths = async () => {
   }
 
   return Array.from(new Set(paths));
+};
+
+/**
+ * 用于保存文件到本地
+ */
+export const saveFileToLocal = async (
+  win: BrowserWindow,
+  options: OpenDialogOptions & { fileName: string; payload: string },
+) => {
+  const downloadPath = getDownloadsPath();
+  const result = await dialog.showSaveDialog(win, {
+    ..._.omit(options, ['defaultPath', 'fileName']),
+    defaultPath: options.defaultPath || `${downloadPath}/${options.fileName}`,
+    properties: ['createDirectory', 'showOverwriteConfirmation'],
+  });
+
+  if (!result.canceled && result.filePath) {
+    return result.filePath;
+  } else {
+    return null;
+  }
 };

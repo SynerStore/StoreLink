@@ -5,6 +5,7 @@
   -webkit-app-region: drag;
   border-bottom: 1px solid var(--border-color);
   position: relative;
+  z-index: 999;
   background: var(--header-bg-dark, var(--header-bg-light));
 }
 
