@@ -27,6 +27,19 @@ body {
   background-color: var(--scrollbar-thumb-color);
 }
 
+.rc-virtual-list-scrollbar {
+  width: 6px !important;
+}
+
+.rc-virtual-list-scrollbar-thumb {
+  background-color: transparent !important;
+  border-radius: 3px !important;
+}
+
+.rc-virtual-list-holder:hover .rc-virtual-list-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color) !important;
+}
+
 /* videojs 样式重置 */
 .vjs-paused .vjs-big-play-button,
 .vjs-paused.vjs-has-started .vjs-big-play-button {

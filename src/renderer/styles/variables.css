@@ -111,6 +111,7 @@ body.dark-theme {
   --sidebar-backdrop-filter: saturate(160%) blur(14px);
   --header-border-color: rgba(43, 177, 217, 0.38);
   --scrollbar-thumb-color: var(--neutral-6);
+  --rc-virtual-list-scrollbar-bg: transparent;
 
   --color-bg-2: var(--neutral-2);
   --color-bg-popup: var(--neutral-3);
