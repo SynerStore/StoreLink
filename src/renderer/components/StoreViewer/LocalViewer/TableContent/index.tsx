@@ -19,6 +19,7 @@ export type TableContentProps = {
   selectedKeys?: React.Key[];
   onMoveTo?: (data: any) => Promise<void>;
   onCopyTo?: (data: any) => Promise<void>;
+  onDropMove?: (sourceKeys: React.Key[], targetFolder: TStoreObject) => Promise<void>;
 };
 
 const TableContent = (props: TableContentProps) => {
@@ -35,6 +36,7 @@ const TableContent = (props: TableContentProps) => {
     selectedKeys,
     onMoveTo,
     onCopyTo,
+    onDropMove,
   } = props;
   const { t } = useTranslation();
 
@@ -133,6 +135,8 @@ const TableContent = (props: TableContentProps) => {
         columns={columns}
         onRowDoubleClick={handleFileClick}
         onRowDragStart={handleRowDragStart}
+        connectionId={connectionId}
+        onDropMove={onDropMove}
       />
     </div>
   );

@@ -3,12 +3,13 @@ import dayjs from 'dayjs';
 import { Tooltip } from 'antd';
 import { debounce } from 'lodash-es';
 
-import { FileIcon, FileContextMenu } from '@/renderer/components';
+import { FileIcon, FileContextMenu, FileMoveConfirmModal } from '@/renderer/components';
 import VirtualResponsiveGrid, { VirtualResponsiveGridRef } from '../ResponsiveGrid/VirtualResponsiveGrid';
 import { calculateSize } from '@/renderer/utils';
 import { FileCardListProps, rangeSelectKeys, toggleSelectionKey } from './types';
 import styles from './styles.module.css';
 import { useTranslation } from 'react-i18next';
+import { TStoreObject } from '@/types';
 
 const FileCardList: React.FC<FileCardListProps> = (props) => {
   const { t } = useTranslation();
@@ -22,6 +23,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     onRename,
     onMoveTo,
     onCopyTo,
+    onDropMove,
     onSelectionChange,
     selectedKeys: propSelectedKeys,
     className = '',
@@ -46,6 +48,12 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   const [lassoRect, setLassoRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [lassoSelectedKeys, setLassoSelectedKeys] = useState<React.Key[]>([]);
   const [virtualItemsPerRow, setVirtualItemsPerRow] = useState(1);
+
+  // Drag and drop state
+  const [dragOverKey, setDragOverKey] = useState<React.Key | null>(null);
+  const [moveModalVisible, setMoveModalVisible] = useState(false);
+  const [moveSourceFiles, setMoveSourceFiles] = useState<TStoreObject[]>([]);
+  const [moveTargetFolder, setMoveTargetFolder] = useState<TStoreObject | null>(null);
 
   const triggerSelectionChange = useCallback(
     (newKeys: React.Key[]) => {
@@ -157,6 +165,93 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
       setLastSelectedKey(key);
       setFocusedKey(key);
     }
+    
+    // Set data for drag
+    const dragKeys = currentSelectedKeys;
+    e.dataTransfer.setData('application/json', JSON.stringify({
+      keys: dragKeys,
+      connectionId
+    }));
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, item: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!item.isDirectory) return;
+    
+    // Check if dragging self or dragging into selection
+    // Note: Can't easily access dragged data here safely without keeping track of it
+    // But we can check if the target is in the selectedKeys (which we are dragging)
+    if (selectedKeys.includes(item.key as React.Key)) return;
+
+    setDragOverKey(item.key as React.Key);
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>, item: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (dragOverKey === item.key) {
+      setDragOverKey(null);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, item: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverKey(null);
+
+    if (!item.isDirectory) return;
+    
+    try {
+      const dataStr = e.dataTransfer.getData('application/json');
+      if (!dataStr) return;
+      
+      const dragData = JSON.parse(dataStr);
+      
+      let keys: React.Key[] = [];
+      let srcConnId: string | undefined;
+
+      if (Array.isArray(dragData)) {
+         if (dragData.length > 0) {
+             srcConnId = dragData[0].connectionId;
+             keys = dragData.map((d: any) => d.key);
+         }
+      } else {
+         srcConnId = dragData.connectionId;
+         keys = dragData.keys;
+      }
+
+      if (srcConnId !== connectionId) return; // Only allow same connection for now
+      
+      if (keys.includes(item.key as React.Key)) return; // Cannot drop into itself
+      
+      const sourceFiles = data.filter(d => keys.includes(d.key as React.Key));
+      
+      if (sourceFiles.length > 0) {
+        setMoveSourceFiles(sourceFiles);
+        setMoveTargetFolder(item);
+        setMoveModalVisible(true);
+      }
+    } catch (err) {
+      console.error('Drop error', err);
+    }
+  };
+
+  const handleConfirmMove = async () => {
+    if (moveSourceFiles.length > 0 && moveTargetFolder && onDropMove) {
+      await onDropMove(moveSourceFiles.map(f => f.key as React.Key), moveTargetFolder);
+    }
+    setMoveModalVisible(false);
+    setMoveSourceFiles([]);
+    setMoveTargetFolder(null);
+  };
+
+  const handleCancelMove = () => {
+    setMoveModalVisible(false);
+    setMoveSourceFiles([]);
+    setMoveTargetFolder(null);
   };
 
   const rectFromPoints = (start: { x: number; y: number }, end: { x: number; y: number }) => {
@@ -229,6 +324,9 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   }, [lassoing, lassoStart, triggerSelectionChange]);
 
   const renderItem = (item: any) => {
+    const isDragOver = dragOverKey === item.key;
+    const isSelected = (lassoing ? lassoSelectedKeys : selectedKeys).includes(item.key as React.Key);
+
     return (
       <FileContextMenu
         key={item.key}
@@ -259,15 +357,14 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
         >
           <div
             draggable="true"
-            className={`${styles.item} ${itemClassName} ${
-              (lassoing ? lassoSelectedKeys : selectedKeys).includes(item.key as React.Key) ? styles.selected : ''
-            }`}
+            className={`${styles.item} ${itemClassName} ${isSelected ? styles.selected : ''}`}
+            style={isDragOver ? { border: '2px dashed var(--primary-color)', background: 'rgba(24, 144, 255, 0.1)' } : {}}
             data-info={JSON.stringify({
               connectionId,
               key: item.key,
             })}
             data-key={item.key as React.Key}
-            data-selected={(lassoing ? lassoSelectedKeys : selectedKeys).includes(item.key as React.Key) ? 'true' : 'false'}
+            data-selected={isSelected ? 'true' : 'false'}
             onClick={(e) => {
               e.stopPropagation();
               clickDebounce(() => {
@@ -280,6 +377,9 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
               handleFileClick(item);
             }}
             onDragStart={(e) => handleDragStart(e, item)}
+            onDragOver={(e) => handleDragOver(e, item)}
+            onDragLeave={(e) => handleDragLeave(e, item)}
+            onDrop={(e) => handleDrop(e, item)}
           >
             {item.isDirectory ? (
               <Fragment>
@@ -328,6 +428,14 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
           }}
         />
       ) : null}
+      
+      <FileMoveConfirmModal 
+        open={moveModalVisible}
+        sourceFiles={moveSourceFiles}
+        targetFolder={moveTargetFolder}
+        onConfirm={handleConfirmMove}
+        onCancel={handleCancelMove}
+      />
     </div>
   );
 };

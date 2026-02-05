@@ -176,6 +176,27 @@ const LocalViewer = (props: LocalViewerProps) => {
     setTransferModalVisible(false);
   };
 
+  const handleDropMove = async (sourceKeys: React.Key[], targetFolder: TStoreObject) => {
+    const sourceConnectionId = connectionId;
+    const targetConnectionId = connectionId;
+    const targetPath = targetFolder.key as string;
+
+    await storeRequest({
+      method: 'transfer',
+      id: connectionId,
+      params: {
+        sourceConnectionId,
+        targetConnectionId,
+        files: sourceKeys,
+        targetPath,
+        isMove: true,
+      },
+    });
+
+    // Refresh the list after move
+    handleGetObjects();
+  };
+
   const handleSelectionChange = (keys: React.Key[]) => {
     setSelectedKeys(keys);
   };
@@ -289,6 +310,7 @@ const LocalViewer = (props: LocalViewerProps) => {
               selectedKeys={selectedKeys}
               onMoveTo={handleMoveTo}
               onCopyTo={handleCopyTo}
+              onDropMove={handleDropMove}
             />
           ) : null}
           {display === ETabDisplay.CARD ? (
@@ -304,6 +326,7 @@ const LocalViewer = (props: LocalViewerProps) => {
               selectedKeys={selectedKeys}
               onMoveTo={handleMoveTo}
               onCopyTo={handleCopyTo}
+              onDropMove={handleDropMove}
             />
           ) : null}
         </FileDropWrap>

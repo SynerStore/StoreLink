@@ -10,6 +10,7 @@ export type FileCardListProps = {
   onRename?: (data: any, newName: string) => Promise<void>;
   onMoveTo?: (data: any) => Promise<void>;
   onCopyTo?: (data: any) => Promise<void>;
+  onDropMove?: (sourceKeys: React.Key[], targetFolder: TStoreObject) => Promise<void>;
   onSelectionChange?: (selectedKeys: React.Key[]) => void;
   selectedKeys?: React.Key[];
   className?: string;

@@ -17,6 +17,7 @@ export type CardContentProps = {
   onCopyTo?: (data: any) => Promise<void>;
   onSelectionChange?: (selectedKeys: React.Key[]) => void;
   selectedKeys?: React.Key[];
+  onDropMove?: (sourceKeys: React.Key[], targetFolder: TStoreObject) => Promise<void>;
 };
 
 const CardContent = (props: CardContentProps) => {
@@ -34,6 +35,7 @@ const CardContent = (props: CardContentProps) => {
     onCopyTo,
     onSelectionChange,
     selectedKeys,
+    onDropMove,
   } = props;
 
   useLayoutEffect(() => {
@@ -54,6 +56,7 @@ const CardContent = (props: CardContentProps) => {
             onDownload={onDownload}
             onMoveTo={onMoveTo}
             onCopyTo={onCopyTo}
+            onDropMove={onDropMove}
             onSelectionChange={onSelectionChange}
             selectedKeys={selectedKeys}
             minItemWidth={80}

@@ -28,4 +28,5 @@ export { default as List } from './List';
 export * from './FileTable';
 export { default as FileCardList } from './FileCardList';
 export { default as FileTransferModal } from './FileTransferModal';
+export { default as FileMoveConfirmModal } from './FileMoveConfirmModal';
 export { default as StoreViewerWrap } from './StoreViewerWrap';
