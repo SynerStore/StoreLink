@@ -19,6 +19,9 @@ export type TableContentProps = {
   onRename: (data: any, newName: string) => Promise<void>;
   onSelectionChange?: (selectedKeys: React.Key[]) => void;
   selectedKeys?: React.Key[];
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
+  onDropMove?: (sourceKeys: React.Key[], targetFolder: TStoreObject) => Promise<void>;
 };
 
 const TableContent = (props: TableContentProps) => {
@@ -34,6 +37,9 @@ const TableContent = (props: TableContentProps) => {
     connectionId,
     onSelectionChange,
     selectedKeys,
+    onMoveTo,
+    onCopyTo,
+    onDropMove,
   } = props;
   const { t } = useTranslation();
 
@@ -72,6 +78,8 @@ const TableContent = (props: TableContentProps) => {
             onRename={onRename}
             onDelete={onDelete}
             onOpen={onFileView}
+            onMoveTo={onMoveTo}
+            onCopyTo={onCopyTo}
           >
             <div
               draggable="true"
@@ -123,22 +131,19 @@ const TableContent = (props: TableContentProps) => {
   ];
 
   return (
-    <div className="table-content">
+    <div className={styles['table-content']}>
       <FileTable
-        rowKey={'key'}
-        size="small"
-        bordered={false}
+        dataSource={data}
+        rowKey="key"
+        columns={columns}
         loading={loading}
         rowSelection={{
           type: 'checkbox',
-          columnWidth: 40,
-          onChange: handleSelectChange,
           selectedRowKeys: selectedKeys,
+          onChange: handleSelectChange,
         }}
         scroll={{ y: tableScrollHight }}
-        dataSource={data}
-        pagination={false}
-        columns={columns}
+        onDropMove={onDropMove}
       />
     </div>
   );

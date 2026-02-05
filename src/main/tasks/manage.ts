@@ -56,10 +56,6 @@ class TaskManager {
   private setupTask(task: TaskEntity) {
     task.setCallbacks(
       () => {
-        // On progress
-        // Throttle DB updates if needed, but for now just update
-        // We might not want to update DB on every chunk for speed, but for simplicity let's do it
-        // Or better, only send IPC, and update DB less frequently
         this.notifyRenderer(task);
       },
       (status, err) => {

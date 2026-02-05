@@ -115,8 +115,8 @@ export type RenameParams = {
 };
 export async function rename(client: SftpClient, params: RenameParams) {
   const { oldName, newName } = params;
-  const dirname = path.dirname(oldName);
-  const result = await client.rename(oldName, path.join(dirname, newName));
+  const targetPath = newName.startsWith('/') ? newName : path.posix.join(path.posix.dirname(oldName), newName);
+  const result = await client.rename(oldName, targetPath);
   return result;
 }
 

@@ -15,6 +15,9 @@ export type CardContentProps = {
   onRename: (data: any, newName: string) => Promise<void>;
   onSelectionChange?: (selectedKeys: React.Key[]) => void;
   selectedKeys?: React.Key[];
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
+  onDropMove?: (sourceKeys: React.Key[], targetFolder: TStoreObject) => Promise<void>;
 };
 
 const CardContent = (props: CardContentProps) => {
@@ -30,6 +33,9 @@ const CardContent = (props: CardContentProps) => {
     connectionId,
     onSelectionChange,
     selectedKeys,
+    onMoveTo,
+    onCopyTo,
+    onDropMove,
   } = props;
 
   useLayoutEffect(() => {
@@ -48,6 +54,7 @@ const CardContent = (props: CardContentProps) => {
             onDownload={onDownload}
             onRename={onRename}
             onDelete={onDelete}
+            onDropMove={onDropMove}
             onSelectionChange={onSelectionChange}
             selectedKeys={selectedKeys}
             minItemWidth={80}

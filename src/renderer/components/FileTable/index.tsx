@@ -277,6 +277,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
   };
 
   const handleConfirmMove = async () => {
+    debugger
     if (onDropMove && moveTargetFolder && moveSourceFiles.length > 0) {
       const sourceKeys = moveSourceFiles.map((file, i) => getRowKey(file, i)); // Note: this might be inaccurate if getRowKey needs index
       // Better to rely on keys if possible, assuming moveSourceFiles are from dataSource

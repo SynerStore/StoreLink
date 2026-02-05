@@ -273,12 +273,6 @@ export type UploadObjectParams = {
   region: string;
 };
 
-// Internal use for single file upload logic if needed, but putObject below handles both
-async function uploadObject(client: COS, params: UploadObjectParams, onProgress?: any) {
-   // This is effectively putObject logic, keeping for structure consistency
-   return putObject(client, params, onProgress);
-}
-
 export type PutObjectParams = {
   prefix?: string;
   key?: string;
@@ -559,6 +553,16 @@ export async function renameFolder(client: COS, params: RenameFolderParams) {
   for (const key of keys) {
     const objectNewKey = key.replace(oldKey, newKeyPrefix);
     await renameObject(client, { oldKey: key, newKey: objectNewKey, bucketName, region });
+  }
+}
+
+export async function moveFolder(client: COS, params: RenameFolderParams) {
+  const { oldKey, newKey, bucketName, region } = params;
+  const newKeyPrefix = newKey.endsWith('/') ? newKey : newKey + '/';
+  const { keys } = await listAllObjects(client, { prefix: oldKey, bucketName, region });
+  for (const key of keys) {
+    const objectNewKey = key.replace(oldKey, newKeyPrefix);
+    await renameObject(client, { oldKey: key, newKey: objectNewKey, prefix: '', bucketName, region });
   }
 }
 

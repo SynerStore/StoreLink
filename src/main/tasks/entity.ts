@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import path from 'node:path';
 import { getStoreInstance } from '@/main/stores';
 import { ProgressData } from '@/main/utils';
 import { ETaskStatus, ETaskType } from '@/types';
@@ -66,6 +67,11 @@ export default class TaskEntity {
     this.startTime = new Date().toISOString();
     this.onStatusChange?.(this.status);
 
+    if (this.type === ETaskType.TRANSFER) {
+      await this.handleTransfer();
+      return;
+    }
+
     const { connectionId, method, params } = this;
     const store = getStoreInstance(connectionId);
 
@@ -105,6 +111,56 @@ export default class TaskEntity {
     this.status = ETaskStatus.CANCELED;
     this.endTime = new Date().toISOString();
     this.onStatusChange?.(this.status);
+  }
+
+  async handleTransfer() {
+    const { sourceConnectionId, targetConnectionId, files, targetPath, isMove } = this.params;
+
+    // Only support same-store transfer for now
+    if (sourceConnectionId === targetConnectionId) {
+      const store = getStoreInstance(sourceConnectionId);
+      this.size = files.length;
+      this.progress = 0;
+
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const fileName = path.basename(file);
+          const destPath = path.join(targetPath, fileName);
+
+          if (isMove) {
+            await store.rename({ oldName: file, newName: destPath });
+          } else {
+            await store.copy({ file: file, newFile: destPath });
+          }
+
+          this.progress = i + 1;
+          this.onProgress?.({
+            receivedBytes: this.progress,
+            size: this.size,
+            progress: Math.round((this.progress / this.size) * 100),
+            speed: 0,
+          });
+        }
+
+        this.status = ETaskStatus.COMPLETED;
+        this.endTime = new Date().toISOString();
+        this.onStatusChange?.(this.status);
+      } catch (err: any) {
+        console.error('Transfer failed:', err);
+        this.status = ETaskStatus.FAILED;
+        this.errorMessage = err.message || String(err);
+        this.endTime = new Date().toISOString();
+        this.onStatusChange?.(this.status, this.errorMessage);
+      }
+      return;
+    }
+
+    // Fallback for cross-store
+    this.status = ETaskStatus.FAILED;
+    this.errorMessage = 'Cross-store transfer not implemented yet';
+    this.endTime = new Date().toISOString();
+    this.onStatusChange?.(this.status, this.errorMessage);
   }
 
   toRow() {

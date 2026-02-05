@@ -95,8 +95,8 @@ export type RenameParams = {
 };
 export async function rename(params: RenameParams) {
   const { oldName, newName } = params;
-  const dirname = path.dirname(oldName);
-  const result = await fs.rename(oldName, path.join(dirname, newName));
+  const targetPath = path.isAbsolute(newName) ? newName : path.join(path.dirname(oldName), newName);
+  const result = await fs.rename(oldName, targetPath);
   return result;
 }
 

@@ -22,6 +22,7 @@ export const storeRequestRegistry = () => {
       putFolder: ETaskType.CREATE_DIR,
       rename: ETaskType.RENAME,
       copy: ETaskType.COPY,
+      transfer: ETaskType.TRANSFER,
     };
 
     if (taskTypeMap[method]) {

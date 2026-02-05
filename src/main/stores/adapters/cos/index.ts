@@ -1,4 +1,5 @@
 import COS from 'cos-nodejs-sdk-v5';
+import path from 'node:path';
 
 import { sucessResponse, errorResponse, isObjectFolder } from '@/main/utils';
 import { IStorageHandler } from '../store';
@@ -33,6 +34,7 @@ import {
   GetSourceUrlParams,
   putObject,
   getService,
+  moveFolder,
 } from './api';
 import { storeRemove } from '../../storeManage';
 
@@ -138,6 +140,13 @@ class CosStore implements IStorageHandler {
     }
   }
 
+  async put(params: any, onProgress?: any) {
+    if (params.localPaths) {
+      return this.putMultiObjects(params, onProgress);
+    }
+    return this.putObject(params, onProgress);
+  }
+
   async putObject(params: any, onProgress?: any) {
     try {
       await putObject(this.client, { ...params, bucketName: this.bucketName, region: this.region }, onProgress);
@@ -186,6 +195,41 @@ class CosStore implements IStorageHandler {
   async deleteFolder(params: DeleteFolderParams) {
     try {
       await deleteFolder(this.client, { ...params, bucketName: this.bucketName, region: this.region });
+      return sucessResponse(true);
+    } catch (err: any) {
+      return errorResponse(err.message);
+    }
+  }
+
+  async rename(params: { oldName: string; newName: string }) {
+    try {
+      const { oldName, newName } = params;
+      const dirname = path.dirname(oldName);
+      
+      let targetPath = newName;
+      // Heuristic: if newName doesn't contain path separators (except trailing), assume it's just a name relative to dirname
+      const isNameOnly = !newName.replace(/\/$/, '').includes('/');
+      
+      if (isNameOnly) {
+         targetPath = path.join(dirname, newName);
+      }
+      
+      if (isObjectFolder(oldName)) {
+         await moveFolder(this.client, { 
+            oldKey: oldName, 
+            newKey: targetPath, 
+            bucketName: this.bucketName, 
+            region: this.region 
+         });
+      } else {
+         await renameObject(this.client, { 
+             oldKey: oldName, 
+             newKey: targetPath, 
+             prefix: '', 
+             bucketName: this.bucketName, 
+             region: this.region 
+         });
+      }
       return sucessResponse(true);
     } catch (err: any) {
       return errorResponse(err.message);

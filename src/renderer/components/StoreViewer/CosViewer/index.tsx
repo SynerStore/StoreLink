@@ -13,11 +13,18 @@ import {
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, StoreViewerWrap } from '@/renderer/components';
+import {
+  FolderCreateWrap,
+  ViewInput,
+  FileDropWrap,
+  ButtonGroup,
+  StoreViewerWrap,
+  FileTransferModal,
+} from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer, createTask } from '@/renderer/utils';
 import { useLoading, useUnmount } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
-import { ETaskType } from '@/types';
+import { ETaskType, TStoreObject } from '@/types';
 import { useTranslation } from 'react-i18next';
 
 const RadioGroup = Radio.Group;
@@ -37,6 +44,10 @@ const CosViewer = (props: CosViewerProps) => {
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
+
+  const [transferModalVisible, setTransferModalVisible] = useState(false);
+  const [transferMode, setTransferMode] = useState<'move' | 'copy'>('copy');
+  const [transferFiles, setTransferFiles] = useState<TStoreObject[]>([]);
 
   const display = useMemo(() => {
     return data?.display || ETabDisplay.LIST;
@@ -147,6 +158,60 @@ const CosViewer = (props: CosViewerProps) => {
       oldKey: record.key,
       newKey: newName,
     });
+  };
+
+  const handleMoveTo = async (record: any) => {
+    setTransferFiles([record]);
+    setTransferMode('move');
+    setTransferModalVisible(true);
+  };
+
+  const handleCopyTo = async (record: any) => {
+    setTransferFiles([record]);
+    setTransferMode('copy');
+    setTransferModalVisible(true);
+  };
+
+  const handleTransfer = async (targetConnectionId: string, targetPath: string) => {
+    const isMove = transferMode === 'move';
+    const sourceConnectionId = connectionId;
+    const files = transferFiles.map((f) => f.key);
+
+    await storeRequest({
+      method: 'transfer',
+      id: connectionId,
+      params: {
+        sourceConnectionId,
+        targetConnectionId,
+        files,
+        targetPath,
+        isMove,
+      },
+    });
+
+    setTransferModalVisible(false);
+  };
+
+  const handleDropMove = async (sourceKeys: React.Key[], targetFolder: TStoreObject) => {
+    const sourceConnectionId = connectionId;
+    const targetConnectionId = connectionId;
+    const targetPath = targetFolder.key as string;
+
+    debugger
+    await storeRequest({
+      method: 'transfer',
+      id: connectionId,
+      params: {
+        sourceConnectionId,
+        targetConnectionId,
+        files: sourceKeys,
+        targetPath,
+        isMove: true,
+      },
+    });
+
+    // Refresh the list after move
+    handleGetObjects();
   };
 
   const handleDisplayChange = (value: ETabDisplay) => {
@@ -274,6 +339,9 @@ const CosViewer = (props: CosViewerProps) => {
               loading={loading}
               onSelectionChange={handleSelectionChange}
               selectedKeys={selectedKeys}
+              onMoveTo={handleMoveTo}
+              onCopyTo={handleCopyTo}
+              onDropMove={handleDropMove}
             />
           ) : (
             <CardContent
@@ -287,6 +355,9 @@ const CosViewer = (props: CosViewerProps) => {
               loading={loading}
               onSelectionChange={handleSelectionChange}
               selectedKeys={selectedKeys}
+              onMoveTo={handleMoveTo}
+              onCopyTo={handleCopyTo}
+              onDropMove={handleDropMove}
             />
           )}
         </FileDropWrap>
@@ -296,6 +367,16 @@ const CosViewer = (props: CosViewerProps) => {
           {t('storeViewer.footer.selectedCount', { count: selectedKeys.length })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
         </span>
+      }
+      extra={
+        <FileTransferModal
+          visible={transferModalVisible}
+          mode={transferMode}
+          files={transferFiles}
+          sourceConnectionId={connectionId}
+          onCancel={() => setTransferModalVisible(false)}
+          onOk={handleTransfer}
+        />
       }
     />
   );
