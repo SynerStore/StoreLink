@@ -5,28 +5,42 @@ import { taskRequest } from '@/renderer/utils';
 export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[]) => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  const fetchTasks = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await taskRequest('list', {});
-      let filtered = res;
-      if (statusFilters && statusFilters.length > 0) {
-        filtered = filtered.filter((t: any) => statusFilters.includes(t.status));
+  const fetchTasks = useCallback(
+    async (page = current, size = pageSize) => {
+      setLoading(true);
+      try {
+        const res = await taskRequest('list', {
+          status: statusFilters,
+          type: typeFilters,
+          current: page,
+          pageSize: size,
+        });
+
+        if (res && typeof res === 'object' && 'list' in res) {
+          setTasks(res.list);
+          setTotal(res.total);
+          setCurrent(res.current);
+          setPageSize(res.pageSize);
+        } else {
+          // Fallback or empty
+          setTasks([]);
+          setTotal(0);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-      if (typeFilters && typeFilters.length > 0) {
-        filtered = filtered.filter((t: any) => typeFilters.includes(t.type));
-      }
-      setTasks(filtered);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [JSON.stringify(statusFilters), JSON.stringify(typeFilters)]);
+    },
+    [JSON.stringify(statusFilters), JSON.stringify(typeFilters)],
+  );
 
   useEffect(() => {
-    fetchTasks();
+    fetchTasks(current, pageSize);
 
     const handler = (updatedTask: any) => {
       setTasks((prev) => {
@@ -57,8 +71,13 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
           newTasks[index] = { ...newTasks[index], ...updatedTask };
           return newTasks;
         } else {
-          // Add new if it matches
-          return [updatedTask, ...prev];
+          // Add new if it matches and we are on the first page
+          if (current === 1) {
+            const newTasks = [updatedTask, ...prev];
+            // Optionally enforce pageSize limit locally or wait for refresh
+            return newTasks;
+          }
+          return prev;
         }
       });
     };
@@ -68,7 +87,7 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
     return () => {
       window.electronBridge?.removeListener(EChannels.taskUpdate, handler);
     };
-  }, [fetchTasks]);
+  }, [fetchTasks, current, pageSize]);
 
   const handlePause = async (taskId: string) => {
     await taskRequest('pause', { taskId });
@@ -80,7 +99,33 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
 
   const handleDelete = async (taskId: string) => {
     await taskRequest('delete', { taskId });
+    // Refetch to update pagination
+    fetchTasks(current, pageSize);
   };
 
-  return { tasks, loading, handlePause, handleResume, handleDelete, refresh: fetchTasks };
+  const handleTableChange = (pagination: any) => {
+    const { current: newCurrent, pageSize: newPageSize } = pagination;
+    setCurrent(newCurrent);
+    setPageSize(newPageSize);
+    // fetchTasks will be triggered by useEffect
+  };
+
+  return {
+    tasks,
+    loading,
+    handlePause,
+    handleResume,
+    handleDelete,
+    refresh: () => fetchTasks(current, pageSize),
+    pagination: {
+      current,
+      pageSize,
+      total,
+      onChange: (page: number, size: number) => {
+        setCurrent(page);
+        setPageSize(size);
+      },
+    },
+    handleTableChange,
+  };
 };

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 const DownloadingTaskTable = () => {
   const { t } = useTranslation();
-  const { tasks, handlePause, handleResume, handleDelete } = useTasks(
+  const { tasks, handlePause, handleResume, handleDelete, pagination, handleTableChange, loading } = useTasks(
     [ETaskStatus.PENDING, ETaskStatus.RUNNING, ETaskStatus.PAUSED],
     [ETaskType.DOWNLOAD],
   );
@@ -75,7 +75,19 @@ const DownloadingTaskTable = () => {
         </Space>
         <Input.Search size="small" allowClear placeholder={t('common.search')} style={{ width: 280 }} />
       </div> */}
-      <Table columns={columns} dataSource={tasks} rowKey="taskId" pagination={false} />
+      <Table
+        columns={columns}
+        dataSource={tasks}
+        rowKey="taskId"
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          showSizeChanger: true,
+        }}
+        onChange={handleTableChange}
+        loading={loading}
+      />
     </div>
   );
 };

@@ -164,26 +164,51 @@ class TaskManager {
 
   public getTasks(params?: any) {
     try {
-      // If requesting history, might need to query DB for completed tasks not in memory
-      // For now, return all tasks from DB
-      let query = 'SELECT * FROM tasks';
-      const args = [];
+      const { status, type, current = 1, pageSize = 20 } = params || {};
+      const offset = (current - 1) * pageSize;
 
-      if (params?.status) {
-        query += ' WHERE status = ?';
-        args.push(params.status);
+      let baseQuery = 'FROM tasks';
+      const whereClauses: string[] = [];
+      const args: any[] = [];
+
+      if (status && Array.isArray(status) && status.length > 0) {
+        const placeholders = status.map(() => '?').join(',');
+        whereClauses.push(`status IN (${placeholders})`);
+        args.push(...status);
+      } else if (status) {
+         // Single status support for backward compatibility or if passed as number
+         whereClauses.push('status = ?');
+         args.push(status);
       }
 
-      query += ' ORDER BY createTime DESC';
+      if (type && Array.isArray(type) && type.length > 0) {
+        const placeholders = type.map(() => '?').join(',');
+        whereClauses.push(`type IN (${placeholders})`);
+        args.push(...type);
+      }
 
-      const rows = db.prepare(query).all(...args) as any[];
-      return rows.map((row) => ({
+      if (whereClauses.length > 0) {
+        baseQuery += ' WHERE ' + whereClauses.join(' AND ');
+      }
+
+      // Count query
+      const countQuery = `SELECT COUNT(*) as total ${baseQuery}`;
+      const totalRow = db.prepare(countQuery).get(...args) as any;
+      const total = totalRow?.total || 0;
+
+      // Data query
+      const query = `SELECT * ${baseQuery} ORDER BY createTime DESC LIMIT ? OFFSET ?`;
+      const rows = db.prepare(query).all(...args, pageSize, offset) as any[];
+
+      const list = rows.map((row) => ({
         ...row,
         params: JSON.parse(row.params),
       }));
+
+      return { list, total, current, pageSize };
     } catch (err) {
       console.error('Failed to get tasks:', err);
-      return [];
+      return { list: [], total: 0, current: 1, pageSize: 20 };
     }
   }
 }

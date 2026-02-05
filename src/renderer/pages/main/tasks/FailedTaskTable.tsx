@@ -7,7 +7,10 @@ import { useTranslation } from 'react-i18next';
 
 const FailedTaskTable = () => {
   const { t } = useTranslation();
-  const { tasks, handleResume, handleDelete } = useTasks([ETaskStatus.FAILED, ETaskStatus.CANCELED], []);
+  const { tasks, handleResume, handleDelete, pagination, handleTableChange, loading } = useTasks(
+    [ETaskStatus.FAILED, ETaskStatus.CANCELED],
+    [],
+  );
 
   const columns = [
     {
@@ -69,7 +72,19 @@ const FailedTaskTable = () => {
         </Space>
         <InputSearch size="small" allowClear placeholder={t('common.search')} style={{ width: 280 }} />
       </div> */}
-      <Table columns={columns} dataSource={tasks} rowKey="taskId" pagination={false} />
+      <Table
+        columns={columns}
+        dataSource={tasks}
+        rowKey="taskId"
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          showSizeChanger: true,
+        }}
+        onChange={handleTableChange}
+        loading={loading}
+      />
     </div>
   );
 };
