@@ -5,17 +5,17 @@ body {
   --store-sider-width: 230px;
 
   /* theme  */
-  --primary-color: #3c62cd;
-  --primary-1: #eaf0ff;
-  --primary-2: #cdd9f7;
-  --primary-3: #a9bdf0;
-  --primary-4: #7f9ee4;
-  --primary-5: #587dd8;
-  --primary-6: #3c62cd;
-  --primary-7: #2f4fb0;
-  --primary-8: #263f8f;
-  --primary-9: #1d306f;
-  --accent-color-light: #3c62cd;
+  --primary-color: #4856b3;
+  --primary-1: #eff2fc;
+  --primary-2: #dce3f8;
+  --primary-3: #b8c5f0;
+  --primary-4: #94a7e8;
+  --primary-5: #708ae0;
+  --primary-6: #4856b3;
+  --primary-7: #384394;
+  --primary-8: #293175;
+  --primary-9: #1b2056;
+  --accent-color-light: #4856b3;
   --accent-color-dark: #2bb1d9;
 
   --neutral-1: #ffffff;
@@ -31,8 +31,8 @@ body {
   --border-color: var(--neutral-4);
   --icon-hover-bg-color: #ededed;
   --icon-hover-danger-color: #f53f3f;
-  --card-selected-bg: #f0f6ff;
-  --card-selected-bg-hover: #e8f2ff;
+  --card-selected-bg: #f0f1f9;
+  --card-selected-bg-hover: #dce3f8;
 
   --border-radius-base: 4px;
   --border-radius-small: 4px;
@@ -46,7 +46,7 @@ body {
   --home-card-bg-light: linear-gradient(180deg, #ffffff, #fafbff);
   --content-bg-light: #fff;
   --sidebar-backdrop-filter: saturate(180%) blur(16px);
-  --header-border-color: rgba(60, 98, 205, 0.18);
+  --header-border-color: rgba(72, 86, 179, 0.18);
 
   --color-bg-2: var(--neutral-2);
   --color-bg-popup: var(--neutral-1);
@@ -72,16 +72,16 @@ body {
 
 body[data-theme='dark'],
 body.dark-theme {
-  --primary-color: #3c62cd;
-  --primary-1: #192033;
-  --primary-2: #1f2a49;
-  --primary-3: #27355f;
-  --primary-4: #2f4279;
-  --primary-5: #375096;
-  --primary-6: #3c62cd;
-  --primary-7: #6b8df0;
-  --primary-8: #91a9f7;
-  --primary-9: #c3d0fb;
+  --primary-color: #4856b3;
+  --primary-1: #191b2e;
+  --primary-2: #202344;
+  --primary-3: #2a2f5e;
+  --primary-4: #333b7a;
+  --primary-5: #3d4996;
+  --primary-6: #4856b3;
+  --primary-7: #6b77c2;
+  --primary-8: #8e98d1;
+  --primary-9: #b1b9e0;
   --accent-color-dark: #2bb1d9;
 
   --neutral-1: #0f1115;
@@ -97,8 +97,8 @@ body.dark-theme {
   --border-color: var(--neutral-4);
   --icon-hover-bg-color: rgba(255, 255, 255, 0.08);
   --icon-hover-danger-color: #f53f3f;
-  --card-selected-bg: rgba(60, 98, 205, 0.14);
-  --card-selected-bg-hover: rgba(60, 98, 205, 0.24);
+  --card-selected-bg: rgba(72, 86, 179, 0.14);
+  --card-selected-bg-hover: rgba(72, 86, 179, 0.24);
 
   --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35);
   --shadow-control: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -132,7 +132,7 @@ body.macos {
   --shadow-control: 0 10px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
   --header-bg-light: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(246, 248, 255, 0.7));
   --sidebar-backdrop-filter: saturate(180%) blur(16px);
-  --header-border-color: rgba(60, 98, 205, 0.22);
+  --header-border-color: rgba(72, 86, 179, 0.22);
 }
 
 body.macos[data-theme='dark'],

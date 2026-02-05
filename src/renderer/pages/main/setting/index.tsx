@@ -50,7 +50,7 @@ const Setting = () => {
     <PageWrapper title={t('settings.title')}>
       <Form autoComplete="off" layout="horizontal">
         <FormItem label={t('settings.theme')}>
-          <RadioGroup name="size" value={settingStore.settings.theme} onChange={handleSwitchTheme}>
+          <RadioGroup name="size" value={settingStore.settings.theme} onChange={handleSwitchTheme} buttonStyle="solid"> 
             <Radio.Button value="light">{t('settings.themeLight')}</Radio.Button>
             <Radio.Button value="dark">{t('settings.themeDark')}</Radio.Button>
             <Radio.Button value="system">{t('settings.themeSystem')}</Radio.Button>

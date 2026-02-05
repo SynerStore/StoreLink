@@ -244,7 +244,7 @@ const S3Viewer = (props: S3ViwerProps) => {
           <Space size={4}>
             <Input.Search style={{ width: '240px' }} />
             <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
-            <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)}>
+            <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)} buttonStyle="solid">
               <Radio.Button value="list" style={{ fontSize: 'medium' }}>
                 <UnorderedListOutlined />
               </Radio.Button>

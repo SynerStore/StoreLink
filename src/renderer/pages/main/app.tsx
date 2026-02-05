@@ -44,7 +44,7 @@ const App = () => {
     return {
       algorithm: settingStore.settings.theme === EnumTheme.DARK ? theme.darkAlgorithm : theme.defaultAlgorithm,
       token: {
-        colorPrimary: '#3c62cd',
+        colorPrimary: '#4856b3',
       },
     };
   }, [settingStore.settings.theme]);

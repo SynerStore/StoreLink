@@ -243,7 +243,7 @@ const OssViewer = (props: OssViewerProps) => {
           <Space size={4}>
             <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
             <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
-            <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)}>
+            <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)} buttonStyle="solid">
               <Radio.Button value="list" style={{ fontSize: 'medium' }}>
                 <UnorderedListOutlined />
               </Radio.Button>

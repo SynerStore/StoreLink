@@ -284,7 +284,7 @@ const LocalViewer = (props: LocalViewerProps) => {
           <Space size={4}>
             <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
             <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
-            <RadioGroup value={display} onChange={handleDisplayChange}>
+            <RadioGroup value={display} onChange={handleDisplayChange} buttonStyle="solid">
               <Radio.Button value="list" style={{ fontSize: 'medium' }}>
                 <UnorderedListOutlined />
               </Radio.Button>
