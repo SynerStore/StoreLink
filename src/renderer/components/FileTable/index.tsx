@@ -191,6 +191,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     <div className="file-table-wrapper" tabIndex={0} onKeyDown={handleKeyDown} ref={wrapperRef}>
       <Table
         {...restProps}
+        virtual
         dataSource={dataSource}
         columns={columns}
         rowSelection={antdRowSelection}

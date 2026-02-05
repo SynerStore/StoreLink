@@ -3,7 +3,8 @@ import dayjs from 'dayjs';
 import { Tooltip } from 'antd';
 import { debounce } from 'lodash-es';
 
-import { FileIcon, FileContextMenu, ResponsiveGrid } from '@/renderer/components';
+import { FileIcon, FileContextMenu } from '@/renderer/components';
+import VirtualResponsiveGrid, { VirtualResponsiveGridRef } from '../ResponsiveGrid/VirtualResponsiveGrid';
 import { calculateSize } from '@/renderer/utils';
 import { FileCardListProps, rangeSelectKeys, toggleSelectionKey } from './types';
 import styles from './styles.module.css';
@@ -29,9 +30,11 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     maxItemWidth = 100,
     columnGap = 12,
     rowGap = 12,
+    height,
   } = props;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const virtualGridRef = useRef<VirtualResponsiveGridRef>(null);
   const clickDebounce = useMemo(() => debounce((fn: Function) => fn(), 200), []);
   const [internalSelectedKeys, setInternalSelectedKeys] = useState<React.Key[]>([]);
   const selectedKeys = propSelectedKeys !== undefined ? propSelectedKeys : internalSelectedKeys;
@@ -42,6 +45,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   const [lassoStart, setLassoStart] = useState<{ x: number; y: number } | null>(null);
   const [lassoRect, setLassoRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [lassoSelectedKeys, setLassoSelectedKeys] = useState<React.Key[]>([]);
+  const [virtualItemsPerRow, setVirtualItemsPerRow] = useState(1);
 
   const triggerSelectionChange = useCallback(
     (newKeys: React.Key[]) => {
@@ -84,16 +88,6 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     triggerSelectionChange(newSelectedKeys);
   };
 
-  const computeItemsPerRow = useCallback(() => {
-    const container = wrapperRef.current?.querySelector('.responsive-grid-container') as HTMLDivElement | null;
-    const item = wrapperRef.current?.querySelector('.responsive-grid-item') as HTMLDivElement | null;
-    if (!container || !item) return 1;
-    const containerWidth = container.clientWidth;
-    const itemWidth = item.clientWidth;
-    const perRow = Math.max(1, Math.floor((containerWidth + columnGap) / (itemWidth + columnGap)));
-    return perRow;
-  }, [columnGap]);
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (data.length === 0) return;
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
@@ -111,7 +105,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     } else if (e.key === 'ArrowUp') {
       nextIndex = currentIndex - 1 >= 0 ? currentIndex - 1 : 0;
     } else if (e.key === 'ArrowRight') {
-      const perRow = computeItemsPerRow();
+      const perRow = virtualItemsPerRow;
       nextIndex = currentIndex + 1 < data.length ? currentIndex + 1 : currentIndex;
       if (perRow > 1 && currentIndex >= 0) {
         const rowStart = currentIndex - (currentIndex % perRow);
@@ -119,7 +113,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
         nextIndex = Math.min(currentIndex + 1, rowEnd);
       }
     } else if (e.key === 'ArrowLeft') {
-      const perRow = computeItemsPerRow();
+      const perRow = virtualItemsPerRow;
       if (currentIndex <= 0) nextIndex = 0;
       else {
         if (perRow > 1) {
@@ -135,6 +129,8 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     if (nextIndex === -1) nextIndex = 0;
     const nextKey = data[nextIndex].key as React.Key;
     setFocusedKey(nextKey);
+    virtualGridRef.current?.scrollToItem(nextIndex);
+
     if (e.shiftKey) {
       if (lastSelectedKey === null) {
         setLastSelectedKey(data[currentIndex >= 0 ? currentIndex : 0].key as React.Key);
@@ -202,11 +198,10 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
       const cur = { x: e.clientX - bounds.left, y: e.clientY - bounds.top };
       const rect = rectFromPoints(lassoStart, cur);
       setLassoRect(rect);
-      const items = Array.from(wrapperRef.current?.querySelectorAll('.responsive-grid-item') || []);
+      const items = Array.from(wrapperRef.current?.querySelectorAll(`.${styles.item}`) || []);
       const selected: React.Key[] = [];
       items.forEach((el) => {
-        const inner = el.querySelector(`.${styles.item}`) as HTMLDivElement | null;
-        if (!inner) return;
+        const inner = el as HTMLDivElement;
         const keyAttr = inner.getAttribute('data-key') as string | null;
         if (!keyAttr) return;
         const r = inner.getBoundingClientRect();
@@ -233,6 +228,76 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     };
   }, [lassoing, lassoStart, triggerSelectionChange]);
 
+  const renderItem = (item: any) => {
+    return (
+      <FileContextMenu
+        key={item.key}
+        data={item}
+        onDetail={() => {}}
+        onRename={onRename}
+        onDelete={onDelete}
+        onDownload={onDownload}
+        onMoveTo={onMoveTo}
+        onCopyTo={onCopyTo}
+      >
+        <Tooltip
+          placement="bottom"
+          trigger="click"
+          title={
+            <div>
+              <div>
+                {t('common.name')}:{item.name}
+              </div>
+              <div>
+                {t('common.size')}:{calculateSize(item.size as number)}
+              </div>
+              <div>
+                {t('common.modified')}:{dayjs(item.lastModified).format('YYYY-MM-DD HH:mm:ss')}
+              </div>
+            </div>
+          }
+        >
+          <div
+            draggable="true"
+            className={`${styles.item} ${itemClassName} ${
+              (lassoing ? lassoSelectedKeys : selectedKeys).includes(item.key as React.Key) ? styles.selected : ''
+            }`}
+            data-info={JSON.stringify({
+              connectionId,
+              key: item.key,
+            })}
+            data-key={item.key as React.Key}
+            data-selected={(lassoing ? lassoSelectedKeys : selectedKeys).includes(item.key as React.Key) ? 'true' : 'false'}
+            onClick={(e) => {
+              e.stopPropagation();
+              clickDebounce(() => {
+                handleItemClick(item, e);
+              });
+            }}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              clickDebounce.cancel();
+              handleFileClick(item);
+            }}
+            onDragStart={(e) => handleDragStart(e, item)}
+          >
+            {item.isDirectory ? (
+              <Fragment>
+                <FileIcon size="large" type="folder" />
+                <div className={styles.fileName}>{item.name}</div>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <FileIcon size="large" mime={item.mime as string} />
+                <div className={styles.fileName}>{item.name}</div>
+              </Fragment>
+            )}
+          </div>
+        </Tooltip>
+      </FileContextMenu>
+    );
+  };
+
   return (
     <div
       className={`${styles.container} ${className}`}
@@ -241,77 +306,17 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
       onKeyDown={handleKeyDown}
       onMouseDown={startLasso}
     >
-      <ResponsiveGrid minItemWidth={minItemWidth} maxItemWidth={maxItemWidth} columnGap={columnGap} rowGap={rowGap}>
-        {data.map((item) => {
-          return (
-            <FileContextMenu
-              key={item.key}
-              data={item}
-              onDetail={() => {}}
-              onRename={onRename}
-              onDelete={onDelete}
-              onDownload={onDownload}
-              onMoveTo={onMoveTo}
-              onCopyTo={onCopyTo}
-            >
-              <Tooltip
-                placement="bottom"
-                trigger="click"
-                title={
-                  <div>
-                    <div>
-                      {t('common.name')}:{item.name}
-                    </div>
-                    <div>
-                      {t('common.size')}:{calculateSize(item.size as number)}
-                    </div>
-                    <div>
-                      {t('common.modified')}:{dayjs(item.lastModified).format('YYYY-MM-DD HH:mm:ss')}
-                    </div>
-                  </div>
-                }
-              >
-                <div
-                  draggable="true"
-                  className={`${styles.item} ${itemClassName} ${
-                    (lassoing ? lassoSelectedKeys : selectedKeys).includes(item.key as React.Key) ? styles.selected : ''
-                  }`}
-                  data-info={JSON.stringify({
-                    connectionId,
-                    key: item.key,
-                  })}
-                  data-key={item.key as React.Key}
-                  data-selected={(lassoing ? lassoSelectedKeys : selectedKeys).includes(item.key as React.Key) ? 'true' : 'false'}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    clickDebounce(() => {
-                      handleItemClick(item, e);
-                    });
-                  }}
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    clickDebounce.cancel();
-                    handleFileClick(item);
-                  }}
-                  onDragStart={(e) => handleDragStart(e, item)}
-                >
-                  {item.isDirectory ? (
-                    <Fragment>
-                      <FileIcon size="large" type="folder" />
-                      <div className={styles.fileName}>{item.name}</div>
-                    </Fragment>
-                  ) : (
-                    <Fragment>
-                      <FileIcon size="large" mime={item.mime as string} />
-                      <div className={styles.fileName}>{item.name}</div>
-                    </Fragment>
-                  )}
-                </div>
-              </Tooltip>
-            </FileContextMenu>
-          );
-        })}
-      </ResponsiveGrid>
+      <VirtualResponsiveGrid
+        ref={virtualGridRef}
+        dataSource={data}
+        renderItem={renderItem}
+        minItemWidth={minItemWidth}
+        maxItemWidth={maxItemWidth}
+        columnGap={columnGap}
+        rowGap={rowGap}
+        height={height}
+        onItemsPerRowChange={setVirtualItemsPerRow}
+      />
       {lassoRect ? (
         <div
           className={styles.lassoRect}

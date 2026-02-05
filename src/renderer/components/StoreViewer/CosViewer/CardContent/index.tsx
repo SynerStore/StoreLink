@@ -1,6 +1,7 @@
 import { Spin, Empty } from 'antd';
+import { useLayoutEffect, useState } from 'react';
 
-import { TStoreObject } from '@/types';
+import { TStoreObject, EWindowSize } from '@/types';
 import { FileCardList } from '@/renderer/components';
 
 export type CardContentProps = {
@@ -17,6 +18,7 @@ export type CardContentProps = {
 };
 
 const CardContent = (props: CardContentProps) => {
+  const [cardHeight, setCardHeight] = useState(EWindowSize.height - 251);
   const {
     data,
     onPrefixChange,
@@ -29,6 +31,10 @@ const CardContent = (props: CardContentProps) => {
     onSelectionChange,
     selectedKeys,
   } = props;
+
+  useLayoutEffect(() => {
+    setCardHeight(document.body.clientHeight - 238);
+  }, []);
 
   return (
     <div className="cards-content">
@@ -48,6 +54,7 @@ const CardContent = (props: CardContentProps) => {
             maxItemWidth={100}
             columnGap={12}
             rowGap={12}
+            height={cardHeight}
           />
         ) : (
           <Empty />

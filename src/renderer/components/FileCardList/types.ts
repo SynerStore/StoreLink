@@ -18,6 +18,7 @@ export type FileCardListProps = {
   maxItemWidth?: number;
   columnGap?: number;
   rowGap?: number;
+  height?: number;
 };
 
 export const rangeSelectKeys = (items: TStoreObject[], anchor: React.Key, current: React.Key): React.Key[] => {
