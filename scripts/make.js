@@ -7,8 +7,8 @@ const pkg = require('../package.json');
 
 const root_dir = path.normalize(path.join(__dirname, '..'));
 const dist_dir = path.normalize(path.join(__dirname, '..', 'dist'));
-const macIcon = path.normalize(path.join(__dirname, './assets', 'mac.png'));
-const winIcon = path.normalize(path.join(__dirname, './assets', 'win.png'));
+const macIcon = path.normalize(path.join(__dirname, './assets', 'icons/icon-512.png'));
+const winIcon = path.normalize(path.join(__dirname, './assets', 'icons/icon-512.png'));
 
 const APP_NAME = 'StoreLink';
 
