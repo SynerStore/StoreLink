@@ -9,6 +9,24 @@ body {
   height: 100vh;
 }
 
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 3px;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+}
+
 /* videojs 样式重置 */
 .vjs-paused .vjs-big-play-button,
 .vjs-paused.vjs-has-started .vjs-big-play-button {
@@ -17,6 +35,6 @@ body {
 
 /* antd 样式重置 */
 
-.ant-tabs-nav{
+.ant-tabs-nav {
   margin-bottom: 6px !important;
 }

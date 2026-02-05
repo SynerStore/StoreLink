@@ -53,6 +53,7 @@ body {
   --color-fill-3: var(--neutral-4);
   --color-neutral-2: var(--neutral-2);
   --color-neutral-8: var(--neutral-8);
+  --scrollbar-thumb-color: var(--neutral-6);
 
   transition:
     background-color 0.25s ease,
@@ -109,6 +110,7 @@ body.dark-theme {
   --content-bg-dark: #0f1115;
   --sidebar-backdrop-filter: saturate(160%) blur(14px);
   --header-border-color: rgba(43, 177, 217, 0.38);
+  --scrollbar-thumb-color: var(--neutral-6);
 
   --color-bg-2: var(--neutral-2);
   --color-bg-popup: var(--neutral-3);

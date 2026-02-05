@@ -20,7 +20,6 @@
 
     .home-tab-dashbord-card {
       width: calc(25% - 12px);
-      min-width: 200px;
       .ant-card {
         border-radius: var(--border-radius-base);
         box-shadow: var(--shadow-card);

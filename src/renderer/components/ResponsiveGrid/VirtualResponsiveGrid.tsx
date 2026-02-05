@@ -43,6 +43,7 @@ const VirtualResponsiveGrid = forwardRef<VirtualResponsiveGridRef, VirtualRespon
 
   const [itemWidth, setItemWidth] = useState<number>(responsiveGridCardWidth ?? maxItemWidth);
   const [itemsPerRow, setItemsPerRow] = useState<number>(1);
+  const [containerHeight, setContainerHeight] = useState<number>(height);
 
   useImperativeHandle(ref, () => ({
     scrollToItem: (index: number) => {
@@ -56,6 +57,9 @@ const VirtualResponsiveGrid = forwardRef<VirtualResponsiveGridRef, VirtualRespon
   const calculateLayout = useCallback(() => {
     if (!containerRef.current) return;
     const containerWidth = containerRef.current.clientWidth - padding * 2;
+    const currentHeight = containerRef.current.clientHeight;
+    setContainerHeight(currentHeight);
+
     const maxItems = Math.floor((containerWidth + columnGap) / (minItemWidth + columnGap));
     const minItems = Math.ceil((containerWidth + columnGap) / (maxItemWidth + columnGap));
     let bestItemsPerRow = Math.max(1, minItems);
@@ -113,7 +117,7 @@ const VirtualResponsiveGrid = forwardRef<VirtualResponsiveGridRef, VirtualRespon
       <List
         ref={listRef}
         data={rows}
-        height={height}
+        height={containerHeight}
         itemHeight={130}
         itemKey="key"
       >
