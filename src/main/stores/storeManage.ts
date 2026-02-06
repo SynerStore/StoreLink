@@ -28,6 +28,9 @@ const getConfigById = (id: string) => {
 };
 
 const createStoreClient = (data: any): any => {
+  if (!data) {
+    throw new Error('Connection data is required');
+  }
   const { id, type } = data;
   const config = (() => {
     try {
@@ -93,7 +96,7 @@ const scheduleCleanup = (id: string) => {
     if (!cur) return;
     try {
       const manager = TaskManager.getInstance();
-      const running = manager.getTasks({ status: ETaskStatus.RUNNING }).some((t: any) => t.connectionId === id);
+      const running = manager.getTasks({ status: ETaskStatus.RUNNING }).list.some((t: any) => t.connectionId === id);
       if (running) {
         scheduleCleanup(id);
         return;
@@ -113,6 +116,9 @@ export const getStoreInstance = (id: string) => {
     return entry.client;
   } else {
     const connectionData = getConfigById(id);
+    if (!connectionData) {
+      throw new Error(`Connection ${id} not found`);
+    }
     const storeClient = createStoreClient(connectionData);
     const entry: StoreEntry = { client: storeClient, timeout: null };
     storePool.set(id, entry);

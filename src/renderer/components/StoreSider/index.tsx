@@ -41,12 +41,14 @@ const StoreSider = (props: StoreSiderProps) => {
                 menu={[
                   {
                     render: () => (
-                      <ConnectionEditWrap connection={connection}>
-                        <Space size={6}>
-                          <EditOutlined />
-                          {t('storeSider.editConnection')}
-                        </Space>
-                      </ConnectionEditWrap>
+                      <span onClick={(e) => e.stopPropagation()}>
+                        <ConnectionEditWrap connection={connection}>
+                          <Space size={6}>
+                            <EditOutlined />
+                            {t('storeSider.editConnection')}
+                          </Space>
+                        </ConnectionEditWrap>
+                      </span>
                     ),
                   },
                   ...(connection.type === StoreTypes.LOCAL
@@ -78,12 +80,14 @@ const StoreSider = (props: StoreSiderProps) => {
                       ]),
                   {
                     render: () => (
-                      <ConnectionDeleteWrap onDelete={handleDelete} connection={{ key: id, ...connection }}>
-                        <Space size={6}>
-                          <DeleteOutlined />
-                          {t('storeSider.deleteConnection')}
-                        </Space>
-                      </ConnectionDeleteWrap>
+                      <span onClick={(e) => e.stopPropagation()}>
+                        <ConnectionDeleteWrap onDelete={handleDelete} connection={{ key: id, ...connection }}>
+                          <Space size={6}>
+                            <DeleteOutlined />
+                            {t('storeSider.deleteConnection')}
+                          </Space>
+                        </ConnectionDeleteWrap>
+                      </span>
                     ),
                   },
                 ]}

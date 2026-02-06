@@ -76,6 +76,7 @@ const FailedTaskTable = () => {
         columns={columns}
         dataSource={tasks}
         rowKey="taskId"
+        size="small"
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,
