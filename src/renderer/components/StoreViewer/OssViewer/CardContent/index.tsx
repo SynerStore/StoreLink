@@ -13,6 +13,9 @@ export type CardContentProps = {
   onDownload: (data: any) => Promise<void>;
   onDelete: (data: any) => Promise<void>;
   onRename: (data: any, newName: string) => Promise<void>;
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
+  onDropMove?: (sourceKeys: React.Key[], targetFolder: TStoreObject) => Promise<void>;
   onSelectionChange?: (selectedKeys: React.Key[]) => void;
   selectedKeys?: React.Key[];
 };
@@ -27,6 +30,9 @@ const CardContent = (props: CardContentProps) => {
     loading,
     onRename,
     onDelete,
+    onMoveTo,
+    onCopyTo,
+    onDropMove,
     connectionId,
     onSelectionChange,
     selectedKeys,
@@ -48,6 +54,9 @@ const CardContent = (props: CardContentProps) => {
             onDownload={onDownload}
             onRename={onRename}
             onDelete={onDelete}
+            onMoveTo={onMoveTo}
+            onCopyTo={onCopyTo}
+            onDropMove={onDropMove}
             onSelectionChange={onSelectionChange}
             selectedKeys={selectedKeys}
             minItemWidth={80}

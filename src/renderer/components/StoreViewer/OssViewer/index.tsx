@@ -13,11 +13,18 @@ import {
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, StoreViewerWrap } from '@/renderer/components';
+import {
+  FolderCreateWrap,
+  ViewInput,
+  FileDropWrap,
+  ButtonGroup,
+  StoreViewerWrap,
+  FileTransferModal,
+} from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer, createTask } from '@/renderer/utils';
 import { useLoading, useUnmount } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
-import { ETaskType } from '@/types';
+import { ETaskType, TStoreObject } from '@/types';
 import { useTranslation } from 'react-i18next';
 
 const RadioGroup = Radio.Group;
@@ -37,6 +44,10 @@ const OssViewer = (props: OssViewerProps) => {
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
+
+  const [transferModalVisible, setTransferModalVisible] = useState(false);
+  const [transferMode, setTransferMode] = useState<'move' | 'copy'>('copy');
+  const [transferFiles, setTransferFiles] = useState<TStoreObject[]>([]);
 
   const display = useMemo(() => {
     return data?.display || ETabDisplay.LIST;
@@ -149,6 +160,59 @@ const OssViewer = (props: OssViewerProps) => {
     });
   };
 
+  const handleMoveTo = async (record: any) => {
+    setTransferFiles([record]);
+    setTransferMode('move');
+    setTransferModalVisible(true);
+  };
+
+  const handleCopyTo = async (record: any) => {
+    setTransferFiles([record]);
+    setTransferMode('copy');
+    setTransferModalVisible(true);
+  };
+
+  const handleTransfer = async (targetConnectionId: string, targetPath: string) => {
+    const isMove = transferMode === 'move';
+    const sourceConnectionId = connectionId;
+    const files = transferFiles.map((f) => f.key);
+
+    await storeRequest({
+      method: 'transfer',
+      id: connectionId,
+      params: {
+        sourceConnectionId,
+        targetConnectionId,
+        files,
+        targetPath,
+        isMove,
+      },
+    });
+
+    setTransferModalVisible(false);
+  };
+
+  const handleDropMove = async (sourceKeys: React.Key[], targetFolder: TStoreObject) => {
+    const sourceConnectionId = connectionId;
+    const targetConnectionId = connectionId;
+    const targetPath = targetFolder.key as string;
+
+    await storeRequest({
+      method: 'transfer',
+      id: connectionId,
+      params: {
+        sourceConnectionId,
+        targetConnectionId,
+        files: sourceKeys,
+        targetPath,
+        isMove: true,
+      },
+    });
+
+    // Refresh the list after move
+    handleGetObjects();
+  };
+
   const handleDisplayChange = (value: ETabDisplay) => {
     updateTab({ ...data, display: value });
   };
@@ -181,6 +245,24 @@ const OssViewer = (props: OssViewerProps) => {
     { key: 'move', label: t('contextMenu.moveTo') },
     { key: 'remove', label: t('contextMenu.delete') },
   ];
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    const files = dataList.filter((item: any) => selectedKeys.includes(item.key));
+    if (files.length === 0) return;
+
+    if (key === 'copy') {
+      setTransferFiles(files);
+      setTransferMode('copy');
+      setTransferModalVisible(true);
+    } else if (key === 'move') {
+      setTransferFiles(files);
+      setTransferMode('move');
+      setTransferModalVisible(true);
+    } else if (key === 'remove') {
+      // 批量删除
+      files.forEach((file) => handleDelete(file));
+    }
+  };
 
   useUnmount(() => {
     storeRequest({
@@ -234,7 +316,7 @@ const OssViewer = (props: OssViewerProps) => {
               <Button>{t('storeViewer.createFolder')}</Button>
             </FolderCreateWrap>
             <Button>{t('common.download')}</Button>
-            <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+            <Dropdown trigger={['click']} menu={{ items: menuItems, onClick: handleMenuClick }}>
               <Button>
                 {t('common.more')} <DownOutlined style={{ fontSize: 'medium' }} />
               </Button>
@@ -266,6 +348,9 @@ const OssViewer = (props: OssViewerProps) => {
               onDownload={handleDownload}
               onDelete={handleDelete}
               onRename={handleRename}
+              onMoveTo={handleMoveTo}
+              onCopyTo={handleCopyTo}
+              onDropMove={handleDropMove}
               onSelectionChange={handleSelectionChange}
               selectedKeys={selectedKeys}
             />
@@ -280,10 +365,21 @@ const OssViewer = (props: OssViewerProps) => {
               onDownload={handleDownload}
               onDelete={handleDelete}
               onRename={handleRename}
+              onMoveTo={handleMoveTo}
+              onCopyTo={handleCopyTo}
+              onDropMove={handleDropMove}
               onSelectionChange={handleSelectionChange}
               selectedKeys={selectedKeys}
             />
           ) : null}
+          <FileTransferModal
+            visible={transferModalVisible}
+            mode={transferMode}
+            files={transferFiles}
+            sourceConnectionId={connectionId}
+            onCancel={() => setTransferModalVisible(false)}
+            onOk={handleTransfer}
+          />
         </FileDropWrap>
       }
       footer={

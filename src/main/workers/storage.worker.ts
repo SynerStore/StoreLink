@@ -55,9 +55,20 @@ const handleTransfer = async (task: WorkerTask, store: any, onProgress: (data: a
       // Note: Store adapters must support these params.
       // If S3 expects oldKey/newKey, this might need adaptation or caller ensures params match.
       // We keep existing logic from TaskEntity.
-      await store.rename({ oldName: file, newName: destPath });
+      await store.rename({
+        oldName: file,
+        newName: destPath,
+        oldKey: file,
+        newKey: destPath,
+      });
     } else {
-      await store.copy({ file: file, newFile: destPath });
+      await store.copy({
+        file: file,
+        newFile: destPath,
+        sourceKey: file,
+        targetKey: destPath,
+        targetPath: targetPath,
+      });
     }
 
     onProgress({

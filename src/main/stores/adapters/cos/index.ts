@@ -201,29 +201,29 @@ class CosStore implements IStorageHandler {
     }
   }
 
-  async rename(params: { oldName: string; newName: string }) {
+  async rename(params: { oldKey: string; newKey: string }) {
     try {
-      const { oldName, newName } = params;
-      const dirname = path.dirname(oldName);
+      const { oldKey, newKey } = params;
+      const dirname = path.dirname(oldKey);
 
-      let targetPath = newName;
-      // Heuristic: if newName doesn't contain path separators (except trailing), assume it's just a name relative to dirname
-      const isNameOnly = !newName.replace(/\/$/, '').includes('/');
+      let targetPath = newKey;
+      // Heuristic: if newKey doesn't contain path separators (except trailing), assume it's just a name relative to dirname
+      const isNameOnly = !newKey.replace(/\/$/, '').includes('/');
 
       if (isNameOnly) {
-         targetPath = path.join(dirname, newName);
+         targetPath = path.join(dirname, newKey);
       }
 
-      if (isObjectFolder(oldName)) {
+      if (isObjectFolder(oldKey)) {
          await moveFolder(this.client, {
-            oldKey: oldName,
+            oldKey: oldKey,
             newKey: targetPath,
             bucketName: this.bucketName,
             region: this.region
          });
       } else {
          await renameObject(this.client, {
-             oldKey: oldName,
+             oldKey: oldKey,
              newKey: targetPath,
              prefix: '',
              bucketName: this.bucketName,

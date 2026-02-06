@@ -17,6 +17,9 @@ export type TableContentProps = {
   onDownload: (data: any) => Promise<void>;
   onDelete: (data: any) => Promise<void>;
   onRename: (data: any, newName: string) => Promise<void>;
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
+  onDropMove?: (sourceKeys: React.Key[], targetFolder: TStoreObject) => Promise<void>;
   onSelectionChange?: (selectedKeys: React.Key[]) => void;
   selectedKeys?: React.Key[];
 };
@@ -31,6 +34,9 @@ const TableContent = (props: TableContentProps) => {
     loading,
     onRename,
     onDelete,
+    onMoveTo,
+    onCopyTo,
+    onDropMove,
     connectionId,
     onSelectionChange,
     selectedKeys,
@@ -71,6 +77,8 @@ const TableContent = (props: TableContentProps) => {
             onDownload={onDownload}
             onRename={onRename}
             onDelete={onDelete}
+            onMoveTo={onMoveTo}
+            onCopyTo={onCopyTo}
             onOpen={onFileView}
           >
             <div
@@ -139,6 +147,7 @@ const TableContent = (props: TableContentProps) => {
         dataSource={data}
         pagination={false}
         columns={columns}
+        onDropMove={onDropMove}
       />
     </div>
   );
