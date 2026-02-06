@@ -272,9 +272,8 @@ const LocalViewer = (props: LocalViewerProps) => {
         <Fragment>
           <Space size={4}>
             <FolderCreateWrap onCreateFolder={handlePutFolder}>
-              <Button>{t('storeViewer.createFolder')}</Button>
+              <Button type='primary'>{t('storeViewer.createFolder')}</Button>
             </FolderCreateWrap>
-            <Button>{t('common.download')}</Button>
             <Dropdown trigger={['click']} menu={{ items: menuItems }}>
               <Button>
                 {t('common.more')} <DownOutlined />
