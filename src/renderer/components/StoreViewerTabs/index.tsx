@@ -44,14 +44,17 @@ const StoreViewerTabs = () => {
         ['delete', 'rename', 'create_dir', 'copy'].includes(updatedTask?.method) &&
         updatedTask?.connectionId
       ) {
-        updateTab({ id: updatedTask.connectionId, refreshTick: Date.now() });
+        // Only refresh if the task connection matches the active tab
+        if (activeTab === updatedTask.connectionId) {
+          updateTab({ id: updatedTask.connectionId, refreshTick: Date.now() });
+        }
       }
     };
     window.electronBridge?.on(EChannels.taskUpdate, handler);
     return () => {
       window.electronBridge?.removeListener(EChannels.taskUpdate, handler);
     };
-  }, []);
+  }, [activeTab]);
 
   const handleClick = (key: string) => {
     selectTab(key);
