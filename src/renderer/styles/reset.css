@@ -27,6 +27,9 @@ body {
   background-color: var(--scrollbar-thumb-color);
 }
 
+.rc-virtual-list{
+  width: 100%;
+}
 .rc-virtual-list-scrollbar {
   width: 6px !important;
 }

@@ -111,7 +111,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
       e.preventDefault();
     }
-    
+
     // 全选
     if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
       e.preventDefault();
@@ -183,7 +183,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
       setLastSelectedKey(key);
       setFocusedKey(key);
     }
-    
+
     const dragKeys = currentSelectedKeys;
     e.dataTransfer.setData('application/json', JSON.stringify({
       keys: dragKeys,
@@ -197,7 +197,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     e.preventDefault();
     e.stopPropagation();
     if (!item.isDirectory) return;
-    
+
     // 避免拖入自身或已选中的项目
     if (selectedKeys.includes(item.key as React.Key)) return;
 
@@ -221,13 +221,13 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     setDragOverKey(null);
 
     if (!item.isDirectory) return;
-    
+
     try {
       const dataStr = e.dataTransfer.getData('application/json');
       if (!dataStr) return;
-      
+
       const dragData = JSON.parse(dataStr);
-      
+
       let keys: React.Key[] = [];
       let srcConnId: string | undefined;
 
@@ -242,11 +242,11 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
       }
 
       if (srcConnId !== connectionId) return; // 仅支持同连接
-      
+
       if (keys.includes(item.key as React.Key)) return; // 不能拖入自身
-      
+
       const sourceFiles = data.filter(d => keys.includes(d.key as React.Key));
-      
+
       if (sourceFiles.length > 0) {
         setMoveSourceFiles(sourceFiles);
         setMoveTargetFolder(item);
@@ -288,7 +288,9 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     r1: { x: number; y: number; w: number; h: number },
     r2: { x: number; y: number; w: number; h: number },
   ) => {
-    return !(r2.x > r1.x + r1.w || r2.x + r2.w < r1.x || r2.y > r1.y + r1.h || r2.y + r2.h < r1.y);
+    const xOverlap = Math.max(0, Math.min(r1.x + r1.w, r2.x + r2.w) - Math.max(r1.x, r2.x));
+    const yOverlap = Math.max(0, Math.min(r1.y + r1.h, r2.y + r2.h) - Math.max(r1.y, r2.y));
+    return xOverlap > 0 && yOverlap > 0;
   };
 
   // 开始框选
@@ -307,18 +309,20 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   // 框选逻辑
   useEffect(() => {
     if (!lassoing) return;
-    const bounds = wrapperRef.current?.getBoundingClientRect();
-    if (!bounds) return;
 
-    let currentSelected: React.Key[] = [];
+    // 使用 Set 存储整个圈选过程中碰到的所有 key（累积）
+    const accumulatedSet = new Set<React.Key>();
 
     const handleMove = (e: MouseEvent) => {
       if (!lassoStart) return;
+      const bounds = wrapperRef.current?.getBoundingClientRect();
+      if (!bounds) return;
+
       const cur = { x: e.clientX - bounds.left, y: e.clientY - bounds.top };
       const rect = rectFromPoints(lassoStart, cur);
       setLassoRect(rect);
       const items = Array.from(wrapperRef.current?.querySelectorAll(`.${styles.item}`) || []);
-      const selected: React.Key[] = [];
+      
       items.forEach((el) => {
         const inner = el as HTMLDivElement;
         const keyAttr = inner.getAttribute('data-key') as string | null;
@@ -326,17 +330,29 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
         const r = inner.getBoundingClientRect();
         const rr = { x: r.left - bounds.left, y: r.top - bounds.top, w: r.width, h: r.height };
         if (intersects(rect, rr)) {
-          selected.push(keyAttr);
+          // 尝试从 data-info 中获取原始类型的 key
+          let finalKey: React.Key = keyAttr;
+          const infoStr = inner.getAttribute('data-info');
+          if (infoStr) {
+            try {
+              const info = JSON.parse(infoStr);
+              if (info && info.key !== undefined) {
+                finalKey = info.key;
+              }
+            } catch (e) {
+              // ignore
+            }
+          }
+          accumulatedSet.add(finalKey);
         }
       });
-      currentSelected = selected;
-      setLassoSelectedKeys(selected);
+      setLassoSelectedKeys(Array.from(accumulatedSet));
     };
     const handleUp = () => {
       setLassoing(false);
       setLassoStart(null);
       setLassoRect(null);
-      triggerSelectionChange(currentSelected);
+      triggerSelectionChange(Array.from(accumulatedSet));
       setLassoSelectedKeys([]);
     };
     window.addEventListener('mousemove', handleMove);
@@ -453,8 +469,8 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
           }}
         />
       ) : null}
-      
-      <FileMoveConfirmModal 
+
+      <FileMoveConfirmModal
         open={moveModalVisible}
         sourceFiles={moveSourceFiles}
         targetFolder={moveTargetFolder}
