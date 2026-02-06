@@ -14,10 +14,10 @@ import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, StoreViewerWrap } from '@/renderer/components';
+import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, StoreViewerWrap, FileTransferModal } from '@/renderer/components';
 import { PathHistory, events, storeRequest, openViewer } from '@/renderer/utils';
 import { createTask } from '@/renderer/utils/task';
-import { ETaskType } from '@/types';
+import { ETaskType, TStoreObject } from '@/types';
 import { useLoading } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 
@@ -38,6 +38,10 @@ const S3Viewer = (props: S3ViwerProps) => {
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
+
+  const [transferModalVisible, setTransferModalVisible] = useState(false);
+  const [transferMode, setTransferMode] = useState<'move' | 'copy'>('copy');
+  const [transferFiles, setTransferFiles] = useState<TStoreObject[]>([]);
 
   const display = useMemo(() => {
     return data?.display || ETabDisplay.LIST;
@@ -185,6 +189,44 @@ const S3Viewer = (props: S3ViwerProps) => {
     };
   }, [dataList]);
 
+  const handleTransfer = async (targetConnectionId: string, targetPath: string) => {
+    const isMove = transferMode === 'move';
+    const sourceConnectionId = connectionId;
+    const files = transferFiles.map((f) => f.key);
+
+    await storeRequest({
+      method: 'transfer',
+      id: connectionId,
+      params: {
+        sourceConnectionId,
+        targetConnectionId,
+        files,
+        targetPath,
+        isMove,
+      },
+    });
+
+    setTransferModalVisible(false);
+  };
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    const files = dataList.filter((item: any) => selectedKeys.includes(item.key));
+    if (files.length === 0) return;
+
+    if (key === 'copy') {
+      setTransferFiles(files);
+      setTransferMode('copy');
+      setTransferModalVisible(true);
+    } else if (key === 'move') {
+      setTransferFiles(files);
+      setTransferMode('move');
+      setTransferModalVisible(true);
+    } else if (key === 'remove') {
+      // 批量删除
+      files.forEach((file) => handleDelete(file));
+    }
+  };
+
   const menuItems = [
     { key: 'copy', label: t('contextMenu.copyTo') },
     { key: 'move', label: t('contextMenu.moveTo') },
@@ -235,7 +277,7 @@ const S3Viewer = (props: S3ViwerProps) => {
               <Button>{t('storeViewer.createFolder')}</Button>
             </FolderCreateWrap>
             <Button>{t('common.download')}</Button>
-            <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+            <Dropdown trigger={['click']} menu={{ items: menuItems, onClick: handleMenuClick }}>
               <Button>
                 {t('common.more')} <DownOutlined style={{ fontSize: 'medium' }} />
               </Button>
@@ -292,6 +334,16 @@ const S3Viewer = (props: S3ViwerProps) => {
           {t('storeViewer.footer.selectedCount', { count: selectedKeys.length })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
         </span>
+      }
+      extra={
+        <FileTransferModal
+          visible={transferModalVisible}
+          mode={transferMode}
+          files={transferFiles}
+          sourceConnectionId={connectionId}
+          onCancel={() => setTransferModalVisible(false)}
+          onOk={handleTransfer}
+        />
       }
     />
   );

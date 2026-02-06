@@ -246,6 +246,24 @@ const CosViewer = (props: CosViewerProps) => {
     { key: 'remove', label: t('contextMenu.delete') },
   ];
 
+  const handleMenuClick = ({ key }: { key: string }) => {
+    const files = dataList.filter((item: any) => selectedKeys.includes(item.key));
+    if (files.length === 0) return;
+
+    if (key === 'copy') {
+      setTransferFiles(files);
+      setTransferMode('copy');
+      setTransferModalVisible(true);
+    } else if (key === 'move') {
+      setTransferFiles(files);
+      setTransferMode('move');
+      setTransferModalVisible(true);
+    } else if (key === 'remove') {
+      // 批量删除
+      files.forEach((file) => handleDelete(file));
+    }
+  };
+
   useUnmount(() => {
     storeRequest({
       method: 'destroy',
@@ -304,7 +322,7 @@ const CosViewer = (props: CosViewerProps) => {
               <Button>{t('storeViewer.createFolder')}</Button>
             </FolderCreateWrap>
             <Button onClick={() => {}}>{t('common.download')}</Button>
-            <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+            <Dropdown trigger={['click']} menu={{ items: menuItems, onClick: handleMenuClick }}>
               <Button>
                 {t('common.more')} <DownOutlined style={{ fontSize: 'medium' }} />
               </Button>

@@ -241,6 +241,24 @@ const LocalViewer = (props: LocalViewerProps) => {
     { key: 'remove', label: t('contextMenu.delete') },
   ];
 
+  const handleMenuClick = ({ key }: { key: string }) => {
+    const files = dataList.filter((item: any) => selectedKeys.includes(item.key));
+    if (files.length === 0) return;
+
+    if (key === 'copy') {
+      setTransferFiles(files);
+      setTransferMode('copy');
+      setTransferModalVisible(true);
+    } else if (key === 'move') {
+      setTransferFiles(files);
+      setTransferMode('move');
+      setTransferModalVisible(true);
+    } else if (key === 'remove') {
+      // 批量删除
+      files.forEach((file) => handleDelete(file));
+    }
+  };
+
   return (
     <StoreViewerWrap
       onContentClick={handleContentClick}
@@ -274,7 +292,7 @@ const LocalViewer = (props: LocalViewerProps) => {
             <FolderCreateWrap onCreateFolder={handlePutFolder}>
               <Button type='primary'>{t('storeViewer.createFolder')}</Button>
             </FolderCreateWrap>
-            <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+            <Dropdown trigger={['click']} menu={{ items: menuItems, onClick: handleMenuClick }}>
               <Button>
                 {t('common.more')} <DownOutlined />
               </Button>
