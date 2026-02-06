@@ -123,11 +123,32 @@ class TaskManager {
   private startMonitoring() {
     setInterval(() => {
       const stats = TaskScheduler.getInstance().getStats();
-      const pendingTasks = this.getTasks({ status: ETaskStatus.PENDING }).total;
+
+      // Get counts for all statuses efficiently
+      const counts: Record<string, number> = {};
+      try {
+        const rows = db.prepare('SELECT status, COUNT(*) as count FROM tasks GROUP BY status').all() as any[];
+        rows.forEach((row) => {
+          counts[row.status] = row.count;
+        });
+      } catch (err) {
+        console.error('Failed to get task counts:', err);
+      }
+
+      const pendingTasks = counts[ETaskStatus.PENDING] || 0;
+      const runningTasks = (counts[ETaskStatus.RUNNING] || 0) + (counts[ETaskStatus.PAUSED] || 0);
+      const completedTasks = counts[ETaskStatus.COMPLETED] || 0;
+      const failedTasks = (counts[ETaskStatus.FAILED] || 0) + (counts[ETaskStatus.CANCELED] || 0);
 
       const payload = {
         ...stats,
-        pendingTasks
+        pendingTasks,
+        counts: {
+          pending: pendingTasks,
+          running: runningTasks,
+          completed: completedTasks,
+          failed: failedTasks
+        }
       };
 
       MainWindow.getInstance()?.window?.webContents.send(EChannels.taskStats, payload);

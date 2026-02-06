@@ -160,9 +160,9 @@
     "errorMessage": "错误信息",
     "manageTitle": "任务管理",
     "tabs": {
-      "downloading": "下载中",
-      "uploading": "上传中",
-      "finished": "已完成",
+      "pending": "未开始",
+      "running": "进行中",
+      "completed": "已完成",
       "failed": "已失败"
     }
   },

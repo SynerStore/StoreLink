@@ -5,7 +5,7 @@ import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
 import { useTranslation } from 'react-i18next';
 
-const FinishedTaskTable = () => {
+const CompletedTaskTable = () => {
   const { t } = useTranslation();
   const { tasks, handleDelete, pagination, handleTableChange, loading } = useTasks([ETaskStatus.COMPLETED], []);
 
@@ -53,28 +53,17 @@ const FinishedTaskTable = () => {
   ];
 
   return (
-    <div className="task-table">
-      {/* <div className="task-table-options">
-        <Space>
-        </Space>
-        <InputSearch size="small" allowClear placeholder={t('common.search')} style={{ width: 280 }} />
-      </div> */}
-      <Table
-        columns={columns}
-        dataSource={tasks}
-        rowKey="taskId"
-        size="small"
-        pagination={{
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: pagination.total,
-          showSizeChanger: true,
-        }}
-        onChange={handleTableChange}
-        loading={loading}
-      />
-    </div>
+    <Table
+      rowKey="taskId"
+      columns={columns}
+      dataSource={tasks}
+      pagination={pagination}
+      loading={loading}
+      onChange={handleTableChange}
+      size="small"
+      scroll={{ y: 'calc(100vh - 220px)' }}
+    />
   );
 };
 
-export default FinishedTaskTable;
+export default CompletedTaskTable;

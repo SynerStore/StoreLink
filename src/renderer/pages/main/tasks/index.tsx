@@ -3,39 +3,38 @@ import { Tabs } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import PageWrapper from '@/renderer/components/PageWrapper';
-import DownloadingTaskTable from './DownloadingTaskTable';
-import FinishedTaskTable from './FinishedTaskTable';
+import PendingTaskTable from './PendingTaskTable';
+import RunningTaskTable from './RunningTaskTable';
+import CompletedTaskTable from './CompletedTaskTable';
 import FailedTaskTable from './FailedTaskTable';
-import UploadingTaskTable from './UploadingTaskTable';
 import './index.css';
 
 export enum ETaskManageTab {
-  Downloading = 'downloading',
-  Uploading = 'uploading',
-  Finished = 'finished',
+  Pending = 'pending',
+  Running = 'running',
+  Completed = 'completed',
   Failed = 'failed',
 }
 
 const Tasks: React.FC = () => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<ETaskManageTab>(ETaskManageTab.Downloading);
+  const [activeTab, setActiveTab] = useState<ETaskManageTab>(ETaskManageTab.Running);
 
   const items = [
     {
-      key: ETaskManageTab.Downloading,
-      label: t('tasks.tabs.downloading'),
-      children: <DownloadingTaskTable />,
+      key: ETaskManageTab.Pending,
+      label: t('tasks.tabs.pending'),
+      children: <PendingTaskTable />,
     },
     {
-      key: ETaskManageTab.Uploading,
-      label: t('tasks.tabs.uploading'),
-      children: <UploadingTaskTable />,
+      key: ETaskManageTab.Running,
+      label: t('tasks.tabs.running'),
+      children: <RunningTaskTable />,
     },
-
     {
-      key: ETaskManageTab.Finished,
-      label: t('tasks.tabs.finished'),
-      children: <FinishedTaskTable />,
+      key: ETaskManageTab.Completed,
+      label: t('tasks.tabs.completed'),
+      children: <CompletedTaskTable />,
     },
     {
       key: ETaskManageTab.Failed,

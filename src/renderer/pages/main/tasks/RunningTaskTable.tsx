@@ -5,11 +5,11 @@ import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
 import { useTranslation } from 'react-i18next';
 
-const UploadingTaskTable = () => {
+const RunningTaskTable = () => {
   const { t } = useTranslation();
   const { tasks, handlePause, handleResume, handleDelete, pagination, handleTableChange, loading } = useTasks(
-    [ETaskStatus.PENDING, ETaskStatus.RUNNING, ETaskStatus.PAUSED],
-    [ETaskType.UPLOAD, ETaskType.DELETE, ETaskType.RENAME, ETaskType.COPY, ETaskType.CREATE_DIR],
+    [ETaskStatus.RUNNING, ETaskStatus.PAUSED],
+    [],
   );
 
   const columns = [
@@ -62,16 +62,11 @@ const UploadingTaskTable = () => {
         <Space>
           {record.status === ETaskStatus.RUNNING ? (
             <Button size="small" icon={<PauseOutlined />} onClick={() => handlePause(record.taskId)}>
-              {t('tasks.pause')}
+              {t('common.pause')}
             </Button>
           ) : (
-            <Button
-              size="small"
-              type="primary"
-              icon={<PlayCircleOutlined />}
-              onClick={() => handleResume(record.taskId)}
-            >
-              {t('tasks.resume')}
+            <Button size="small" icon={<PlayCircleOutlined />} onClick={() => handleResume(record.taskId)}>
+              {t('common.resume')}
             </Button>
           )}
           <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.taskId)}>
@@ -83,28 +78,17 @@ const UploadingTaskTable = () => {
   ];
 
   return (
-    <div className="task-table">
-      {/* <div className="task-table-options">
-        <Space>
-        </Space>
-        <InputSearch size="small" allowClear placeholder="搜索" style={{ width: 280 }} />
-      </div> */}
-      <Table
-        columns={columns}
-        dataSource={tasks}
-        rowKey="taskId"
-        size="small"
-        pagination={{
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: pagination.total,
-          showSizeChanger: true,
-        }}
-        onChange={handleTableChange}
-        loading={loading}
-      />
-    </div>
+    <Table
+      rowKey="taskId"
+      columns={columns}
+      dataSource={tasks}
+      pagination={pagination}
+      loading={loading}
+      onChange={handleTableChange}
+      size="small"
+      scroll={{ y: 'calc(100vh - 220px)' }}
+    />
   );
 };
 
-export default UploadingTaskTable;
+export default RunningTaskTable;

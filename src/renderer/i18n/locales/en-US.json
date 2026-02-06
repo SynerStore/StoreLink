@@ -160,9 +160,9 @@
     "errorMessage": "Error Message",
     "manageTitle": "Task Management",
     "tabs": {
-      "downloading": "Downloading",
-      "uploading": "Uploading",
-      "finished": "Finished",
+      "pending": "Pending",
+      "running": "Running",
+      "completed": "Completed",
       "failed": "Failed"
     }
   },

@@ -30,4 +30,10 @@ db.exec(`
   )
 `);
 
+// Create index for status and createTime to optimize task list queries
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_tasks_status_createTime 
+  ON tasks(status, createTime DESC)
+`);
+
 export default db;
