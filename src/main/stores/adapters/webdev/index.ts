@@ -1,6 +1,7 @@
 import { createClient } from 'webdav';
 
-import { sucessResponse, errorResponse, isObjectFolder } from '@/main/utils';
+import { sucessResponse, errorResponse } from '@/main/utils/response';
+import { isObjectFolder } from '@/main/utils/fs';
 import { IStorageHandler } from '../store';
 import {
   list,

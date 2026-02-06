@@ -1,17 +1,27 @@
-import { app } from 'electron';
 import path from 'node:path';
+import os from 'node:os';
 import qs from 'query-string';
 
-import { isEmpty } from '@/main/utils';
+import { isEmpty } from './helpers';
 import { isDev } from './env';
 import { EPages } from '../../types';
 
+let app: any;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  app = require('electron').app;
+} catch (e) {
+  // ignore
+}
+
+const isPackaged = app ? app.isPackaged : process.env.NODE_ENV === 'production';
+
 // 资源路径
-export const PACKAGE_PATH = app.isPackaged
+export const PACKAGE_PATH = isPackaged
   ? path.join(__dirname, './package.json')
   : path.join(__dirname, '../package.json');
 
-export const RESOURCES_PATH = app.isPackaged
+export const RESOURCES_PATH = isPackaged && app
   ? path.join(process.resourcesPath, 'assets')
   : path.join(__dirname, '../assets');
 
@@ -38,10 +48,11 @@ export const ensureFirstBackSlash = (str: string) => {
 };
 
 export const getRcloneConfigPath = () => {
+  const home = app ? app.getPath('home') : os.homedir();
   if (process.platform === 'win32') {
-    return path.join(app.getPath('home'), '.config', 'rclone', 'rclone.conf');
+    return path.join(home, '.config', 'rclone', 'rclone.conf');
   } else {
-    return path.join(app.getPath('home'), '.config', 'rclone', 'rclone.conf');
+    return path.join(home, '.config', 'rclone', 'rclone.conf');
   }
 };
 
@@ -49,13 +60,14 @@ export const getRcloneCMDPath = () => {
   if (process.platform === 'win32') {
     return path.join('../../../bin', 'rclone', 'rclone.conf');
   } else {
-    return path.join(app.getPath('home'), '.config', 'rclone', 'rclone.conf');
+    const home = app ? app.getPath('home') : os.homedir();
+    return path.join(home, '.config', 'rclone', 'rclone.conf');
   }
 };
 
 // 应用程序相关路径
 export const getUserDataPath = () => {
-  const userDataPath = app.getPath('userData');
+  const userDataPath = app ? app.getPath('userData') : path.join(os.homedir(), '.synerstore');
   // 开发环境用户数据
   if (isDev) {
     const devDataPath = path.join(__dirname, '../.userdata');
@@ -65,17 +77,17 @@ export const getUserDataPath = () => {
 };
 
 export const getHomePath = () => {
-  return app.getPath('home');
+  return app ? app.getPath('home') : os.homedir();
 };
 
 export const getTempPath = () => {
-  return app.getPath('temp');
+  return app ? app.getPath('temp') : os.tmpdir();
 };
 
 export const getDownloadsPath = () => {
-  return app.getPath('downloads');
+  return app ? app.getPath('downloads') : path.join(os.homedir(), 'Downloads');
 };
 
 export const getLogsPath = () => {
-  return app.getPath('logs');
+  return app ? app.getPath('logs') : path.join(getUserDataPath(), 'logs');
 };

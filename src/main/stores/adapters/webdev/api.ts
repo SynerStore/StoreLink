@@ -4,15 +4,11 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { WebDAVClient, FileStat } from 'webdav';
 
-import {
-  filesSort,
-  runTasksSequentially,
-  isObjectFolder,
-  readDirectoryRecursive,
-  getTempPath,
-  streamToPromise,
-  getMd5ByString,
-} from '@/main/utils';
+import { filesSort, isObjectFolder, readDirectoryRecursive } from '@/main/utils/fs';
+import { runTasksSequentially } from '@/main/utils/helpers';
+import { getTempPath } from '@/main/utils/path';
+import { streamToPromise } from '@/main/utils/stream';
+import { getMd5ByString } from '@/main/utils/crypto';
 import { TStoreObject } from '@/types';
 
 export const formatObjects = async (file: FileStat): Promise<TStoreObject | null> => {

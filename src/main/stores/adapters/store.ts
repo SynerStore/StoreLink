@@ -1,4 +1,4 @@
-import { ResponseData } from '@/main/utils';
+import { ResponseData } from '@/main/utils/response';
 
 export interface IStorageHandler {
   init?(config: any): void;

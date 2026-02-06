@@ -4,14 +4,9 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { Buffer } from 'node:buffer';
 
-import {
-  isDirectory,
-  isObjectFolder,
-  readDirectoryRecursive,
-  streamOnProgress,
-  getTempPath,
-  streamToPromise,
-} from '@/main/utils';
+import { isDirectory, isObjectFolder, readDirectoryRecursive } from '@/main/utils/fs';
+import { streamOnProgress, streamToPromise } from '@/main/utils/stream';
+import { getTempPath } from '@/main/utils/path';
 import { TStoreObject } from '@/types';
 
 export const formatObjects = (objects: any[], bucketName: string, region: string): TStoreObject[] => {

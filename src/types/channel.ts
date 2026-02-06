@@ -12,6 +12,7 @@ export enum EChannels {
   // tasks
   taskRequest = 'taskRequest',
   taskUpdate = 'taskUpdate',
+  taskStats = 'taskStats',
 
   // events
   eventsX = 'eventsX',

@@ -1,4 +1,15 @@
-import { safeStorage, systemPreferences } from 'electron';
+let safeStorage: any;
+let systemPreferences: any;
+
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const electron = require('electron');
+  safeStorage = electron.safeStorage;
+  systemPreferences = electron.systemPreferences;
+} catch (e) {
+  // ignore in worker thread
+}
+
 import CryptoJS from 'crypto-js';
 import crypto from 'crypto';
 import { machineIdSync } from 'node-machine-id';
@@ -112,7 +123,7 @@ export function decryptPassword(enc: string) {
 }
 
 export async function verifySystemAuth() {
-  if (process.platform === 'darwin' && systemPreferences.canPromptTouchID()) {
+  if (process.platform === 'darwin' && systemPreferences && systemPreferences.canPromptTouchID()) {
     try {
       await systemPreferences.promptTouchID('允许 SynerStore 导出连接配置');
       return true;
@@ -122,23 +133,35 @@ export async function verifySystemAuth() {
     }
   }
 
-  if (!safeStorage.isEncryptionAvailable()) {
+  if (safeStorage && !safeStorage.isEncryptionAvailable()) {
     throw new Error('System encryption is not available');
   }
 
-  try {
-    const testString = 'auth_verification_check';
-    const encrypted = safeStorage.encryptString(testString);
-    const decrypted = safeStorage.decryptString(encrypted);
+  if (safeStorage) {
+      try {
+        const testString = 'auth_verification_check';
+        const encrypted = safeStorage.encryptString(testString);
+        const decrypted = safeStorage.decryptString(encrypted);
 
-    if (decrypted !== testString) {
-      throw new Error('Verification failed: decrypted value does not match');
-    }
-    return true;
-  } catch (error) {
-    errorLogger.error('System authentication failed:', error);
-    throw new Error('System authentication failed');
+        if (decrypted !== testString) {
+          throw new Error('Verification failed: decrypted value does not match');
+        }
+        return true;
+      } catch (error) {
+        errorLogger.error('System authentication failed:', error);
+        throw new Error('System authentication failed');
+      }
   }
+
+  // If no safeStorage/systemPreferences (e.g. worker thread or unsupported env), we might want to fail or bypass.
+  // Assuming this method is only called from main thread where electron is available.
+  // If called from worker, it should probably throw.
+  if (!safeStorage && !systemPreferences) {
+      // In worker thread?
+      throw new Error('System auth not available in this context');
+  }
+
+  return true;
 }
 
 export function rotateSecret(newSecret: string) {

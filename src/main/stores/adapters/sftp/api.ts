@@ -3,7 +3,10 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import SftpClient from 'ssh2-sftp-client';
 
-import { filesSort, runTasksSequentially, getTempPath, getMd5ByString } from '@/main/utils';
+import { filesSort } from '@/main/utils/fs';
+import { runTasksSequentially } from '@/main/utils/helpers';
+import { getTempPath } from '@/main/utils/path';
+import { getMd5ByString } from '@/main/utils/crypto';
 import { TStoreObject } from '@/types';
 
 type SftpListFile = {

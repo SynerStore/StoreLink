@@ -1,4 +1,5 @@
-import { sucessResponse, errorResponse, isObjectFolder } from '@/main/utils';
+import { sucessResponse, errorResponse } from '@/main/utils/response';
+import { isObjectFolder } from '@/main/utils/fs';
 import SynologyApi from '@fett/synology-api';
 import { IStorageHandler } from '../store';
 import {

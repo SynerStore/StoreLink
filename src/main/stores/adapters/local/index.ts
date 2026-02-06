@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 
-import { sucessResponse, errorResponse } from '@/main/utils';
+import { sucessResponse, errorResponse } from '@/main/utils/response';
 import { IStorageHandler } from '../store';
 import {
   list,

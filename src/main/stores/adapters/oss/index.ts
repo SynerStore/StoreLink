@@ -1,6 +1,7 @@
 import OSS from 'ali-oss';
 
-import { sucessResponse, errorResponse, isObjectFolder } from '@/main/utils';
+import { sucessResponse, errorResponse } from '@/main/utils/response';
+import { isObjectFolder } from '@/main/utils/fs';
 import { IStorageHandler } from '../store';
 import {
   list,
@@ -32,7 +33,6 @@ import {
   getSourceUrl,
   GetSourceUrlParams,
 } from './api';
-import { storeRemove } from '../../storeManage';
 
 class OssStore implements IStorageHandler {
   public client: any;
@@ -60,7 +60,7 @@ class OssStore implements IStorageHandler {
 
   // 销毁
   destroy() {
-    storeRemove(this.id);
+    // this.client.destroy(); // OSS client might not have destroy
   }
 
   // 测试链接

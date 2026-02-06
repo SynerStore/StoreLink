@@ -4,6 +4,7 @@ import TaskEntity, { TaskEntityParams } from './entity';
 import { EChannels, ETaskStatus } from '@/types';
 import { MainWindow } from '@/main/windows/main';
 import { logAction } from '@/main/events/log';
+import TaskScheduler from './scheduler';
 
 class TaskManager {
   private static instance: TaskManager;
@@ -11,6 +12,7 @@ class TaskManager {
 
   private constructor() {
     this.init();
+    this.startMonitoring();
   }
 
   public static getInstance(): TaskManager {
@@ -18,6 +20,21 @@ class TaskManager {
       TaskManager.instance = new TaskManager();
     }
     return TaskManager.instance;
+  }
+
+  public getTaskById(taskId: string): TaskEntity | undefined {
+    return this.tasks.get(taskId);
+  }
+
+  public restoreTask(row: any): TaskEntity {
+    const params: TaskEntityParams = {
+      ...row,
+      params: typeof row.params === 'string' ? JSON.parse(row.params) : row.params,
+    };
+    const task = new TaskEntity(params);
+    this.setupTask(task);
+    this.tasks.set(task.taskId, task);
+    return task;
   }
 
   private init() {
@@ -101,6 +118,20 @@ class TaskManager {
     } catch (err) {
       console.error('Failed to update task in DB:', err);
     }
+  }
+
+  private startMonitoring() {
+    setInterval(() => {
+      const stats = TaskScheduler.getInstance().getStats();
+      const pendingTasks = this.getTasks({ status: ETaskStatus.PENDING }).total;
+
+      const payload = {
+        ...stats,
+        pendingTasks
+      };
+
+      MainWindow.getInstance()?.window?.webContents.send(EChannels.taskStats, payload);
+    }, 1000);
   }
 
   private notifyRenderer(task: TaskEntity) {

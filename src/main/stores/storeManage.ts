@@ -27,6 +27,32 @@ const getConfigById = (id: string) => {
   return undefined;
 };
 
+export const getStoreConfig = (id: string) => {
+  const data = getConfigById(id);
+  if (!data) return undefined;
+
+  const { type } = data;
+  const config = (() => {
+    try {
+      const cfg = { ...(data?.config || {}) };
+      if (cfg.password && typeof cfg.password === 'string' && isEncrypted(cfg.password)) {
+        cfg.password = decryptPassword(cfg.password);
+      }
+      if (cfg.secretAccessKey && typeof cfg.secretAccessKey === 'string' && isEncrypted(cfg.secretAccessKey)) {
+        cfg.secretAccessKey = decryptPassword(cfg.secretAccessKey);
+      }
+      if (cfg.accessKeySecret && typeof cfg.accessKeySecret === 'string' && isEncrypted(cfg.accessKeySecret)) {
+        cfg.accessKeySecret = decryptPassword(cfg.accessKeySecret);
+      }
+      return cfg;
+    } catch (e: any) {
+      errorLogger.error(`Decrypt config for connection ${id} failed:`, e?.message || e);
+      throw e;
+    }
+  })();
+  return { type, config };
+};
+
 const createStoreClient = (data: any): any => {
   if (!data) {
     throw new Error('Connection data is required');

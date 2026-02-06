@@ -1,14 +1,10 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import mime from 'mime-types';
-import {
-  filesSort,
-  getTempPath,
-  streamToPromise,
-  getMd5ByString,
-  isObjectFolder,
-  readDirectoryRecursive,
-} from '@/main/utils';
+import { filesSort, isObjectFolder, readDirectoryRecursive } from '@/main/utils/fs';
+import { getTempPath } from '@/main/utils/path';
+import { streamToPromise } from '@/main/utils/stream';
+import { getMd5ByString } from '@/main/utils/crypto';
 import { TStoreObject } from '@/types';
 
 export type SynologyClient = {

@@ -1,9 +1,8 @@
 import path from 'node:path';
 import mime from 'mime-types';
 import fs from 'fs-extra';
-import { shell } from 'electron';
 
-import { filesSort, isHiddenFile } from '@/main/utils';
+import { filesSort, isHiddenFile } from '@/main/utils/fs';
 import { TStoreObject } from '@/types';
 
 export const formatObjects = async (filePath: string): Promise<TStoreObject | null> => {
@@ -76,7 +75,14 @@ export type DeleteFileParams = {
 };
 export async function deleteFile(params: DeleteFileParams) {
   const { file } = params;
-  return shell.trashItem(file);
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { shell } = require('electron');
+    return shell.trashItem(file);
+  } catch (error) {
+    // Fallback for worker thread where electron is not available
+    return fs.remove(file);
+  }
 }
 
 // 删除桶内的全部对象

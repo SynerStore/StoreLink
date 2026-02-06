@@ -11,6 +11,7 @@ const config: Configuration = {
   entry: {
     main: path.resolve(ROOT, './src/main/index.ts'),
     preload: path.resolve(ROOT, './src/main/preload.ts'),
+    'storage.worker': path.resolve(ROOT, './src/main/workers/storage.worker.ts'),
   },
   output: {
     path: path.resolve(ROOT, 'build'),
@@ -28,6 +29,7 @@ const config: Configuration = {
   devtool: isDev ? 'source-map' : false,
   externals: {
     ssh2: 'commonjs ssh2',
+    piscina: 'commonjs piscina',
     'cpu-features': 'commonjs cpu-features',
     'ssh2-sftp-client': 'commonjs ssh2-sftp-client',
   },
@@ -47,6 +49,10 @@ const config: Configuration = {
         type: 'javascript/auto',
       },
     ],
+  },
+  node: {
+    __dirname: false,
+    __filename: false,
   },
   plugins: [new rspack.ProgressPlugin({})].filter(Boolean),
   optimization: {

@@ -1,6 +1,7 @@
 import * as S3 from '@aws-sdk/client-s3';
 
-import { sucessResponse, errorResponse, isObjectFolder } from '@/main/utils';
+import { sucessResponse, errorResponse } from '@/main/utils/response';
+import { isObjectFolder } from '@/main/utils/fs';
 import {
   list,
   ListParams,
@@ -32,7 +33,6 @@ import {
   GetSourceUrlParams,
 } from './api';
 import { IStorageHandler } from '../store';
-import { storeRemove } from '../../storeManage';
 
 class S3Store implements IStorageHandler {
   private client: any;
@@ -71,7 +71,7 @@ class S3Store implements IStorageHandler {
 
   // 销毁
   destroy() {
-    storeRemove(this.id);
+    this.client?.destroy?.();
   }
 
   // 测试链接
