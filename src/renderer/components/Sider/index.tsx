@@ -24,7 +24,6 @@ const Sider = () => {
           className={`action ${isHome ? 'active' : undefined}`}
           pointer
           onClick={() => {
-            selectTab('home');
             navigate('/');
           }}
           type="home"

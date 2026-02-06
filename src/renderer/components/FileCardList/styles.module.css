@@ -32,8 +32,8 @@
 
 .fileName {
   width: 100%;
-  height: 30px;
-  margin-top: 6px;
+  height: 32px;
+  margin-top: 4px;
   line-height: 16px;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -41,7 +41,7 @@ const StoreViewerTabs = () => {
     const handler = (updatedTask: any) => {
       if (
         updatedTask?.status === ETaskStatus.COMPLETED &&
-        ['delete', 'rename', 'create_dir', 'copy'].includes(updatedTask?.method) &&
+        ['delete', 'deleteMulti', 'rename', 'putFolder', 'put', 'copy', 'transfer'].includes(updatedTask?.method) &&
         updatedTask?.connectionId
       ) {
         // Only refresh if the task connection matches the active tab
