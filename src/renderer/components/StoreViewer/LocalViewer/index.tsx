@@ -22,7 +22,7 @@ import {
   StoreViewerWrap,
 } from '@/renderer/components';
 import { PathHistory, storeRequest, openViewer, events } from '@/renderer/utils';
-import { useLoading } from '@/renderer/hooks';
+import { useLoading, useFileTransfer } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 import { TStoreObject } from '@/types';
 import { useTranslation } from 'react-i18next';
@@ -45,9 +45,14 @@ const LocalViewer = (props: LocalViewerProps) => {
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
 
-  const [transferModalVisible, setTransferModalVisible] = useState(false);
-  const [transferMode, setTransferMode] = useState<'move' | 'copy'>('copy');
-  const [transferFiles, setTransferFiles] = useState<TStoreObject[]>([]);
+  const {
+    transferModalVisible,
+    transferMode,
+    transferFiles,
+    openTransferModal,
+    closeTransferModal,
+    handleTransfer,
+  } = useFileTransfer(connectionId);
 
   const display = useMemo(() => {
     return tabData?.display || ETabDisplay.LIST;
@@ -145,35 +150,11 @@ const LocalViewer = (props: LocalViewerProps) => {
   };
 
   const handleMoveTo = async (record: any) => {
-    setTransferFiles([record]);
-    setTransferMode('move');
-    setTransferModalVisible(true);
+    openTransferModal([record], 'move');
   };
 
   const handleCopyTo = async (record: any) => {
-    setTransferFiles([record]);
-    setTransferMode('copy');
-    setTransferModalVisible(true);
-  };
-
-  const handleTransfer = async (targetConnectionId: string, targetPath: string) => {
-    const isMove = transferMode === 'move';
-    const sourceConnectionId = connectionId;
-    const files = transferFiles.map((f) => f.key);
-
-    await storeRequest({
-      method: 'transfer',
-      id: connectionId,
-      params: {
-        sourceConnectionId,
-        targetConnectionId,
-        files,
-        targetPath,
-        isMove,
-      },
-    });
-
-    setTransferModalVisible(false);
+    openTransferModal([record], 'copy');
   };
 
   const handleDropMove = async (sourceKeys: React.Key[], targetFolder: TStoreObject) => {
@@ -246,13 +227,9 @@ const LocalViewer = (props: LocalViewerProps) => {
     if (files.length === 0) return;
 
     if (key === 'copy') {
-      setTransferFiles(files);
-      setTransferMode('copy');
-      setTransferModalVisible(true);
+      openTransferModal(files, 'copy');
     } else if (key === 'move') {
-      setTransferFiles(files);
-      setTransferMode('move');
-      setTransferModalVisible(true);
+      openTransferModal(files, 'move');
     } else if (key === 'remove') {
       // 批量删除
       files.forEach((file) => handleDelete(file));
@@ -360,7 +337,7 @@ const LocalViewer = (props: LocalViewerProps) => {
           mode={transferMode}
           files={transferFiles}
           sourceConnectionId={connectionId}
-          onCancel={() => setTransferModalVisible(false)}
+          onCancel={closeTransferModal}
           onOk={handleTransfer}
         />
       }

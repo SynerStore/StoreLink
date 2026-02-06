@@ -17,6 +17,8 @@ export type TableContentProps = {
   onDownload: (data: any) => Promise<void>;
   onDelete: (data: any) => Promise<void>;
   onRename: (data: any, newName: string) => Promise<void>;
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
   onSelectionChange?: (selectedKeys: React.Key[]) => void;
   selectedKeys?: React.Key[];
 };
@@ -32,6 +34,8 @@ const TableContent = (props: TableContentProps) => {
     loading,
     onRename,
     onDelete,
+    onMoveTo,
+    onCopyTo,
     onSelectionChange,
     selectedKeys,
   } = props;
@@ -62,6 +66,8 @@ const TableContent = (props: TableContentProps) => {
             onDownload={onDownload}
             onRename={onRename}
             onDelete={onDelete}
+            onMoveTo={onMoveTo}
+            onCopyTo={onCopyTo}
           >
             <div
               draggable="true"

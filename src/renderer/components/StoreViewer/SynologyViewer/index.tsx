@@ -15,9 +15,9 @@ import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
-import { ViewInput, FileDropWrap, FolderCreateWrap, ButtonGroup, StoreViewerWrap } from '@/renderer/components';
+import { ViewInput, FileDropWrap, FolderCreateWrap, ButtonGroup, StoreViewerWrap, FileTransferModal } from '@/renderer/components';
 import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
-import { useLoading } from '@/renderer/hooks';
+import { useLoading, useFileTransfer } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 
 const RadioGroup = Radio.Group;
@@ -37,6 +37,15 @@ const SynologyViewer = (props: SynologyViewerProps) => {
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
+
+  const {
+    transferModalVisible,
+    transferMode,
+    transferFiles,
+    openTransferModal,
+    closeTransferModal,
+    handleTransfer,
+  } = useFileTransfer(connectionId);
 
   const display = useMemo(() => {
     return tabData?.display || ETabDisplay.LIST;
@@ -159,6 +168,14 @@ const SynologyViewer = (props: SynologyViewerProps) => {
     });
   };
 
+  const handleMoveTo = async (record: any) => {
+    openTransferModal([record], 'move');
+  };
+
+  const handleCopyTo = async (record: any) => {
+    openTransferModal([record], 'copy');
+  };
+
   const handleDisplayChange = (e: any) => {
     updateTab({ ...tabData, display: e.target.value });
   };
@@ -191,6 +208,20 @@ const SynologyViewer = (props: SynologyViewerProps) => {
     { key: 'move', label: t('contextMenu.moveTo') },
     { key: 'remove', label: t('contextMenu.delete') },
   ];
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    const files = dataList.filter((item: any) => selectedKeys.includes(item.key));
+    if (files.length === 0) return;
+
+    if (key === 'copy') {
+      openTransferModal(files, 'copy');
+    } else if (key === 'move') {
+      openTransferModal(files, 'move');
+    } else if (key === 'remove') {
+      // 批量删除
+      files.forEach((file) => handleDelete(file));
+    }
+  };
 
   return (
     <StoreViewerWrap
@@ -228,7 +259,7 @@ const SynologyViewer = (props: SynologyViewerProps) => {
               <Button>{t('storeViewer.createFolder')}</Button>
             </FolderCreateWrap>
             <Button>{t('common.download')}</Button>
-            <Dropdown trigger={['click']} menu={{ items: menuItems }}>
+            <Dropdown trigger={['click']} menu={{ items: menuItems, onClick: handleMenuClick }}>
               <Button>
                 {t('common.more')} <DownOutlined />
               </Button>
@@ -260,6 +291,8 @@ const SynologyViewer = (props: SynologyViewerProps) => {
               onDownload={handleDownload}
               onDelete={handleDelete}
               onRename={handleRename}
+              onMoveTo={handleMoveTo}
+              onCopyTo={handleCopyTo}
               onSelectionChange={handleSelectionChange}
               selectedKeys={selectedKeys}
             />
@@ -274,6 +307,8 @@ const SynologyViewer = (props: SynologyViewerProps) => {
               onDownload={handleDownload}
               onDelete={handleDelete}
               onRename={handleRename}
+              onMoveTo={handleMoveTo}
+              onCopyTo={handleCopyTo}
               onSelectionChange={handleSelectionChange}
               selectedKeys={selectedKeys}
             />
@@ -285,6 +320,16 @@ const SynologyViewer = (props: SynologyViewerProps) => {
           {t('storeViewer.footer.selectedCount', { count: selectedKeys.length })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
         </span>
+      }
+      extra={
+        <FileTransferModal
+          visible={transferModalVisible}
+          mode={transferMode}
+          files={transferFiles}
+          sourceConnectionId={connectionId}
+          onCancel={closeTransferModal}
+          onOk={handleTransfer}
+        />
       }
     />
   );

@@ -19,7 +19,7 @@ import { FileDropWrap, ViewInput, FolderCreateWrap, ButtonGroup, StoreViewerWrap
 import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
 import { createTask } from '@/renderer/utils/task';
 import { ETaskType, TStoreObject } from '@/types';
-import { useLoading } from '@/renderer/hooks';
+import { useLoading, useFileTransfer } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 
 const RadioGroup = Radio.Group;
@@ -40,9 +40,14 @@ const SftpViewer = (props: SftpViewerProps) => {
   const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
 
-  const [transferModalVisible, setTransferModalVisible] = useState(false);
-  const [transferMode, setTransferMode] = useState<'move' | 'copy'>('copy');
-  const [transferFiles, setTransferFiles] = useState<TStoreObject[]>([]);
+  const {
+    transferModalVisible,
+    transferMode,
+    transferFiles,
+    openTransferModal,
+    closeTransferModal,
+    handleTransfer,
+  } = useFileTransfer(connectionId);
 
   const display = useMemo(() => {
     return tabData?.display || ETabDisplay.LIST;
@@ -173,24 +178,12 @@ const SftpViewer = (props: SftpViewerProps) => {
     };
   }, [dataList]);
 
-  const handleTransfer = async (targetConnectionId: string, targetPath: string) => {
-    const isMove = transferMode === 'move';
-    const sourceConnectionId = connectionId;
-    const files = transferFiles.map((f) => f.key);
+  const handleMoveTo = async (record: any) => {
+    openTransferModal([record], 'move');
+  };
 
-    await storeRequest({
-      method: 'transfer',
-      id: connectionId,
-      params: {
-        sourceConnectionId,
-        targetConnectionId,
-        files,
-        targetPath,
-        isMove,
-      },
-    });
-
-    setTransferModalVisible(false);
+  const handleCopyTo = async (record: any) => {
+    openTransferModal([record], 'copy');
   };
 
   const handleMenuClick = ({ key }: { key: string }) => {
@@ -198,13 +191,9 @@ const SftpViewer = (props: SftpViewerProps) => {
     if (files.length === 0) return;
 
     if (key === 'copy') {
-      setTransferFiles(files);
-      setTransferMode('copy');
-      setTransferModalVisible(true);
+      openTransferModal(files, 'copy');
     } else if (key === 'move') {
-      setTransferFiles(files);
-      setTransferMode('move');
-      setTransferModalVisible(true);
+      openTransferModal(files, 'move');
     } else if (key === 'remove') {
       // 批量删除
       files.forEach((file) => handleDelete(file));
@@ -287,6 +276,8 @@ const SftpViewer = (props: SftpViewerProps) => {
               onRename={handleRename}
               onSelectionChange={handleSelectionChange}
               selectedKeys={selectedKeys}
+              onMoveTo={handleMoveTo}
+              onCopyTo={handleCopyTo}
             />
           ) : null}
           {display === ETabDisplay.CARD ? (
@@ -301,6 +292,8 @@ const SftpViewer = (props: SftpViewerProps) => {
               onRename={handleRename}
               onSelectionChange={handleSelectionChange}
               selectedKeys={selectedKeys}
+              onMoveTo={handleMoveTo}
+              onCopyTo={handleCopyTo}
             />
           ) : null}
         </FileDropWrap>
@@ -317,7 +310,7 @@ const SftpViewer = (props: SftpViewerProps) => {
           mode={transferMode}
           files={transferFiles}
           sourceConnectionId={connectionId}
-          onCancel={() => setTransferModalVisible(false)}
+          onCancel={closeTransferModal}
           onOk={handleTransfer}
         />
       }

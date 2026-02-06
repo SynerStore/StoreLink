@@ -19,6 +19,8 @@ export type TableContentProps = {
   onRename: (data: any, newName: string) => Promise<void>;
   onSelectionChange?: (selectedKeys: React.Key[]) => void;
   selectedKeys?: React.Key[];
+  onMoveTo?: (data: any) => Promise<void>;
+  onCopyTo?: (data: any) => Promise<void>;
 };
 
 const TableContent = (props: TableContentProps) => {
@@ -34,6 +36,8 @@ const TableContent = (props: TableContentProps) => {
     onDelete,
     onSelectionChange,
     selectedKeys,
+    onMoveTo,
+    onCopyTo,
   } = props;
   const { t } = useTranslation();
 
@@ -62,6 +66,8 @@ const TableContent = (props: TableContentProps) => {
             onRename={onRename}
             onDelete={onDelete}
             onDownload={onDownload}
+            onMoveTo={onMoveTo}
+            onCopyTo={onCopyTo}
           >
             <div
               draggable="true"
