@@ -197,7 +197,6 @@ const CosViewer = (props: CosViewerProps) => {
     const targetConnectionId = connectionId;
     const targetPath = targetFolder.key as string;
 
-    debugger
     await storeRequest({
       method: 'transfer',
       id: connectionId,

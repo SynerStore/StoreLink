@@ -131,14 +131,18 @@ const TableContent = (props: TableContentProps) => {
   ];
 
   return (
-    <div className={styles['table-content']}>
+    <div className="table-content">
       <FileTable
         dataSource={data}
         rowKey="key"
         columns={columns}
         loading={loading}
+        size="small"
+        bordered={false}
+        pagination={false}
         rowSelection={{
           type: 'checkbox',
+          columnWidth: 40,
           selectedRowKeys: selectedKeys,
           onChange: handleSelectChange,
         }}

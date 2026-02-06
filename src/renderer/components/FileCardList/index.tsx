@@ -2,13 +2,13 @@ import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } fr
 import dayjs from 'dayjs';
 import { Tooltip } from 'antd';
 import { debounce } from 'lodash-es';
+import { useTranslation } from 'react-i18next';
 
 import { FileIcon, FileContextMenu, FileMoveConfirmModal } from '@/renderer/components';
 import VirtualResponsiveGrid, { VirtualResponsiveGridRef } from '../ResponsiveGrid/VirtualResponsiveGrid';
 import { calculateSize } from '@/renderer/utils';
 import { FileCardListProps, rangeSelectKeys, toggleSelectionKey } from './types';
 import styles from './styles.module.css';
-import { useTranslation } from 'react-i18next';
 import { TStoreObject } from '@/types';
 
 const FileCardList: React.FC<FileCardListProps> = (props) => {
@@ -38,23 +38,27 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const virtualGridRef = useRef<VirtualResponsiveGridRef>(null);
   const clickDebounce = useMemo(() => debounce((fn: Function) => fn(), 200), []);
+
+  // 选中状态管理
   const [internalSelectedKeys, setInternalSelectedKeys] = useState<React.Key[]>([]);
   const selectedKeys = propSelectedKeys !== undefined ? propSelectedKeys : internalSelectedKeys;
-
   const [lastSelectedKey, setLastSelectedKey] = useState<React.Key | null>(null);
   const [focusedKey, setFocusedKey] = useState<React.Key | null>(null);
+
+  // 框选相关状态
   const [lassoing, setLassoing] = useState(false);
   const [lassoStart, setLassoStart] = useState<{ x: number; y: number } | null>(null);
   const [lassoRect, setLassoRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [lassoSelectedKeys, setLassoSelectedKeys] = useState<React.Key[]>([]);
   const [virtualItemsPerRow, setVirtualItemsPerRow] = useState(1);
 
-  // Drag and drop state
+  // 拖拽相关状态
   const [dragOverKey, setDragOverKey] = useState<React.Key | null>(null);
   const [moveModalVisible, setMoveModalVisible] = useState(false);
   const [moveSourceFiles, setMoveSourceFiles] = useState<TStoreObject[]>([]);
   const [moveTargetFolder, setMoveTargetFolder] = useState<TStoreObject | null>(null);
 
+  // 触发选择变更
   const triggerSelectionChange = useCallback(
     (newKeys: React.Key[]) => {
       if (propSelectedKeys === undefined) {
@@ -67,6 +71,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
 
   const getIndex = useCallback((key: React.Key) => data.findIndex((d) => (d.key as React.Key) === key), [data]);
 
+  // 处理文件点击（打开文件夹或预览文件）
   const handleFileClick = (record: any) => {
     if (record.isDirectory) {
       onPrefixChange(record.key as string);
@@ -75,20 +80,24 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     }
   };
 
+  // 处理项目单击（选中逻辑）
   const handleItemClick = (item: any, e: React.MouseEvent) => {
     const key = item.key as React.Key;
     let newSelectedKeys = [...selectedKeys];
     if (e.ctrlKey || e.metaKey) {
+      // Ctrl/Cmd + 点击：切换选中
       newSelectedKeys = toggleSelectionKey(newSelectedKeys, key);
       setLastSelectedKey(key);
       setFocusedKey(key);
     } else if (e.shiftKey && lastSelectedKey !== null) {
+      // Shift + 点击：范围选择
       const rangeKeys = rangeSelectKeys(data, lastSelectedKey, key);
       if (rangeKeys.length > 0) {
         newSelectedKeys = rangeKeys;
       }
       setFocusedKey(key);
     } else {
+      // 普通点击：单选
       newSelectedKeys = [key];
       setLastSelectedKey(key);
       setFocusedKey(key);
@@ -96,18 +105,24 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     triggerSelectionChange(newSelectedKeys);
   };
 
+  // 处理键盘操作
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (data.length === 0) return;
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
       e.preventDefault();
     }
+    
+    // 全选
     if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
       e.preventDefault();
       triggerSelectionChange(data.map((d) => d.key as React.Key));
       return;
     }
+
     let nextIndex = -1;
     const currentIndex = focusedKey ? getIndex(focusedKey) : -1;
+
+    // 方向键导航逻辑
     if (e.key === 'ArrowDown') {
       nextIndex = currentIndex + 1 < data.length ? currentIndex + 1 : currentIndex;
     } else if (e.key === 'ArrowUp') {
@@ -134,11 +149,13 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     } else {
       return;
     }
+
     if (nextIndex === -1) nextIndex = 0;
     const nextKey = data[nextIndex].key as React.Key;
     setFocusedKey(nextKey);
     virtualGridRef.current?.scrollToItem(nextIndex);
 
+    // Shift + 方向键：范围选择
     if (e.shiftKey) {
       if (lastSelectedKey === null) {
         setLastSelectedKey(data[currentIndex >= 0 ? currentIndex : 0].key as React.Key);
@@ -155,6 +172,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     }
   };
 
+  // 拖拽开始
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: any) => {
     e.stopPropagation();
     const key = item.key as React.Key;
@@ -166,7 +184,6 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
       setFocusedKey(key);
     }
     
-    // Set data for drag
     const dragKeys = currentSelectedKeys;
     e.dataTransfer.setData('application/json', JSON.stringify({
       keys: dragKeys,
@@ -175,20 +192,20 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     e.dataTransfer.effectAllowed = 'move';
   };
 
+  // 拖拽经过
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>, item: any) => {
     e.preventDefault();
     e.stopPropagation();
     if (!item.isDirectory) return;
     
-    // Check if dragging self or dragging into selection
-    // Note: Can't easily access dragged data here safely without keeping track of it
-    // But we can check if the target is in the selectedKeys (which we are dragging)
+    // 避免拖入自身或已选中的项目
     if (selectedKeys.includes(item.key as React.Key)) return;
 
     setDragOverKey(item.key as React.Key);
     e.dataTransfer.dropEffect = 'move';
   };
 
+  // 拖拽离开
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>, item: any) => {
     e.preventDefault();
     e.stopPropagation();
@@ -197,6 +214,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     }
   };
 
+  // 拖拽放下
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, item: any) => {
     e.preventDefault();
     e.stopPropagation();
@@ -223,9 +241,9 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
          keys = dragData.keys;
       }
 
-      if (srcConnId !== connectionId) return; // Only allow same connection for now
+      if (srcConnId !== connectionId) return; // 仅支持同连接
       
-      if (keys.includes(item.key as React.Key)) return; // Cannot drop into itself
+      if (keys.includes(item.key as React.Key)) return; // 不能拖入自身
       
       const sourceFiles = data.filter(d => keys.includes(d.key as React.Key));
       
@@ -239,6 +257,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     }
   };
 
+  // 确认移动
   const handleConfirmMove = async () => {
     if (moveSourceFiles.length > 0 && moveTargetFolder && onDropMove) {
       await onDropMove(moveSourceFiles.map(f => f.key as React.Key), moveTargetFolder);
@@ -248,12 +267,14 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     setMoveTargetFolder(null);
   };
 
+  // 取消移动
   const handleCancelMove = () => {
     setMoveModalVisible(false);
     setMoveSourceFiles([]);
     setMoveTargetFolder(null);
   };
 
+  // 计算矩形
   const rectFromPoints = (start: { x: number; y: number }, end: { x: number; y: number }) => {
     const x = Math.min(start.x, end.x);
     const y = Math.min(start.y, end.y);
@@ -262,6 +283,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     return { x, y, w, h };
   };
 
+  // 检测矩形相交
   const intersects = (
     r1: { x: number; y: number; w: number; h: number },
     r2: { x: number; y: number; w: number; h: number },
@@ -269,6 +291,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     return !(r2.x > r1.x + r1.w || r2.x + r2.w < r1.x || r2.y > r1.y + r1.h || r2.y + r2.h < r1.y);
   };
 
+  // 开始框选
   const startLasso = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     const target = e.target as HTMLElement;
@@ -281,6 +304,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     setLassoing(true);
   };
 
+  // 框选逻辑
   useEffect(() => {
     if (!lassoing) return;
     const bounds = wrapperRef.current?.getBoundingClientRect();
@@ -323,6 +347,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     };
   }, [lassoing, lassoStart, triggerSelectionChange]);
 
+  // 渲染单个文件项
   const renderItem = (item: any) => {
     const isDragOver = dragOverKey === item.key;
     const isSelected = (lassoing ? lassoSelectedKeys : selectedKeys).includes(item.key as React.Key);

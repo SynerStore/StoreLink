@@ -2,7 +2,6 @@ import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
 import { debounce } from 'lodash-es';
-import { useTranslation } from 'react-i18next';
 import FileMoveConfirmModal from '../FileMoveConfirmModal';
 import { TStoreObject } from '@/types';
 import './index.css';
@@ -21,21 +20,33 @@ export interface FileTableProps<T> extends Omit<TableProps<T>, 'rowSelection'> {
 }
 
 export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
-  const { dataSource = [], rowSelection, onRowDragStart, onRowDoubleClick, connectionId, onDropMove, columns, ...restProps } = props;
+  const {
+    dataSource = [],
+    rowSelection,
+    onRowDragStart,
+    onRowDoubleClick,
+    connectionId,
+    onDropMove,
+    columns,
+    ...restProps
+  } = props;
 
+  // 内部选中状态
   const [internalSelectedKeys, setInternalSelectedKeys] = useState<React.Key[]>([]);
+  // 最后选中的Key（用于Shift范围选择）
   const [lastSelectedKey, setLastSelectedKey] = useState<React.Key | null>(null);
+  // 当前焦点Key（用于键盘导航）
   const [focusedKey, setFocusedKey] = useState<React.Key | null>(null);
-  
-  // Drag and drop state
+
+  // 拖拽相关状态
   const [dragOverKey, setDragOverKey] = useState<React.Key | null>(null);
   const [moveModalVisible, setMoveModalVisible] = useState(false);
   const [moveSourceFiles, setMoveSourceFiles] = useState<T[]>([]);
   const [moveTargetFolder, setMoveTargetFolder] = useState<T | null>(null);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
+  // 防抖处理单击事件，避免双击时触发单击
   const clickDebounce = useMemo(() => debounce((fn: Function) => fn(), 200), []);
-  const { t } = useTranslation();
 
   // 获取行键值的辅助函数
   const getRowKey = useCallback(
@@ -52,11 +63,12 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     [restProps.rowKey],
   );
 
-  // 受控与非受控选择逻辑
+  // 受控与非受控选择逻辑合并
   const selectedKeys = useMemo(() => {
     return rowSelection?.selectedRowKeys ?? internalSelectedKeys;
   }, [rowSelection?.selectedRowKeys, internalSelectedKeys]);
 
+  // 触发选择变更
   const triggerSelectionChange = (newKeys: React.Key[]) => {
     if (!rowSelection?.selectedRowKeys) {
       setInternalSelectedKeys(newKeys);
@@ -78,7 +90,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     let newSelectedKeys = [...selectedKeys];
 
     if (event.ctrlKey || event.metaKey) {
-      // 切换选中状态
+      // Ctrl/Cmd + 点击：切换选中状态
       if (newSelectedKeys.includes(key)) {
         newSelectedKeys = newSelectedKeys.filter((k) => k !== key);
       } else {
@@ -87,7 +99,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       setLastSelectedKey(key);
       setFocusedKey(key);
     } else if (event.shiftKey && lastSelectedKey !== null) {
-      // 范围选择
+      // Shift + 点击：范围选择
       const lastIndex = getIndex(lastSelectedKey);
       const currentIndex = index;
       if (lastIndex >= 0 && currentIndex >= 0) {
@@ -98,7 +110,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       }
       setFocusedKey(key);
     } else {
-      // 单选
+      // 普通点击：单选
       newSelectedKeys = [key];
       setLastSelectedKey(key);
       setFocusedKey(key);
@@ -116,7 +128,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       e.preventDefault();
     }
 
-    // 全选
+    // Ctrl/Cmd + A：全选
     if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
       e.preventDefault();
       triggerSelectionChange(dataSource.map((d: T, i: number) => getRowKey(d, i)));
@@ -144,7 +156,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     rowElement?.scrollIntoView({ block: 'nearest' });
 
     if (e.shiftKey) {
-      // 扩展选区
+      // Shift + 方向键：扩展选区
       if (lastSelectedKey === null) {
         setLastSelectedKey(
           getRowKey(dataSource[currentIndex >= 0 ? currentIndex : 0], currentIndex >= 0 ? currentIndex : 0),
@@ -159,16 +171,16 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       const rangeKeys = dataSource.slice(start, end + 1).map((item: T, idx: number) => getRowKey(item, start + idx));
       triggerSelectionChange(rangeKeys);
     } else {
-      // 移动焦点并选中
+      // 方向键：移动焦点并选中
       setLastSelectedKey(nextKey);
       triggerSelectionChange([nextKey]);
     }
   };
 
-  // 拖拽逻辑
+  // 拖拽开始
   const handleDragStart = (e: React.DragEvent<HTMLElement>, record: T, index: number) => {
     const key = getRowKey(record, index);
-    // 拖拽未选中行时先将其选中（单选）
+    // 拖拽未选中行时先将其选中（视为单选并开始拖拽）
     let currentSelectedKeys = selectedKeys;
     if (!selectedKeys.includes(key)) {
       currentSelectedKeys = [key];
@@ -179,53 +191,44 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
 
     const selectedRows = dataSource.filter((item: T, i: number) => currentSelectedKeys.includes(getRowKey(item, i)));
 
-    // Set data for drag
-    e.dataTransfer.setData('application/json', JSON.stringify({
-      keys: currentSelectedKeys,
-      connectionId
-    }));
+    // 设置拖拽数据
+    e.dataTransfer.setData(
+      'application/json',
+      JSON.stringify({
+        keys: currentSelectedKeys,
+        connectionId,
+      }),
+    );
     e.dataTransfer.effectAllowed = 'move';
 
-    // 调用回调
+    // 调用外部传入的拖拽开始回调
     if (onRowDragStart) {
       onRowDragStart(e, selectedRows);
     }
   };
 
+  // 拖拽经过
   const handleDragOver = (e: React.DragEvent<HTMLElement>, record: T, index: number) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    // Check if dragging over a directory
+
+    // 检查是否拖拽到文件夹上（仅允许拖入文件夹）
     if (!(record as any).isDirectory) {
       if (dragOverKey !== null) setDragOverKey(null);
       return;
     }
 
     const key = getRowKey(record, index);
-    
-    // Check if dragging over selected items (cannot move into itself)
-    const dataStr = e.dataTransfer.getData('application/json');
-    if (dataStr) {
-      // Note: getData might be empty during dragover in some browsers/OS, but we check dragOverKey anyway
-    }
 
+    // 设置拖拽经过的高亮Key
     if (dragOverKey !== key) {
       setDragOverKey(key);
     }
-    
+
     e.dataTransfer.dropEffect = 'move';
   };
 
-  const handleDragLeave = (e: React.DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Only reset if leaving the row (this might need refinement as dragleave fires when entering children)
-    // For now, rely on drop or dragOver on other items to switch key
-    // or simple implementation: do nothing here or just careful check relatedTarget
-  };
-  
-  // Refined drag leave to clear style when leaving the table row
+  // 拖拽离开行时的样式清理
   const handleRowDragLeave = (e: React.DragEvent<HTMLElement>, record: T, index: number) => {
     const key = getRowKey(record, index);
     if (dragOverKey === key) {
@@ -233,6 +236,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     }
   };
 
+  // 拖拽放下
   const handleDrop = (e: React.DragEvent<HTMLElement>, record: T, index: number) => {
     e.preventDefault();
     e.stopPropagation();
@@ -245,24 +249,25 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       if (!dataStr) return;
 
       const dragData = JSON.parse(dataStr);
-      
+
       let keys: React.Key[] = [];
       let srcConnId: string | undefined;
 
       if (Array.isArray(dragData)) {
-         if (dragData.length > 0) {
-             srcConnId = dragData[0].connectionId;
-             keys = dragData.map((d: any) => d.key);
-         }
+        if (dragData.length > 0) {
+          srcConnId = dragData[0].connectionId;
+          keys = dragData.map((d: any) => d.key);
+        }
       } else {
-         srcConnId = dragData.connectionId;
-         keys = dragData.keys;
+        srcConnId = dragData.connectionId;
+        keys = dragData.keys;
       }
 
+      // 仅支持同连接内的移动
       if (srcConnId !== connectionId) return;
 
       const key = getRowKey(record, index);
-      if (keys.includes(key)) return; // Cannot drop into itself
+      if (keys.includes(key)) return; // 不能移动到自身
 
       const sourceFiles = dataSource.filter((item: T, i: number) => keys.includes(getRowKey(item, i)));
 
@@ -276,20 +281,12 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     }
   };
 
+  // 确认移动
   const handleConfirmMove = async () => {
-    debugger
     if (onDropMove && moveTargetFolder && moveSourceFiles.length > 0) {
-      const sourceKeys = moveSourceFiles.map((file, i) => getRowKey(file, i)); // Note: this might be inaccurate if getRowKey needs index
-      // Better to rely on keys if possible, assuming moveSourceFiles are from dataSource
-      // Let's re-map keys properly using cached keys or just assume T has key property as fallback
-      // Actually moveSourceFiles comes from dataSource filter, so we can use getRowKey but we need index.
-      // However, we passed keys in dragData.
-      
-      // Let's use the keys from dragData if we had them, but we parsed them in handleDrop.
-      // We can re-derive keys.
       const keys = moveSourceFiles.map((item) => {
-         const idx = dataSource.indexOf(item);
-         return getRowKey(item, idx);
+        const idx = dataSource.indexOf(item);
+        return getRowKey(item, idx);
       });
 
       await onDropMove(keys, moveTargetFolder);
@@ -299,6 +296,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     setMoveTargetFolder(null);
   };
 
+  // 取消移动
   const handleCancelMove = () => {
     setMoveModalVisible(false);
     setMoveSourceFiles([]);
@@ -306,7 +304,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
   };
 
   // Antd Table 的 rowSelection 配置
-  // 合并内管的选中状态与传入配置
+  // 合并内部的选中状态与传入配置
   const antdRowSelection: TableProps<T>['rowSelection'] = {
     ...rowSelection,
     selectedRowKeys: selectedKeys,
@@ -316,7 +314,6 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
       setFocusedKey(keys[keys.length - 1] || null);
       triggerSelectionChange(keys);
     },
-    // 保持复选框功能可用
   };
 
   return (
@@ -327,6 +324,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
         dataSource={dataSource}
         columns={columns}
         rowSelection={antdRowSelection}
+        pagination={false}
         onRow={(record: T, index?: number) => {
           const userOnRow = restProps.onRow ? restProps.onRow(record, index) : {};
           const key = getRowKey(record, index);
@@ -364,7 +362,7 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
           };
         }}
       />
-      
+
       <FileMoveConfirmModal
         open={moveModalVisible}
         sourceFiles={moveSourceFiles as unknown as TStoreObject[]}
