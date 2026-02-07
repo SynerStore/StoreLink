@@ -4,7 +4,7 @@ import mime from 'mime-types';
 import fs from 'fs-extra';
 import { Buffer } from 'node:buffer';
 
-import { isDirectory, isObjectFolder, readDirectoryRecursive } from '@/main/utils/fs';
+import { isDirectory, isObjectFolder, readDirectoryRecursive } from '@/main/utils';
 import { streamOnProgress, streamToPromise } from '@/main/utils/stream';
 import { getTempPath } from '@/main/utils/path';
 import { TStoreObject } from '@/types';
@@ -55,10 +55,7 @@ export type ListParams = {
   region: string;
 };
 
-export async function list(
-  client: COS,
-  params: ListParams
-) {
+export async function list(client: COS, params: ListParams) {
   const { prefix, nextContinuationToken, bucketName, region, maxKeys = 1000 } = params;
 
   return new Promise<{
@@ -66,36 +63,39 @@ export async function list(
     total: number;
     nextContinuationToken?: string;
   }>((resolve, reject) => {
-    client.getBucket({
-      Bucket: bucketName,
-      Region: region,
-      Prefix: prefix,
-      Delimiter: '/',
-      Marker: nextContinuationToken,
-      MaxKeys: maxKeys,
-    }, (err, data) => {
-      if (err) {
-        reject(err);
-        return;
-      }
+    client.getBucket(
+      {
+        Bucket: bucketName,
+        Region: region,
+        Prefix: prefix,
+        Delimiter: '/',
+        Marker: nextContinuationToken,
+        MaxKeys: maxKeys,
+      },
+      (err, data) => {
+        if (err) {
+          reject(err);
+          return;
+        }
 
-      let allObjects: TStoreObject[] = [];
+        let allObjects: TStoreObject[] = [];
 
-      if (data.CommonPrefixes && data.CommonPrefixes.length > 0) {
-         const prefixes = data.CommonPrefixes.map(item => item.Prefix);
-         allObjects = allObjects.concat(formatPrefixs(prefixes));
-      }
+        if (data.CommonPrefixes && data.CommonPrefixes.length > 0) {
+          const prefixes = data.CommonPrefixes.map((item) => item.Prefix);
+          allObjects = allObjects.concat(formatPrefixs(prefixes));
+        }
 
-      if (data.Contents && data.Contents.length > 0) {
-        allObjects = allObjects.concat(formatObjects(data.Contents, bucketName, region));
-      }
+        if (data.Contents && data.Contents.length > 0) {
+          allObjects = allObjects.concat(formatObjects(data.Contents, bucketName, region));
+        }
 
-      resolve({
-        objects: allObjects,
-        total: allObjects.length,
-        nextContinuationToken: data.IsTruncated === 'true' ? data.NextMarker : undefined,
-      });
-    });
+        resolve({
+          objects: allObjects,
+          total: allObjects.length,
+          nextContinuationToken: data.IsTruncated === 'true' ? data.NextMarker : undefined,
+        });
+      },
+    );
   });
 }
 
@@ -112,9 +112,9 @@ export async function getService(client: COS) {
       // OSS adapter returns object with .buckets property
       // We should probably return a list of buckets with name and region
       const buckets = data.Buckets.map((item: any) => ({
-          name: item.Name,
-          region: item.Location,
-          creationDate: item.CreationDate
+        name: item.Name,
+        region: item.Location,
+        creationDate: item.CreationDate,
       }));
       resolve(buckets);
     });
@@ -135,30 +135,33 @@ export async function getObject(client: COS, params: GetObjectParams, onProgress
   const targetFilePath = localFilePath || path.join(localPath as string, path.basename(key));
 
   return new Promise<void>((resolve, reject) => {
-      // Get object to stream/file
-      client.getObject({
-          Bucket: bucketName,
-          Region: region,
-          Key: key,
-          Output: fs.createWriteStream(targetFilePath),
-          onProgress: (progressData) => {
-              if (onProgress) {
-                  onProgress({
-                      progress: progressData.percent * 100,
-                      status: 'running',
-                  });
-              }
+    // Get object to stream/file
+    client.getObject(
+      {
+        Bucket: bucketName,
+        Region: region,
+        Key: key,
+        Output: fs.createWriteStream(targetFilePath),
+        onProgress: (progressData) => {
+          if (onProgress) {
+            onProgress({
+              progress: progressData.percent * 100,
+              status: 'running',
+            });
           }
-      }, (err, data) => {
-          if (err) {
-              reject(err);
-          } else {
-              if (onProgress) {
-                  onProgress({ progress: 100, status: 'finished' });
-              }
-              resolve();
+        },
+      },
+      (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (onProgress) {
+            onProgress({ progress: 100, status: 'finished' });
           }
-      });
+          resolve();
+        }
+      },
+    );
   });
 }
 
@@ -176,35 +179,37 @@ export async function listAllObjects(client: COS, params: ListAllObjectsParams) 
   let totalSize = 0;
 
   do {
-      const data: any = await new Promise((resolve, reject) => {
-          client.getBucket({
-              Bucket: bucketName,
-              Region: region,
-              Prefix: prefix,
-              Delimiter: '/',
-              Marker: marker,
-              MaxKeys: 1000,
-          }, (err, data) => {
-              if (err) reject(err);
-              else resolve(data);
-          });
+    const data: any = await new Promise((resolve, reject) => {
+      client.getBucket(
+        {
+          Bucket: bucketName,
+          Region: region,
+          Prefix: prefix,
+          Delimiter: '/',
+          Marker: marker,
+          MaxKeys: 1000,
+        },
+        (err, data) => {
+          if (err) reject(err);
+          else resolve(data);
+        },
+      );
+    });
+
+    if (data.CommonPrefixes && data.CommonPrefixes.length > 0) {
+      data.CommonPrefixes.forEach((item: any) => {
+        allKeys.add(item.Prefix);
       });
+    }
 
-      if (data.CommonPrefixes && data.CommonPrefixes.length > 0) {
-          data.CommonPrefixes.forEach((item: any) => {
-              allKeys.add(item.Prefix);
-          });
-      }
+    if (data.Contents && data.Contents.length > 0) {
+      data.Contents.forEach((obj: any) => {
+        totalSize += parseInt(obj.Size);
+        allKeys.add(obj.Key);
+      });
+    }
 
-      if (data.Contents && data.Contents.length > 0) {
-          data.Contents.forEach((obj: any) => {
-              totalSize += parseInt(obj.Size);
-              allKeys.add(obj.Key);
-          });
-      }
-
-      marker = data.IsTruncated === 'true' ? data.NextMarker : undefined;
-
+    marker = data.IsTruncated === 'true' ? data.NextMarker : undefined;
   } while (marker);
 
   return {
@@ -284,59 +289,65 @@ export async function putObject(client: COS, params: PutObjectParams, onProgress
   // Determine key
   let key = paramKey;
   if (!key && prefix && localPath) {
-      key = path.join(prefix, path.basename(localPath));
+    key = path.join(prefix, path.basename(localPath));
   }
 
-  if (!key) throw new Error("Key or Prefix+LocalPath is required");
+  if (!key) throw new Error('Key or Prefix+LocalPath is required');
 
   // If directory
-  if (localPath && await isDirectory(localPath)) {
+  if (localPath && (await isDirectory(localPath))) {
     return await putFolder(client, { prefix: prefix as string, localPath, bucketName, region });
   }
 
   let body: any = buffer;
   if (localPath || filePath) {
-      body = fs.createReadStream(localPath || filePath!);
+    body = fs.createReadStream(localPath || filePath!);
   }
 
   return new Promise((resolve, reject) => {
-    client.putObject({
-      Bucket: bucketName,
-      Region: region,
-      Key: key!,
-      Body: body,
-      onProgress: (progressData) => {
-         if (onProgress) {
+    client.putObject(
+      {
+        Bucket: bucketName,
+        Region: region,
+        Key: key!,
+        Body: body,
+        onProgress: (progressData) => {
+          if (onProgress) {
             onProgress({
-                 progress: progressData.percent * 100,
-                 status: 'running'
-             });
-         }
-      }
-    }, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        if (onProgress) {
+              progress: progressData.percent * 100,
+              status: 'running',
+            });
+          }
+        },
+      },
+      (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (onProgress) {
             onProgress({ progress: 100, status: 'finished' });
+          }
+          resolve(data);
         }
-        resolve(data);
-      }
-    });
+      },
+    );
   });
 }
 
 export async function createFolder(client: COS, prefix: string, bucketName: string, region: string) {
   return new Promise((resolve, reject) => {
-      client.putObject({
-          Bucket: bucketName,
-          Region: region,
-          Key: prefix,
-          Body: Buffer.from(''),
-      }, (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
-      });
+    client.putObject(
+      {
+        Bucket: bucketName,
+        Region: region,
+        Key: prefix,
+        Body: Buffer.from(''),
+      },
+      (err, data) => {
+        if (err) reject(err);
+        else resolve(data);
+      },
+    );
   });
 }
 
@@ -393,7 +404,7 @@ export async function putMultiObjects(client: COS, params: PutMultiObjectsParams
         prefix: prefix,
         localPath: filePath,
         bucketName,
-        region
+        region,
       },
       (progressData: any) => {
         if (onProgress && totalSize > 0 && !item.isDir) {
@@ -439,14 +450,17 @@ export type DeleteObjectParams = {
 export async function deleteObject(client: COS, params: DeleteObjectParams) {
   const { key, bucketName, region } = params;
   return new Promise((resolve, reject) => {
-      client.deleteObject({
-          Bucket: bucketName,
-          Region: region,
-          Key: key
-      }, (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
-      });
+    client.deleteObject(
+      {
+        Bucket: bucketName,
+        Region: region,
+        Key: key,
+      },
+      (err, data) => {
+        if (err) reject(err);
+        else resolve(data);
+      },
+    );
   });
 }
 
@@ -477,36 +491,43 @@ export type CopyObjectParams = {
 export async function copyObject(client: COS, params: CopyObjectParams) {
   const { sourceKey, targetKey, bucketName, region } = params;
   return new Promise((resolve, reject) => {
-      // COS copy source format: <BucketName-APPID>.cos.<Region>.myqcloud.com/<Key>
-      // We need to construct this.
-      // Assuming source is in same bucket/region as per OSS implementation usually implies.
-      // But we can get Bucket/Region from client config or params.
-      // Ideally source string should be: `test-1250000000.cos.ap-guangzhou.myqcloud.com/test.jpg`
-      const copySource = `${bucketName}.cos.${region}.myqcloud.com/${encodeURIComponent(sourceKey).replace(/%2F/g, '/')}`;
+    // COS copy source format: <BucketName-APPID>.cos.<Region>.myqcloud.com/<Key>
+    // We need to construct this.
+    // Assuming source is in same bucket/region as per OSS implementation usually implies.
+    // But we can get Bucket/Region from client config or params.
+    // Ideally source string should be: `test-1250000000.cos.ap-guangzhou.myqcloud.com/test.jpg`
+    const key = sourceKey.startsWith('/') ? sourceKey.slice(1) : sourceKey;
+    const copySource = `${bucketName}.cos.${region}.myqcloud.com/${encodeURIComponent(key).replace(/%2F/g, '/')}`;
 
-      client.putObjectCopy({
-          Bucket: bucketName,
-          Region: region,
-          Key: targetKey,
-          CopySource: copySource,
-      }, (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
-      });
+    client.putObjectCopy(
+      {
+        Bucket: bucketName,
+        Region: region,
+        Key: targetKey,
+        CopySource: copySource,
+      },
+      (err, data) => {
+        if (err) reject(err);
+        else resolve(data);
+      },
+    );
   });
 }
 
 async function isExistObject(client: COS, key: string, bucketName: string, region: string) {
   try {
     return await new Promise((resolve, reject) => {
-        client.headObject({
-            Bucket: bucketName,
-            Region: region,
-            Key: key
-        }, (err, data) => {
-            if (err) reject(err);
-            else resolve(true);
-        });
+      client.headObject(
+        {
+          Bucket: bucketName,
+          Region: region,
+          Key: key,
+        },
+        (err, data) => {
+          if (err) reject(err);
+          else resolve(true);
+        },
+      );
     });
   } catch (error) {
     return false;
@@ -566,55 +587,68 @@ export type GetSourceUrlParams = {
   key: string;
 };
 export async function getSourceUrl(client: COS, bucketName: string, region: string, key: string) {
-  // Use getObjectUrl to get signed URL
-  return new Promise<any>((resolve, reject) => {
-      client.getObjectUrl({
+  const mimeValue = mime.lookup(key) || '';
+  const isText = /text\/.{0,}/.test(mimeValue) || mimeValue === 'application/json' || mimeValue === 'application/javascript';
+
+  // If not text, return signed URL directly
+  if (!isText) {
+    return new Promise<any>((resolve, reject) => {
+      client.getObjectUrl(
+        {
           Bucket: bucketName,
           Region: region,
           Key: key,
           Sign: true,
-      }, async (err, data) => {
+        },
+        (err, data) => {
           if (err) {
-              reject(err);
-              return;
+            reject(err);
+            return;
           }
-          const url = data.Url;
-
-          // Determine mime type
-          // If we want to read content like OSS adapter does for text files:
-          // We can download to temp like OSS adapter
-
-          const meta: any = await new Promise((res, rej) => {
-             client.headObject({Bucket: bucketName, Region: region, Key: key}, (e, d) => e?rej(e):res(d));
-          });
-
-          const etag = meta.ETag ? meta.ETag.replaceAll('"', '') : '';
-          const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
-          const filePath = `file://${tmpFileName}`;
-
-          if (!fs.existsSync(tmpFileName)) {
-             // Download to temp
-             await new Promise<void>((res, rej) => {
-                client.getObject({
-                    Bucket: bucketName,
-                    Region: region,
-                    Key: key,
-                    Output: fs.createWriteStream(tmpFileName)
-                }, (e) => e ? rej(e) : res());
-             });
-          }
-
-          const mimeValue = mime.lookup(tmpFileName) || '';
-          let content = '';
-          if (/text\/.{0,}/.test(mimeValue)) {
-            content = await fs.readFile(tmpFileName, { encoding: 'utf-8' });
-          }
-
           resolve({
-              src: filePath,
-              mime: mimeValue,
-              content: content
+            src: data.Url,
+            mime: mimeValue,
+            content: '',
           });
-      });
+        },
+      );
+    });
+  }
+
+  // If text, download to temp
+  const meta: any = await new Promise((res, rej) => {
+    client.headObject({ Bucket: bucketName, Region: region, Key: key }, (e, d) => (e ? rej(e) : res(d)));
   });
+
+  const etag = meta.ETag ? meta.ETag.replaceAll('"', '') : '';
+  const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
+  const filePath = `file://${tmpFileName}`;
+
+  if (!fs.existsSync(tmpFileName)) {
+    // Download to temp
+    await new Promise<void>((res, rej) => {
+      client.getObject(
+        {
+          Bucket: bucketName,
+          Region: region,
+          Key: key,
+          Output: fs.createWriteStream(tmpFileName),
+        },
+        (e) => (e ? rej(e) : res()),
+      );
+    });
+  }
+
+  let content = '';
+  try {
+    content = await fs.readFile(tmpFileName, { encoding: 'utf-8' });
+  } catch (e) {
+    // ignore read error
+  }
+
+  return {
+    src: filePath,
+    mime: mimeValue,
+    content: content,
+  };
 }

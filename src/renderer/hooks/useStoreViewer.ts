@@ -67,7 +67,7 @@ export const useStoreViewer = (props: UseStoreViewerProps) => {
         params,
       });
 
-      if (res.success) {
+      if (res?.success) {
         // 兼容不同接口返回 (S3返回对象包含objects, Local直接返回数组)
         const list = Array.isArray(res.data) ? res.data : (res.data.objects || []);
         setDataList(list);

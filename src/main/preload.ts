@@ -7,11 +7,18 @@ const apiKey = 'electronBridge';
 const listeners = new Map<string, Map<Function, Function>>();
 
 try {
+  const getPathForFile = (file: File) => {
+    if (webUtils && webUtils.getPathForFile) {
+      return webUtils.getPathForFile(file);
+    }
+    return (file as any).path;
+  };
+
   const api: any = {
     platform: os.platform(),
     versions: process.versions,
     dispatch: dispatch,
-    getPathForFile: webUtils.getPathForFile,
+    getPathForFile: getPathForFile,
     on: (channel: string, listener: (...args: any[]) => void) => {
       const wrapped = (_event: any, ...args: any[]) => listener(...args);
       if (!listeners.has(channel)) {
@@ -32,5 +39,5 @@ try {
 
   contextBridge.exposeInMainWorld(apiKey, api);
 } catch (err) {
-  console.error(err);
+  console.error('Preload Error:', err);
 }

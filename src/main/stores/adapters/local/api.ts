@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import mime from 'mime-types';
 import fs from 'fs-extra';
 
@@ -148,7 +149,21 @@ export type GetSourceUrlParams = {
 
 export async function getSourceUrl(params: GetSourceUrlParams) {
   const { key } = params;
-  return key;
+  const src = pathToFileURL(key).href;
+  const mimeValue = mime.lookup(key) || '';
+  let content = '';
+  if (/text\/.{0,}/.test(mimeValue) || mimeValue === 'application/json' || mimeValue.includes('xml')) {
+    try {
+      content = await fs.readFile(key, { encoding: 'utf-8' });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return {
+    src,
+    mime: mimeValue,
+    content,
+  };
 }
 
 export type CopyFileParams = {
@@ -166,4 +181,18 @@ export async function copyFile(params: CopyFileParams) {
   // Ensure target directory exists (though targetPath should be valid)
   // Check if it's move or copy? This function is named copyFile.
   await fs.copy(sourceKey, destPath);
+}
+
+
+
+export async function moveFile(params: CopyFileParams) {
+  const { sourceKey, targetPath } = params;
+  // For LocalStore, targetPath is usually the destination directory
+  // sourceKey is the full path of the source file
+  const fileName = path.basename(sourceKey);
+  const destPath = path.join(targetPath, fileName);
+
+  // Ensure target directory exists (though targetPath should be valid)
+  // Check if it's move or copy? This function is named moveFile.
+  await fs.move(sourceKey, destPath);
 }

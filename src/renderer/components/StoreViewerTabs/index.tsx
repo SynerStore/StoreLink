@@ -30,7 +30,7 @@ const StoreViewerTabs = () => {
       return {
         label: tab.name,
         key: tab.id,
-        children: <StoreViewer data={tab} />,
+        children: <StoreViewer key={tab.id} data={tab} />,
       };
     });
 

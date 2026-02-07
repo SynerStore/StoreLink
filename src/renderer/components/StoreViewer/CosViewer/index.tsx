@@ -21,7 +21,7 @@ import {
   FileTransferModal,
 } from '@/renderer/components';
 import { events, storeRequest, openViewer, createTask } from '@/renderer/utils';
-import { useUnmount, useStoreViewer } from '@/renderer/hooks';
+import { useStoreViewer } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 import { ETaskType, TStoreObject } from '@/types';
 import { useTranslation } from 'react-i18next';
@@ -189,13 +189,6 @@ const CosViewer = (props: CosViewerProps) => {
       files.forEach((file) => handleDelete(file));
     }
   };
-
-  useUnmount(() => {
-    storeRequest({
-      method: 'destroy',
-      id: connectionId,
-    });
-  });
 
   return (
     <StoreViewerWrap
