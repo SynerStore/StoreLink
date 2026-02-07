@@ -45,6 +45,9 @@ export const storeRequestRegistry = () => {
       meta: { connectionId: id, method, params },
     });
     const result = await store[method](params);
+    if (method === 'list') {
+      console.log('Main Process list result:', result);
+    }
     return result;
   });
 

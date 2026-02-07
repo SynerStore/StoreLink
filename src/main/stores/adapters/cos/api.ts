@@ -89,11 +89,13 @@ export async function list(client: COS, params: ListParams) {
           allObjects = allObjects.concat(formatObjects(data.Contents, bucketName, region));
         }
 
-        resolve({
+        const result = {
           objects: allObjects,
           total: allObjects.length,
           nextContinuationToken: data.IsTruncated === 'true' ? data.NextMarker : undefined,
-        });
+        };
+        console.log('COS Adapter list result:', result);
+        resolve(result);
       },
     );
   });

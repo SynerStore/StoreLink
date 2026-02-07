@@ -404,6 +404,19 @@ export type GetSourceUrlParams = {
 };
 export async function getSourceUrl(client: OSS, params: GetSourceUrlParams) {
   const { key } = params;
+  const mimeValue = mime.lookup(key) || '';
+  const isText =
+    /text\/.{0,}/.test(mimeValue) || mimeValue === 'application/json' || mimeValue === 'application/javascript';
+
+  if (!isText) {
+    const url = client.signatureUrl(key);
+    return {
+      src: url,
+      mime: mimeValue,
+      content: '',
+    };
+  }
+
   //   @ts-ignore
   const meta = await client.getObjectMeta(key);
   const etag = meta.res.headers['etag'].replaceAll('"', '');
@@ -415,7 +428,7 @@ export async function getSourceUrl(client: OSS, params: GetSourceUrlParams) {
     const writerStream = fs.createWriteStream(tmpFileName);
     await streamToPromise(readerStream, writerStream);
   }
-  const mimeValue = mime.lookup(filePath) || '';
+
   let content = '';
   if (/text\/.{0,}/.test(mimeValue)) {
     content = await fs.readFile(tmpFileName, { encoding: 'utf-8' });

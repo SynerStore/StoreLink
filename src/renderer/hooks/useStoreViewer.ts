@@ -66,6 +66,7 @@ export const useStoreViewer = (props: UseStoreViewerProps) => {
         id: connectionId,
         params,
       });
+      console.log('List response:', res);
 
       if (res?.success) {
         // 兼容不同接口返回 (S3返回对象包含objects, Local直接返回数组)
