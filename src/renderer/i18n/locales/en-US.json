@@ -47,7 +47,13 @@
     "deleteWarning": "Deletion cannot be undone. Delete selected items?",
     "fieldRequired": "Please input {{field}}",
     "copyError": "Copy Error",
-    "error": "Error"
+    "error": "Error",
+    "errorTitle": "Something went wrong",
+    "errorDesc": "Sorry, an unexpected error has occurred.",
+    "reloadApp": "Reload Application",
+    "errorDetails": "Error Details:",
+    "fileIcon": "File Icon",
+    "appName": "StoreLink"
   },
   "home": {
     "title": "Home",

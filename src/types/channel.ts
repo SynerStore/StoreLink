@@ -3,6 +3,7 @@ export enum EChannels {
   windowMinimize = 'windowMinimize',
   windowClose = 'windowClose',
   windowFullScreen = 'windowFullScreen',
+  windowReload = 'windowReload',
 
   // store
   storeRequest = 'storeRequest',

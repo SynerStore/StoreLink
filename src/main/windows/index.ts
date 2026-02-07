@@ -63,6 +63,13 @@ export default class Windows {
       const browserWindow = BrowserWindow.fromWebContents(sender);
       browserWindow?.minimizable && browserWindow.minimize();
     });
+
+    ipcMain.handle(EChannels.windowReload, (event) => {
+      this.logger.info(EChannels.windowReload);
+      const { sender } = event;
+      const browserWindow = BrowserWindow.fromWebContents(sender);
+      browserWindow?.reload();
+    });
   }
 
   getWindowInstance(page: EPages) {

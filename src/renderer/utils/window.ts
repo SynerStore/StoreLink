@@ -13,3 +13,7 @@ export const winClose = () => {
 export const winFullScreen = () => {
   return dispatch(EChannels.windowFullScreen);
 };
+
+export const winReload = () => {
+  return dispatch(EChannels.windowReload);
+};

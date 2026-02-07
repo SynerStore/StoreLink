@@ -40,6 +40,7 @@ const App = () => {
   }, [settingStore.settings.theme]);
 
   useEffect(() => {
+    settingStore.initializeData();
     __patchModalCentered__();
     if (settingStore.settings.theme === EnumTheme.DARK) {
       document.body.setAttribute('data-theme', 'dark');

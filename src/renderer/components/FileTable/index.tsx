@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
-import { Table } from 'antd';
+import { Table, Skeleton } from 'antd';
 import type { TableProps } from 'antd';
 import { debounce } from 'lodash-es';
 import FileMoveConfirmModal from '../FileMoveConfirmModal';
@@ -316,10 +316,20 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     },
   };
 
+  // 骨架屏渲染
+  if (restProps.loading) {
+    return (
+      <div className="file-table-wrapper" style={{ padding: '16px 24px' }}>
+        <Skeleton active title={false} paragraph={{ rows: 10, width: '100%' }} />
+      </div>
+    );
+  }
+
   return (
     <div className="file-table-wrapper" tabIndex={0} onKeyDown={handleKeyDown} ref={wrapperRef}>
       <Table
         {...restProps}
+        loading={false}
         virtual
         dataSource={dataSource}
         columns={columns}

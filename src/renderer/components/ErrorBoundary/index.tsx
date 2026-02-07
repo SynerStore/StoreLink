@@ -1,10 +1,12 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Button, Result, Typography } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { winReload } from '@/renderer/utils';
 
 const { Paragraph, Text } = Typography;
 
-interface Props {
+interface Props extends WithTranslation {
   children?: ReactNode;
 }
 
@@ -31,27 +33,28 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public render() {
+    const { t } = this.props;
     if (this.state.hasError) {
       return (
         <Result
           status="error"
-          title="Something went wrong"
-          subTitle="Sorry, an unexpected error has occurred."
+          title={t('common.errorTitle', 'Something went wrong')}
+          subTitle={t('common.errorDesc', 'Sorry, an unexpected error has occurred.')}
           extra={[
             <Button
               type="primary"
               key="reload"
               icon={<ReloadOutlined />}
-              onClick={() => window.location.reload()}
+              onClick={() => winReload()}
             >
-              Reload Application
+              {t('common.reloadApp', 'Reload Application')}
             </Button>,
           ]}
         >
           <div className="desc">
             <Paragraph>
               <Text strong style={{ fontSize: 16 }}>
-                Error Details:
+                {t('common.errorDetails', 'Error Details:')}
               </Text>
             </Paragraph>
             <Paragraph>
@@ -71,4 +74,4 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-export default ErrorBoundary;
+export default withTranslation()(ErrorBoundary);

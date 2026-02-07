@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { getFiletype } from '@/utils';
 
 import ExeIcon from '@/renderer/assets/file-icons/exe.png';
@@ -17,6 +18,7 @@ export type FileIconProps = {
 };
 
 const FileIcon = (props: FileIconProps) => {
+  const { t } = useTranslation();
   const { size = 'small' } = props;
   const type = props.type || getFiletype(props?.mime || '');
 
@@ -48,7 +50,7 @@ const FileIcon = (props: FileIconProps) => {
       // @ts-ignore
       style={{ height: size === 'small' ? 18 : 64, WebkitUserDrag: 'none' }}
       src={getFileIcon(type)}
-      alt="File Icon"
+      alt={t('common.fileIcon', 'File Icon')}
     />
   );
 };

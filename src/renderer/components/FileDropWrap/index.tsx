@@ -1,4 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { CloudUploadOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import './index.css';
 
@@ -9,9 +11,14 @@ export type FileDropWrapProps = {
 const FileDropWrap = (props: FileDropWrapProps) => {
   const { children, onDrop } = props;
   const ref = useRef<any>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const { t } = useTranslation();
+
   const handleOnDrop = async (event: any) => {
     event.stopPropagation();
     event.preventDefault();
+    setIsDragOver(false);
+
     const filePaths = [];
     // 本地文件拖拽
     if (event.dataTransfer.files.length !== 0) {
@@ -30,14 +37,45 @@ const FileDropWrap = (props: FileDropWrapProps) => {
     if (onDrop) onDrop(filePaths);
   };
 
-  const handleOnDragover = (event: any) => {
+  const handleOnDragEnter = (event: any) => {
+    event.stopPropagation();
+    event.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleOnDragLeave = (event: any) => {
+    event.stopPropagation();
+    event.preventDefault();
+    // 只有当离开整个容器时才取消高亮
+    if (ref.current && !ref.current.contains(event.relatedTarget as Node)) {
+      setIsDragOver(false);
+    }
+  };
+
+  const handleOnDragOver = (event: any) => {
     event.stopPropagation();
     event.preventDefault();
   };
 
   return (
-    <div ref={ref} id="dropzone" className="file-drop-wrap" onDragOver={handleOnDragover} onDrop={handleOnDrop}>
+    <div 
+      ref={ref} 
+      id="dropzone" 
+      className={`file-drop-wrap ${isDragOver ? 'drag-over' : ''}`}
+      onDragEnter={handleOnDragEnter}
+      onDragLeave={handleOnDragLeave}
+      onDragOver={handleOnDragOver} 
+      onDrop={handleOnDrop}
+    >
       {children}
+      {isDragOver && (
+        <div className="file-drop-overlay">
+          <div className="file-drop-content">
+            <CloudUploadOutlined style={{ fontSize: 48, color: '#1890ff', marginBottom: 16 }} />
+            <div className="file-drop-text">{t('common.upload', 'Upload')}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

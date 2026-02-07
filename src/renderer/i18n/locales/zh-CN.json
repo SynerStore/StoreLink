@@ -47,7 +47,13 @@
     "deleteWarning": "删除操作不能恢复，确定删除选中项吗？",
     "fieldRequired": "请输入{{field}}",
     "copyError": "复制错误信息",
-    "error": "错误"
+    "error": "错误",
+    "errorTitle": "出错了",
+    "errorDesc": "抱歉，发生了意外错误。",
+    "reloadApp": "重新加载应用",
+    "errorDetails": "错误详情：",
+    "fileIcon": "文件图标",
+    "appName": "StoreLink"
   },
   "home": {
     "title": "首页",

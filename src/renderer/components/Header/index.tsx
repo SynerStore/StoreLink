@@ -1,5 +1,6 @@
 import React, { useState, memo } from 'react';
 import { MinusOutlined, CloseOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 import { winClose, winFullScreen, winMinimize } from '@/renderer/utils';
 import { IconFullScreen, IconUnFullScreen } from '@/renderer/components';
@@ -12,6 +13,7 @@ export type HeaderProps = {
   title?: string;
 };
 const Header = (props: HeaderProps) => {
+  const { t } = useTranslation();
   const { icon, title } = props;
   const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -28,7 +30,7 @@ const Header = (props: HeaderProps) => {
     <header className="header">
       <div className="logo">
         {icon ? icon : <img className="logo-img" src={logo} alt="logo" />}
-        <span className="logo-text">{title ? title : 'StoreLink'}</span>
+        <span className="logo-text">{title ? title : t('common.appName', 'StoreLink')}</span>
       </div>
       {/* windows \linux 显示信号灯  */}
       {/* {isInMac() ? null : ( */}
