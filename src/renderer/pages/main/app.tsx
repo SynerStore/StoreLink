@@ -8,6 +8,7 @@ import 'antd/dist/reset.css';
 import '@/renderer/i18n';
 import { Header, Sider, ErrorModal, ErrorBoundary, GlobalAntd } from '@/renderer/components';
 import { useConfigStore, useTabsStore, useSettingStore, EnumTheme, useWindowStore } from '@/renderer/store';
+import { useTaskNotification } from '@/renderer/hooks';
 import { updateRootStyleProperty, isInMac, isInWin } from '@/renderer/utils';
 import '@/renderer/styles/index.css';
 
@@ -35,6 +36,7 @@ const App = () => {
   const configStore = useConfigStore();
   const tabsStore = useTabsStore();
   const windowStore = useWindowStore();
+  useTaskNotification();
 
   const locale = useMemo(() => {
     return settingStore.settings.lang === 'zh-CN' ? zhCN : enUS;

@@ -1,4 +1,4 @@
-import { Form, Select, Radio, Space, Button, message } from 'antd';
+import { Form, Select, Radio, Space, Button, message, Switch } from 'antd';
 import { useSettingStore, EnumLang, useConfigStore } from '@/renderer/store';
 import { events } from '@/renderer/utils';
 import { PageWrapper } from '@/renderer/components';
@@ -28,6 +28,12 @@ const Setting = () => {
     });
   };
 
+  const handleSwitchNotification = (checked: boolean) => {
+    settingStore.update({
+      systemNotification: checked,
+    });
+  };
+
   const handleExportConnections = async () => {
     const dir = await events.getSingleDirPath({});
     if (!dir) return;
@@ -50,7 +56,7 @@ const Setting = () => {
     <PageWrapper title={t('settings.title')}>
       <Form autoComplete="off" layout="horizontal">
         <FormItem label={t('settings.theme')}>
-          <RadioGroup name="size" value={settingStore.settings.theme} onChange={handleSwitchTheme} buttonStyle="solid"> 
+          <RadioGroup name="size" value={settingStore.settings.theme} onChange={handleSwitchTheme} buttonStyle="solid">
             <Radio.Button value="light">{t('settings.themeLight')}</Radio.Button>
             <Radio.Button value="dark">{t('settings.themeDark')}</Radio.Button>
             <Radio.Button value="system">{t('settings.themeSystem')}</Radio.Button>
@@ -61,6 +67,9 @@ const Setting = () => {
             <Option value="zh-CN">{t('settings.langZh')}</Option>
             <Option value="en-US">{t('settings.langEn')}</Option>
           </Select>
+        </FormItem>
+        <FormItem label={t('settings.systemNotification')}>
+          <Switch checked={settingStore.settings.systemNotification} onChange={handleSwitchNotification} />
         </FormItem>
         <FormItem label={t('connection.title')}>
           <Space>

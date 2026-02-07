@@ -5,3 +5,4 @@ export * from './useMount';
 export * from './useFileTransfer';
 export * from './useStoreViewer';
 export * from './useTasks';
+export * from './useTaskNotification';

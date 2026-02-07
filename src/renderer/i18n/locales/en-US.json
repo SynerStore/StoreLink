@@ -68,7 +68,22 @@
       "remove": "Remove",
       "empty": "No favorites"
     },
-    "logs": {
+    "tasks": {
+    "title": "Tasks",
+    "status": "Status",
+    "errorMessage": "Error Message",
+    "retry": "Retry",
+    "retryAll": "Retry All",
+    "pending": "Pending",
+    "running": "Running",
+    "paused": "Paused",
+    "completed": "Completed",
+    "failed": "Failed",
+    "canceled": "Canceled",
+    "taskFinished": "Task Completed",
+    "taskFinishedDesc": "Task {{name}} has been completed"
+  },
+  "logs": {
       "title": "Logs",
       "limit": "Last {{count}} lines"
     }
@@ -140,7 +155,8 @@
     "downloadPath": "Download Path",
     "general": "General",
     "appearance": "Appearance",
-    "storage": "Storage"
+    "storage": "Storage",
+    "systemNotification": "System Notification"
   },
   "logs": {
     "title": "Logs",

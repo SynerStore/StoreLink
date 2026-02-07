@@ -97,6 +97,17 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
     await taskRequest('resume', { taskId });
   };
 
+  const handleRetryAll = async () => {
+    // 简单的实现：遍历当前列表并重试
+    // 注意：如果分页了，可能只能重试当前页的，或者需要后端支持 resumeAll
+    // 这里假设只重试当前加载的失败任务
+    for (const task of tasks) {
+      if (task.status === ETaskStatus.FAILED || task.status === ETaskStatus.CANCELED) {
+        await taskRequest('resume', { taskId: task.taskId });
+      }
+    }
+  };
+
   const handleDelete = async (taskId: string) => {
     await taskRequest('delete', { taskId });
     // Refetch to update pagination
@@ -115,6 +126,7 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
     loading,
     handlePause,
     handleResume,
+    handleRetryAll,
     handleDelete,
     refresh: () => fetchTasks(current, pageSize),
     pagination: {

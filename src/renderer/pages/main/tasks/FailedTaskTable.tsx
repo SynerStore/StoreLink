@@ -1,5 +1,5 @@
-import { Button, Space, Table, Tag } from 'antd';
-import { DeleteOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { Button, Space, Table, Tag, Tooltip } from 'antd';
+import { DeleteOutlined, PlayCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 const FailedTaskTable = () => {
   const { t } = useTranslation();
-  const { tasks, handleResume, handleDelete, pagination, handleTableChange, loading } = useTasks(
+  const { tasks, handleResume, handleRetryAll, handleDelete, pagination, handleTableChange, loading } = useTasks(
     [ETaskStatus.FAILED, ETaskStatus.CANCELED],
     [],
   );
@@ -40,7 +40,23 @@ const FailedTaskTable = () => {
     {
       title: t('tasks.errorMessage'),
       dataIndex: 'errorMessage',
-      render: (msg: string) => <span style={{ color: 'red' }}>{msg || '-'}</span>,
+      render: (msg: string) => (
+        <Tooltip title={msg} placement="topLeft">
+          <span
+            style={{
+              color: 'red',
+              display: 'inline-block',
+              maxWidth: 200,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              cursor: 'help',
+            }}
+          >
+            {msg || '-'}
+          </span>
+        </Tooltip>
+      ),
     },
     {
       title: t('tasks.status'),
@@ -67,11 +83,13 @@ const FailedTaskTable = () => {
 
   return (
     <div className="task-table">
-      {/* <div className="task-table-options">
+      <div className="task-table-options" style={{ marginBottom: 16 }}>
         <Space>
+          <Button type="primary" icon={<ReloadOutlined />} onClick={handleRetryAll} disabled={tasks.length === 0}>
+            {t('tasks.retryAll')}
+          </Button>
         </Space>
-        <InputSearch size="small" allowClear placeholder={t('common.search')} style={{ width: 280 }} />
-      </div> */}
+      </div>
       <Table
         columns={columns}
         dataSource={tasks}

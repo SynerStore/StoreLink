@@ -20,6 +20,7 @@ type DataType = {
     theme: EnumTheme;
     downloadPath: string;
     siderWidth: number;
+    systemNotification: boolean;
   };
   initializeData: () => Promise<void>;
   update: (params: { [key: string]: any }) => Promise<void>;
@@ -34,6 +35,7 @@ export const useSettingStore = create<DataType>()(
         theme: EnumTheme.LIGHT, // light | dark
         downloadPath: '',
         siderWidth: 240,
+        systemNotification: true,
       },
 
       initializeData: async () => {
