@@ -30,3 +30,6 @@ export { default as FileCardList } from './FileCardList';
 export { default as FileTransferModal } from './FileTransferModal';
 export { default as FileMoveConfirmModal } from './FileMoveConfirmModal';
 export { default as StoreViewerWrap } from './StoreViewerWrap';
+export { default as ErrorModal } from './ErrorModal';
+export { default as ErrorBoundary } from './ErrorBoundary';
+export { default as GlobalAntd } from './GlobalAntd';

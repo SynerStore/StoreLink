@@ -90,19 +90,33 @@ export default async function (task: WorkerTask) {
   }
 
   try {
+    let lastTime = 0;
+    let lastProgress = -1;
+
     const onProgress = (data: any) => {
-      if (task.port) {
-        task.port.postMessage({
-          taskId,
-          type: 'progress',
-          data,
-        });
-      } else {
-        parentPort?.postMessage({
-          taskId,
-          type: 'progress',
-          data,
-        });
+      const now = Date.now();
+      const progress = data.progress || 0;
+      const isFinished = progress === 100 || data.status === 'finished' || data.status === 'completed';
+      const isStarted = progress === 0 && lastProgress === -1;
+      const timeElapsed = now - lastTime > 500;
+      const progressJump = Math.abs(progress - lastProgress) >= 1;
+
+      if (isFinished || isStarted || timeElapsed || progressJump) {
+        if (task.port) {
+          task.port.postMessage({
+            taskId,
+            type: 'progress',
+            data,
+          });
+        } else {
+          parentPort?.postMessage({
+            taskId,
+            type: 'progress',
+            data,
+          });
+        }
+        lastTime = now;
+        lastProgress = progress;
       }
     };
 

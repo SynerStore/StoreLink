@@ -45,7 +45,9 @@
     "actions": "Actions",
     "noData": "No data",
     "deleteWarning": "Deletion cannot be undone. Delete selected items?",
-    "fieldRequired": "Please input {{field}}"
+    "fieldRequired": "Please input {{field}}",
+    "copyError": "Copy Error",
+    "error": "Error"
   },
   "home": {
     "title": "Home",

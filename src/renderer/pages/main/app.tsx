@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo } from 'react';
-import { ConfigProvider, theme, Modal } from 'antd';
+import { ConfigProvider, theme, Modal, App as AntdApp } from 'antd';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
 import 'antd/dist/reset.css';
 
 import '@/renderer/i18n';
-import { Header, Sider } from '@/renderer/components';
+import { Header, Sider, ErrorModal, ErrorBoundary, GlobalAntd } from '@/renderer/components';
 import { useConfigStore, useTabsStore, useSettingStore, EnumTheme, useWindowStore } from '@/renderer/store';
 import { updateRootStyleProperty, isInMac, isInWin } from '@/renderer/utils';
 import '@/renderer/styles/index.css';
@@ -88,22 +88,28 @@ const App = () => {
   return (
     <React.StrictMode>
       <ConfigProvider locale={locale} theme={antdTheme}>
-        <HashRouter>
-          <div className="container">
-            <Header />
-            <main className="main">
-              <Sider />
-              <div className="content">
-                <Routes>
-                  <Route path="/" element={<Home fold={windowStore.storeSiderfold} />} />
-                  <Route path="/tasks" element={<Tasks />} />
-                  <Route path="/logs" element={<Logs />} />
-                  <Route path="/setting" element={<Setting />} />
-                </Routes>
+        <AntdApp>
+          <GlobalAntd />
+          <ErrorBoundary>
+            <HashRouter>
+              <div className="container">
+                <Header />
+                <main className="main">
+                  <Sider />
+                  <div className="content">
+                    <Routes>
+                      <Route path="/" element={<Home fold={windowStore.storeSiderfold} />} />
+                      <Route path="/tasks" element={<Tasks />} />
+                      <Route path="/logs" element={<Logs />} />
+                      <Route path="/setting" element={<Setting />} />
+                    </Routes>
+                  </div>
+                </main>
               </div>
-            </main>
-          </div>
-        </HashRouter>
+            </HashRouter>
+            <ErrorModal />
+          </ErrorBoundary>
+        </AntdApp>
       </ConfigProvider>
     </React.StrictMode>
   );

@@ -1,4 +1,4 @@
-import { message } from 'antd';
+import antdUtils from './antd-utils';
 import { isCanOpenFile } from '@/utils';
 import { EChannels } from '../../types';
 
@@ -6,7 +6,7 @@ const dispatch = window?.electronBridge?.dispatch;
 
 export const openViewer = (connectionId: string, data: any) => {
   if (!isCanOpenFile(data.mime)) {
-    return message.warning('该文件类型不支持预览');
+    return antdUtils.message.warning('该文件类型不支持预览');
   }
   return dispatch(EChannels.openViewer, {
     connectionId,

@@ -45,7 +45,9 @@
     "actions": "操作",
     "noData": "暂无数据",
     "deleteWarning": "删除操作不能恢复，确定删除选中项吗？",
-    "fieldRequired": "请输入{{field}}"
+    "fieldRequired": "请输入{{field}}",
+    "copyError": "复制错误信息",
+    "error": "错误"
   },
   "home": {
     "title": "首页",
