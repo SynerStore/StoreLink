@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import hotkeys from 'hotkeys-js';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
@@ -21,8 +20,8 @@ import {
   StoreViewerWrap,
   FileTransferModal,
 } from '@/renderer/components';
-import { PathHistory, events, storeRequest, openViewer, createTask } from '@/renderer/utils';
-import { useLoading, useUnmount, useFileTransfer } from '@/renderer/hooks';
+import { events, openViewer, createTask, storeRequest } from '@/renderer/utils';
+import { useStoreViewer } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 import { ETaskType, TStoreObject } from '@/types';
 import { useTranslation } from 'react-i18next';
@@ -38,65 +37,36 @@ const OssViewer = (props: OssViewerProps) => {
   const { connectionId, bucketName, data } = props;
   const { updateTab } = useTabsStore();
   const { connections, initializeData } = useConfigStore();
-  const [dataList, setDataList] = useState([]);
-  const { loading, setLoading } = useLoading(false);
-  const [curPrefix, setCurPrefix] = useState<string>('');
-  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
-  const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
 
   const {
+    loading,
+    dataList,
+    curPrefix,
+    selectedKeys,
+    setSelectedKeys,
+    handleSelectionChange,
+    canBack,
+    canForward,
+    handlePathBack,
+    handlePathForward,
+    handlePrefixChange,
+    handleGetObjects,
     transferModalVisible,
     transferMode,
     transferFiles,
     openTransferModal,
     closeTransferModal,
     handleTransfer,
-  } = useFileTransfer(connectionId);
+  } = useStoreViewer({
+    connectionId,
+    customListParams: (prefix) => ({ prefix }),
+    refreshTick: data?.refreshTick,
+  });
 
   const display = useMemo(() => {
     return data?.display || ETabDisplay.LIST;
   }, [data?.display]);
-
-  const [canBack, canForward] = useMemo(() => {
-    return [pathHistory?.canBack(), pathHistory?.canForward()];
-  }, [pathHistory, curPrefix]);
-
-  const handlePathBack = () => {
-    const prefix = pathHistory?.back() as string;
-    setCurPrefix(prefix);
-  };
-
-  const handlePathForward = () => {
-    const prefix = pathHistory?.forward() as string;
-    setCurPrefix(prefix);
-  };
-
-  const handleGetObjects = async () => {
-    setLoading(true);
-    const res = await storeRequest({
-      method: 'list',
-      id: connectionId,
-      params: {
-        prefix: curPrefix,
-      },
-    });
-    setLoading(false);
-    if (res.success) {
-      setDataList(res.data.objects);
-      setSelectedKeys([]);
-      console.log(res.data);
-    }
-  };
-
-  const handleSelectionChange = (keys: React.Key[]) => {
-    setSelectedKeys(keys);
-  };
-
-  const handlePrefixChange = (value: string) => {
-    const prefix = pathHistory?.go(value) as string;
-    setCurPrefix(prefix);
-  };
 
   const handleFileView = (data: any) => {
     console.log('查看文件：', data.name);
@@ -198,35 +168,6 @@ const OssViewer = (props: OssViewerProps) => {
     updateTab({ ...data, display: value });
   };
 
-  useEffect(() => {
-    if (connectionId) {
-      handleGetObjects();
-    }
-  }, [connectionId, curPrefix, data?.refreshTick]);
-
-  useEffect(() => {
-    const instance = new PathHistory({ path: curPrefix });
-    setPathHistory(instance);
-  }, []);
-
-  useEffect(() => {
-    // Cmd + A / Ctrl + A Select All
-    hotkeys('command+a,ctrl+a', (e: KeyboardEvent) => {
-      e.preventDefault();
-      setSelectedKeys(dataList.map((item: any) => item.key));
-    });
-
-    return () => {
-      hotkeys.unbind('command+a,ctrl+a');
-    };
-  }, [dataList]);
-
-  const menuItems = [
-    { key: 'copy', label: t('contextMenu.copyTo') },
-    { key: 'move', label: t('contextMenu.moveTo') },
-    { key: 'remove', label: t('contextMenu.delete') },
-  ];
-
   const handleMenuClick = ({ key }: { key: string }) => {
     const files = dataList.filter((item: any) => selectedKeys.includes(item.key));
     if (files.length === 0) return;
@@ -241,12 +182,11 @@ const OssViewer = (props: OssViewerProps) => {
     }
   };
 
-  useUnmount(() => {
-    storeRequest({
-      method: 'destroy',
-      id: connectionId,
-    });
-  });
+  const menuItems = [
+    { key: 'copy', label: t('contextMenu.copyTo') },
+    { key: 'move', label: t('contextMenu.moveTo') },
+    { key: 'remove', label: t('contextMenu.delete') },
+  ];
 
   return (
     <StoreViewerWrap
@@ -264,13 +204,12 @@ const OssViewer = (props: OssViewerProps) => {
               icon={<RightOutlined style={{ fontSize: 'large' }} />}
               onClick={handlePathForward}
             />
-          </ButtonGroup>
-
+          </ButtonGroup>{' '}
           <ViewInput
             prefix={bucketName}
             addAfter={
               <span onClick={handleToggleCollected}>
-                {connection?.isCollected ? (
+                {isCollected ? (
                   <StarFilled style={{ fontSize: 'large', color: 'var(--primary-color)' }} />
                 ) : (
                   <StarOutlined style={{ fontSize: 'large' }} />
@@ -300,7 +239,7 @@ const OssViewer = (props: OssViewerProps) => {
             </Dropdown>
           </Space>
           <Space size={4}>
-            <Input.Search style={{ width: '240px' }} placeholder={t('common.search')} />
+            <Input.Search style={{ width: '240px' }} />
             <Button onClick={handleGetObjects}> {t('common.refresh')} </Button>
             <RadioGroup value={display} onChange={(e) => handleDisplayChange(e.target.value)} buttonStyle="solid">
               <Radio.Button value="list" style={{ fontSize: 'medium' }}>
@@ -349,14 +288,6 @@ const OssViewer = (props: OssViewerProps) => {
               selectedKeys={selectedKeys}
             />
           ) : null}
-          <FileTransferModal
-            visible={transferModalVisible}
-            mode={transferMode}
-            files={transferFiles}
-            sourceConnectionId={connectionId}
-            onCancel={closeTransferModal}
-            onOk={handleTransfer}
-          />
         </FileDropWrap>
       }
       footer={
@@ -364,6 +295,16 @@ const OssViewer = (props: OssViewerProps) => {
           {t('storeViewer.footer.selectedCount', { count: selectedKeys.length })},
           {t('storeViewer.footer.loadedCount', { count: dataList.length })}{' '}
         </span>
+      }
+      extra={
+        <FileTransferModal
+          visible={transferModalVisible}
+          mode={transferMode}
+          files={transferFiles}
+          sourceConnectionId={connectionId}
+          onCancel={closeTransferModal}
+          onOk={handleTransfer}
+        />
       }
     />
   );

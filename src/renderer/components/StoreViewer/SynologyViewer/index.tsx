@@ -1,5 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
-import hotkeys from 'hotkeys-js';
+import { Fragment, useMemo } from 'react';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
@@ -10,14 +9,13 @@ import {
   StarOutlined,
   StarFilled,
 } from '@ant-design/icons';
-import { debounce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import TableContent from './TableContent';
 import CardContent from './CardContent';
 import { ViewInput, FileDropWrap, FolderCreateWrap, ButtonGroup, StoreViewerWrap, FileTransferModal } from '@/renderer/components';
-import { PathHistory, storeRequest, events, openViewer } from '@/renderer/utils';
-import { useLoading, useFileTransfer } from '@/renderer/hooks';
+import { storeRequest, events, openViewer } from '@/renderer/utils';
+import { useStoreViewer } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 
 const RadioGroup = Radio.Group;
@@ -31,65 +29,37 @@ const SynologyViewer = (props: SynologyViewerProps) => {
   const { connectionId, connection, tabData } = props;
   const { updateTab } = useTabsStore();
   const { connections, initializeData } = useConfigStore();
-  const [dataList, setDataList] = useState([]);
-  const { loading, setLoading } = useLoading(false);
-  const [curPrefix, setCurPrefix] = useState<string>('');
-  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
-  const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
 
   const {
+    loading,
+    dataList,
+    curPrefix,
+    selectedKeys,
+    setSelectedKeys,
+    handleSelectionChange,
+    canBack,
+    canForward,
+    handlePathBack,
+    handlePathForward,
+    handlePrefixChange,
+    handleGetObjects,
     transferModalVisible,
     transferMode,
     transferFiles,
     openTransferModal,
     closeTransferModal,
     handleTransfer,
-  } = useFileTransfer(connectionId);
+  } = useStoreViewer({
+    connectionId,
+    initialPath: '',
+    customListParams: (prefix) => ({ prefix }),
+    refreshTick: tabData?.refreshTick,
+  });
 
   const display = useMemo(() => {
     return tabData?.display || ETabDisplay.LIST;
   }, [tabData?.display]);
-
-  const [canBack, canForward] = useMemo(() => {
-    return [pathHistory?.canBack(), pathHistory?.canForward()];
-  }, [pathHistory, curPrefix]);
-
-  const handlePathBack = () => {
-    const prefix = pathHistory?.back() as string;
-    setCurPrefix(prefix);
-  };
-
-  const handlePathForward = () => {
-    const prefix = pathHistory?.forward() as string;
-    setCurPrefix(prefix);
-  };
-
-  const handleGetObjects = debounce(async () => {
-    setLoading(true);
-    const res = await storeRequest({
-      method: 'list',
-      id: connectionId,
-      params: {
-        prefix: curPrefix,
-      },
-    });
-    setLoading(false);
-    if (res.success) {
-      setDataList(res.data);
-      setSelectedKeys([]);
-      console.log(res.data);
-    }
-  }, 100);
-
-  const handleSelectionChange = (keys: React.Key[]) => {
-    setSelectedKeys(keys);
-  };
-
-  const handlePrefixChange = (value: string) => {
-    const prefix = pathHistory?.go(value) as string;
-    setCurPrefix(prefix);
-  };
 
   const handleFileView = (data: any) => {
     console.log('查看文件：', data.name);
@@ -180,35 +150,6 @@ const SynologyViewer = (props: SynologyViewerProps) => {
     updateTab({ ...tabData, display: e.target.value });
   };
 
-  useEffect(() => {
-    if (connectionId) {
-      handleGetObjects();
-    }
-  }, [connectionId, curPrefix, tabData?.refreshTick]);
-
-  useEffect(() => {
-    const instance = new PathHistory({ path: curPrefix });
-    setPathHistory(instance);
-  }, []);
-
-  useEffect(() => {
-    // Cmd + A / Ctrl + A Select All
-    hotkeys('command+a,ctrl+a', (e: KeyboardEvent) => {
-      e.preventDefault();
-      setSelectedKeys(dataList.map((item: any) => item.key));
-    });
-
-    return () => {
-      hotkeys.unbind('command+a,ctrl+a');
-    };
-  }, [dataList]);
-
-  const menuItems = [
-    { key: 'copy', label: t('contextMenu.copyTo') },
-    { key: 'move', label: t('contextMenu.moveTo') },
-    { key: 'remove', label: t('contextMenu.delete') },
-  ];
-
   const handleMenuClick = ({ key }: { key: string }) => {
     const files = dataList.filter((item: any) => selectedKeys.includes(item.key));
     if (files.length === 0) return;
@@ -222,6 +163,12 @@ const SynologyViewer = (props: SynologyViewerProps) => {
       files.forEach((file) => handleDelete(file));
     }
   };
+
+  const menuItems = [
+    { key: 'copy', label: t('contextMenu.copyTo') },
+    { key: 'move', label: t('contextMenu.moveTo') },
+    { key: 'remove', label: t('contextMenu.delete') },
+  ];
 
   return (
     <StoreViewerWrap

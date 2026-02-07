@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import hotkeys from 'hotkeys-js';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
@@ -15,10 +14,10 @@ import { useTranslation } from 'react-i18next';
 import TableContent from './TableContent';
 import CardContent from './CardContent';
 import { FolderCreateWrap, ViewInput, FileDropWrap, ButtonGroup, StoreViewerWrap, FileTransferModal } from '@/renderer/components';
-import { PathHistory, events, storeRequest, openViewer } from '@/renderer/utils';
+import { events, openViewer } from '@/renderer/utils';
 import { createTask } from '@/renderer/utils/task';
-import { ETaskType, TStoreObject } from '@/types';
-import { useLoading, useFileTransfer } from '@/renderer/hooks';
+import { ETaskType } from '@/types';
+import { useStoreViewer } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 
 const RadioGroup = Radio.Group;
@@ -32,66 +31,36 @@ const S3Viewer = (props: S3ViwerProps) => {
   const { connectionId, bucketName, data } = props;
   const { updateTab } = useTabsStore();
   const { connections, initializeData } = useConfigStore();
-  const [dataList, setDataList] = useState([]);
-  const { loading, setLoading } = useLoading(false);
-  const [curPrefix, setCurPrefix] = useState<string>('');
-  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
-  const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
 
   const {
+    loading,
+    dataList,
+    curPrefix,
+    selectedKeys,
+    setSelectedKeys,
+    handleSelectionChange,
+    canBack,
+    canForward,
+    handlePathBack,
+    handlePathForward,
+    handlePrefixChange,
+    handleGetObjects,
     transferModalVisible,
     transferMode,
     transferFiles,
     openTransferModal,
     closeTransferModal,
     handleTransfer,
-  } = useFileTransfer(connectionId);
+  } = useStoreViewer({
+    connectionId,
+    bucketName,
+    refreshTick: data?.refreshTick,
+  });
 
   const display = useMemo(() => {
     return data?.display || ETabDisplay.LIST;
   }, [data?.display]);
-
-  const [canBack, canForward] = useMemo(() => {
-    return [pathHistory?.canBack(), pathHistory?.canForward()];
-  }, [pathHistory, curPrefix]);
-
-  const handlePathBack = () => {
-    const prefix = pathHistory?.back() as string;
-    setCurPrefix(prefix);
-  };
-
-  const handlePathForward = () => {
-    const prefix = pathHistory?.forward() as string;
-    setCurPrefix(prefix);
-  };
-
-  const handleGetObjects = async () => {
-    setLoading(true);
-    const res = await storeRequest({
-      method: 'list',
-      id: connectionId,
-      params: {
-        bucketName: bucketName,
-        prefix: curPrefix,
-      },
-    });
-    setLoading(false);
-    if (res.success) {
-      setDataList(res.data.objects);
-      setSelectedKeys([]);
-      console.log(res.data);
-    }
-  };
-
-  const handleSelectionChange = (keys: React.Key[]) => {
-    setSelectedKeys(keys);
-  };
-
-  const handlePrefixChange = (value: string) => {
-    const prefix = pathHistory?.go(value) as string;
-    setCurPrefix(prefix);
-  };
 
   const handleFileView = (data: any) => {
     console.log('查看文件：', data.name);
@@ -178,29 +147,6 @@ const S3Viewer = (props: S3ViwerProps) => {
   const handleDisplayChange = (value: ETabDisplay) => {
     updateTab({ ...data, display: value });
   };
-
-  useEffect(() => {
-    if (connectionId) {
-      handleGetObjects();
-    }
-  }, [connectionId, curPrefix, data?.refreshTick]);
-
-  useEffect(() => {
-    const instance = new PathHistory({ path: curPrefix });
-    setPathHistory(instance);
-  }, []);
-
-  useEffect(() => {
-    // Cmd + A / Ctrl + A Select All
-    hotkeys('command+a,ctrl+a', (e: KeyboardEvent) => {
-      e.preventDefault();
-      setSelectedKeys(dataList.map((item: any) => item.key));
-    });
-
-    return () => {
-      hotkeys.unbind('command+a,ctrl+a');
-    };
-  }, [dataList]);
 
   const handleMenuClick = ({ key }: { key: string }) => {
     const files = dataList.filter((item: any) => selectedKeys.includes(item.key));

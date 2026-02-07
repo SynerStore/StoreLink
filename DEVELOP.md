@@ -122,3 +122,6 @@ npm run make:linux
 *   **TypeScript**: 全面使用 TypeScript 编写。
 *   **Prettier**: 代码格式化配置在 `package.json` 中，可通过 `npm run prettier` 运行。
 *   **组件化**: UI 组件按功能拆分，Store Viewer 采用策略模式适配不同存储类型。
+
+## 6. 项目优化建议
+详细的优化分析与建议请参考 [OPTIMIZATION.md](./OPTIMIZATION.md) 文档。

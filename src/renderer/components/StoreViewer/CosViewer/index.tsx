@@ -1,5 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
-import hotkeys from 'hotkeys-js';
+import { Fragment, useMemo } from 'react';
 import { Button, Space, Input, Dropdown, Radio } from 'antd';
 import {
   LeftOutlined,
@@ -21,8 +20,8 @@ import {
   StoreViewerWrap,
   FileTransferModal,
 } from '@/renderer/components';
-import { PathHistory, events, storeRequest, openViewer, createTask } from '@/renderer/utils';
-import { useLoading, useUnmount, useFileTransfer } from '@/renderer/hooks';
+import { events, storeRequest, openViewer, createTask } from '@/renderer/utils';
+import { useUnmount, useStoreViewer } from '@/renderer/hooks';
 import { useTabsStore, Tab, ETabDisplay, useConfigStore } from '@/renderer/store';
 import { ETaskType, TStoreObject } from '@/types';
 import { useTranslation } from 'react-i18next';
@@ -38,65 +37,38 @@ const CosViewer = (props: CosViewerProps) => {
   const { connectionId, bucketName, data } = props;
   const { updateTab } = useTabsStore();
   const { connections, initializeData } = useConfigStore();
-  const [dataList, setDataList] = useState([]);
-  const { loading, setLoading } = useLoading(false);
-  const [curPrefix, setCurPrefix] = useState<string>('');
-  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
-  const [pathHistory, setPathHistory] = useState<PathHistory | null>(null);
   const { t } = useTranslation();
 
   const {
+    loading,
+    dataList,
+    curPrefix,
+    selectedKeys,
+    setSelectedKeys,
+    handleSelectionChange,
+    canBack,
+    canForward,
+    handlePathBack,
+    handlePathForward,
+    handlePrefixChange,
+    handleGetObjects,
     transferModalVisible,
     transferMode,
     transferFiles,
     openTransferModal,
     closeTransferModal,
     handleTransfer,
-  } = useFileTransfer(connectionId);
+  } = useStoreViewer({
+    connectionId,
+    bucketName,
+    initialPath: '',
+    customListParams: (prefix) => ({ prefix }),
+    refreshTick: data?.refreshTick,
+  });
 
   const display = useMemo(() => {
     return data?.display || ETabDisplay.LIST;
   }, [data?.display]);
-
-  const [canBack, canForward] = useMemo(() => {
-    return [pathHistory?.canBack(), pathHistory?.canForward()];
-  }, [pathHistory, curPrefix]);
-
-  const handlePathBack = () => {
-    const prefix = pathHistory?.back() as string;
-    setCurPrefix(prefix);
-  };
-
-  const handlePathForward = () => {
-    const prefix = pathHistory?.forward() as string;
-    setCurPrefix(prefix);
-  };
-
-  const handleGetObjects = async () => {
-    setLoading(true);
-    const res = await storeRequest({
-      method: 'list',
-      id: connectionId,
-      params: {
-        prefix: curPrefix,
-      },
-    });
-    setLoading(false);
-    if (res.success) {
-      setDataList(res.data.objects);
-      setSelectedKeys([]);
-      console.log(res.data);
-    }
-  };
-
-  const handleSelectionChange = (keys: React.Key[]) => {
-    setSelectedKeys(keys);
-  };
-
-  const handlePrefixChange = (value: string) => {
-    const prefix = pathHistory?.go(value) as string;
-    setCurPrefix(prefix);
-  };
 
   const handleFileView = (data: any) => {
     console.log('查看文件：', data.name);
@@ -107,6 +79,13 @@ const CosViewer = (props: CosViewerProps) => {
   const handleToggleCollected = async () => {
     await events.updateConnectionCollected({ id: connectionId, isCollected: !isCollected });
     await initializeData();
+  };
+
+  const handlePut = async (paths: string[]) => {
+    return createTask(ETaskType.UPLOAD, connectionId, 'put', {
+      prefix: curPrefix,
+      localPaths: paths,
+    });
   };
 
   const handleDownload = async (record: any) => {
@@ -129,13 +108,6 @@ const CosViewer = (props: CosViewerProps) => {
     if (localPaths && localPaths.length) {
       handlePut(localPaths);
     }
-  };
-
-  const handlePut = async (paths: string[]) => {
-    return createTask(ETaskType.UPLOAD, connectionId, 'put', {
-      prefix: curPrefix,
-      localPaths: paths,
-    });
   };
 
   const handlePutFolder = async (folderName: string) => {
@@ -197,29 +169,6 @@ const CosViewer = (props: CosViewerProps) => {
   const handleDisplayChange = (value: ETabDisplay) => {
     updateTab({ ...data, display: value });
   };
-
-  useEffect(() => {
-    if (connectionId) {
-      handleGetObjects();
-    }
-  }, [connectionId, curPrefix, data?.refreshTick]);
-
-  useEffect(() => {
-    const instance = new PathHistory({ path: curPrefix });
-    setPathHistory(instance);
-  }, []);
-
-  useEffect(() => {
-    // Cmd + A / Ctrl + A Select All
-    hotkeys('command+a,ctrl+a', (e: KeyboardEvent) => {
-      e.preventDefault();
-      setSelectedKeys(dataList.map((item: any) => item.key));
-    });
-
-    return () => {
-      hotkeys.unbind('command+a,ctrl+a');
-    };
-  }, [dataList]);
 
   const menuItems = [
     { key: 'copy', label: t('contextMenu.copyTo') },
