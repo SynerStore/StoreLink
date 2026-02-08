@@ -232,7 +232,12 @@
     "downloadFailed": "下载失败",
     "deleteFailed": "删除失败",
     "renameFailed": "重命名失败",
-    "loadDirFailed": "加载目录失败: {{message}}"
+    "loadDirFailed": "加载目录失败: {{message}}",
+    "bridgeNotAvailable": "Electron Bridge 不可用",
+    "operationFailed": "操作失败",
+    "noResponse": "主进程无响应",
+    "systemError": "系统错误",
+    "unexpected": "发生意外错误"
   },
   "fileTransfer": {
     "move": "移动",

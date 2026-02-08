@@ -232,7 +232,12 @@
     "downloadFailed": "Download Failed",
     "deleteFailed": "Delete Failed",
     "renameFailed": "Rename Failed",
-    "loadDirFailed": "Failed to load directories: {{message}}"
+    "loadDirFailed": "Failed to load directories: {{message}}",
+    "bridgeNotAvailable": "Electron Bridge not available",
+    "operationFailed": "Operation Failed",
+    "noResponse": "No response from main process",
+    "systemError": "System Error",
+    "unexpected": "An unexpected error occurred"
   },
   "fileTransfer": {
     "move": "Move",
