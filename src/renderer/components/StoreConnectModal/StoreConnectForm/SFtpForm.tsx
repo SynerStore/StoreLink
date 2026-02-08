@@ -1,6 +1,7 @@
 import { useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
+import antdUtils from '@/renderer/utils/antd-utils';
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
 import { StoreTypes, StoreBrands } from '@/types';
@@ -50,6 +51,11 @@ const SFtpForm = forwardRef((props: Props, ref) => {
       },
     });
     console.log(result);
+    if (result?.success) {
+      antdUtils.message.success(t('common.testSuccess'));
+    } else {
+      antdUtils.message.error(result?.msg || t('common.testFailed'));
+    }
     setLoading(false);
   };
 

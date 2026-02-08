@@ -1,6 +1,7 @@
 import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
+import antdUtils from '@/renderer/utils/antd-utils';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
@@ -56,8 +57,9 @@ const CosForm = forwardRef((props: Props, ref) => {
           bucketName: bucketsData.map((item: any) => item.name),
         });
       }
-    } catch (e) {
-      console.error(e);
+      antdUtils.message.success(t('common.testSuccess'));
+    } catch (e: any) {
+      antdUtils.message.error(e.message || t('common.testFailed'));
     } finally {
       setLoading(false);
     }

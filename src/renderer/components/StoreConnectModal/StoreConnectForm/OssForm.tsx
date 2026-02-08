@@ -1,6 +1,7 @@
 import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
+import antdUtils from '@/renderer/utils/antd-utils';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
@@ -52,10 +53,15 @@ const OssForm = forwardRef((props: Props, ref) => {
     setBuckets(bucketsData);
     setLoading(false);
 
-    if (bucketsData.length) {
-      form.setFieldsValue({
-        bucketName: bucketsData.map((item: any) => item.name),
-      });
+    if (result?.success) {
+      if (bucketsData.length) {
+        form.setFieldsValue({
+          bucketName: bucketsData.map((item: any) => item.name),
+        });
+      }
+      antdUtils.message.success(t('common.testSuccess'));
+    } else {
+      antdUtils.message.error(result?.msg || t('common.testFailed'));
     }
   };
   // 确认
@@ -134,7 +140,7 @@ const OssForm = forwardRef((props: Props, ref) => {
           ))}
         </Select>
       </FormItem>
-      <FormItem wrapperCol={{ offset: 5 }}> 
+      <FormItem wrapperCol={{ offset: 5 }}>
         <Button type="primary" size="small" onClick={handleTest} loading={loading}>
           {t('connection.testConnection')}
         </Button>

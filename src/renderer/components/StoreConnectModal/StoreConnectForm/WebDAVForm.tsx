@@ -1,5 +1,6 @@
 import { useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
+import antdUtils from '@/renderer/utils/antd-utils';
 import { useTranslation } from 'react-i18next';
 
 import { useLoading } from '@/renderer/hooks';
@@ -44,6 +45,11 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
         password: res.password ?? initial?.config?.password,
       },
     });
+    if (result?.success) {
+      antdUtils.message.success(t('common.testSuccess'));
+    } else {
+      antdUtils.message.error(result?.msg || t('common.testFailed'));
+    }
     setLoading(false);
   };
 
