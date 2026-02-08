@@ -42,7 +42,7 @@ const VirtualResponsiveGrid = forwardRef<VirtualResponsiveGridRef, VirtualRespon
   responsiveGridCardWidthRef.current = responsiveGridCardWidth;
 
   const [itemWidth, setItemWidth] = useState<number>(responsiveGridCardWidth ?? maxItemWidth);
-  const [itemsPerRow, setItemsPerRow] = useState<number>(1);
+  const [itemsPerRow, setItemsPerRow] = useState<number>(0);
   const [containerHeight, setContainerHeight] = useState<number>(height);
 
   useImperativeHandle(ref, () => ({
@@ -100,7 +100,8 @@ const VirtualResponsiveGrid = forwardRef<VirtualResponsiveGridRef, VirtualRespon
   }, [calculateLayout, debouncedResize]);
 
   const rows = useMemo(() => {
-    const result = [];
+    const result: { key: number; items: any[] }[] = [];
+    if (itemsPerRow <= 0) return result;
     for (let i = 0; i < dataSource.length; i += itemsPerRow) {
       result.push({
         key: Math.floor(i / itemsPerRow),

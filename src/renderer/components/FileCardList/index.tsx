@@ -448,24 +448,25 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   };
 
   if (props.loading) {
+    const skeletonCount = virtualItemsPerRow * 1 || 16;
+    const skeletonData = Array.from({ length: skeletonCount }).map((_, i) => ({ key: i }));
     return (
       <div className={`${styles.container} ${className}`} style={{ height: '100%', overflow: 'hidden' }}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(auto-fill, minmax(${minItemWidth}px, 1fr))`,
-            columnGap,
-            rowGap,
-            padding: 10,
-          }}
-        >
-          {Array.from({ length: 20 }).map((_, index) => (
-            <div key={index} className={`${styles.item} ${itemClassName}`} style={{ cursor: 'default' }}>
+        <VirtualResponsiveGrid
+          dataSource={skeletonData}
+          renderItem={() => (
+            <div className={`${styles.item} ${itemClassName}`} style={{ cursor: 'default' }}>
               <Skeleton.Node active style={{ width: 72, height: 64, marginBottom: 8 }} />
               <Skeleton.Input active size="small" style={{ width: '80%', height: 16, minWidth: 0 }} />
             </div>
-          ))}
-        </div>
+          )}
+          minItemWidth={minItemWidth}
+          maxItemWidth={maxItemWidth}
+          columnGap={columnGap}
+          rowGap={rowGap}
+          height={height}
+          onItemsPerRowChange={setVirtualItemsPerRow}
+        />
       </div>
     );
   }
