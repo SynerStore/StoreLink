@@ -26,9 +26,17 @@ db.exec(`
     startTime TEXT,
     endTime TEXT,
     createTime TEXT NOT NULL,
-    errorMessage TEXT
+    errorMessage TEXT,
+    errorStack TEXT
   )
 `);
+
+// Add errorStack column if not exists (for migration)
+try {
+  db.exec('ALTER TABLE tasks ADD COLUMN errorStack TEXT');
+} catch (err) {
+  // Column likely already exists, ignore
+}
 
 // Create index for status and createTime to optimize task list queries
 db.exec(`

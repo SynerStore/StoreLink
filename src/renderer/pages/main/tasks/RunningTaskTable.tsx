@@ -61,17 +61,30 @@ const RunningTaskTable = () => {
       render: (_: any, record: any) => (
         <Space>
           {record.status === ETaskStatus.RUNNING ? (
-            <Button size="small" icon={<PauseOutlined />} onClick={() => handlePause(record.taskId)}>
-              {t('common.pause')}
-            </Button>
+            <Button
+              type="text"
+              size="small"
+              icon={<PauseOutlined />}
+              onClick={() => handlePause(record.taskId)}
+              title={t('common.pause')}
+            />
           ) : (
-            <Button size="small" icon={<PlayCircleOutlined />} onClick={() => handleResume(record.taskId)}>
-              {t('common.resume')}
-            </Button>
+            <Button
+              type="text"
+              size="small"
+              icon={<PlayCircleOutlined />}
+              onClick={() => handleResume(record.taskId)}
+              title={t('common.resume')}
+            />
           )}
-          <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.taskId)}>
-            {t('common.delete')}
-          </Button>
+          <Button
+            type="text"
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.taskId)}
+            title={t('common.delete')}
+          />
         </Space>
       ),
     },

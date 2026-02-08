@@ -16,6 +16,7 @@ export type TaskEntityParams = {
   startTime?: string;
   endTime?: string;
   errorMessage?: string;
+  errorStack?: string;
 };
 
 export default class TaskEntity {
@@ -32,6 +33,7 @@ export default class TaskEntity {
   createTime: string;
   size: number;
   errorMessage: string | undefined;
+  errorStack: string | undefined;
   retryCount: number = 0;
   maxRetries: number = 3;
 
@@ -52,6 +54,7 @@ export default class TaskEntity {
     this.startTime = params.startTime;
     this.endTime = params.endTime;
     this.errorMessage = params.errorMessage;
+    this.errorStack = params.errorStack;
   }
 
   setCallbacks(onProgress: (data: ProgressData) => void, onStatusChange: (status: ETaskStatus, err?: string) => void) {
@@ -93,6 +96,7 @@ export default class TaskEntity {
 
       this.status = ETaskStatus.FAILED;
       this.errorMessage = err.message || String(err);
+      this.errorStack = err.stack;
       this.endTime = new Date().toISOString();
       this.onStatusChange?.(this.status, this.errorMessage);
     }
@@ -133,6 +137,7 @@ export default class TaskEntity {
       endTime: this.endTime ?? null,
       createTime: this.createTime,
       errorMessage: this.errorMessage ?? null,
+      errorStack: this.errorStack ?? null,
     };
   }
 }

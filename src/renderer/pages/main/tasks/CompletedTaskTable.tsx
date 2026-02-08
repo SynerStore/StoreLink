@@ -44,9 +44,14 @@ const CompletedTaskTable = () => {
       dataIndex: 'actions',
       render: (_: any, record: any) => (
         <Space>
-          <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.taskId)}>
-            {t('common.delete')}
-          </Button>
+          <Button
+            type="text"
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.taskId)}
+            title={t('common.delete')}
+          />
         </Space>
       ),
     },

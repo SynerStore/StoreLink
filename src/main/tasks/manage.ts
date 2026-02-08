@@ -108,10 +108,10 @@ class TaskManager {
         `
         INSERT OR REPLACE INTO tasks (
           taskId, type, connectionId, method, params, status,
-          progress, speed, size, startTime, endTime, createTime, errorMessage
+          progress, speed, size, startTime, endTime, createTime, errorMessage, errorStack
         ) VALUES (
           @taskId, @type, @connectionId, @method, @params, @status,
-          @progress, @speed, @size, @startTime, @endTime, @createTime, @errorMessage
+          @progress, @speed, @size, @startTime, @endTime, @createTime, @errorMessage, @errorStack
         )
       `,
       ).run(row);
@@ -216,7 +216,7 @@ class TaskManager {
 
   public getTasks(params?: any) {
     try {
-      const { status, type, current = 1, pageSize = 20 } = params || {};
+      const { status, type, current = 1, pageSize = 20, sorter } = params || {};
       const offset = (current - 1) * pageSize;
 
       let baseQuery = 'FROM tasks';
@@ -248,8 +248,19 @@ class TaskManager {
       const totalRow = db.prepare(countQuery).get(...args) as any;
       const total = totalRow?.total || 0;
 
+      // Sort
+      let orderBy = 'createTime DESC';
+      if (sorter) {
+        const { field, order } = sorter;
+        const direction = order === 'ascend' ? 'ASC' : 'DESC';
+        // Whitelist fields to prevent SQL injection
+        if (['createTime', 'size', 'startTime', 'endTime', 'type', 'status'].includes(field)) {
+          orderBy = `${field} ${direction}`;
+        }
+      }
+
       // Data query
-      const query = `SELECT * ${baseQuery} ORDER BY createTime DESC LIMIT ? OFFSET ?`;
+      const query = `SELECT * ${baseQuery} ORDER BY ${orderBy} LIMIT ? OFFSET ?`;
       const rows = db.prepare(query).all(...args, pageSize, offset) as any[];
 
       const list = rows.map((row) => ({

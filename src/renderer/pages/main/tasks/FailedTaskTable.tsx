@@ -70,12 +70,21 @@ const FailedTaskTable = () => {
       dataIndex: 'actions',
       render: (_: any, record: any) => (
         <Space>
-          <Button size="small" type="primary" icon={<PlayCircleOutlined />} onClick={() => handleResume(record.taskId)}>
-            {t('tasks.retry')}
-          </Button>
-          <Button size="small" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.taskId)}>
-            {t('common.delete')}
-          </Button>
+          <Button
+            type="text"
+            size="small"
+            icon={<PlayCircleOutlined />}
+            onClick={() => handleResume(record.taskId)}
+            title={t('tasks.retry')}
+          />
+          <Button
+            type="text"
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.taskId)}
+            title={t('common.delete')}
+          />
         </Space>
       ),
     },

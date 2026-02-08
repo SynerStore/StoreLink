@@ -7,6 +7,7 @@ import PendingTaskTable from './PendingTaskTable';
 import RunningTaskTable from './RunningTaskTable';
 import CompletedTaskTable from './CompletedTaskTable';
 import FailedTaskTable from './FailedTaskTable';
+import TaskLogTable from './TaskLogTable';
 import './index.css';
 
 export enum ETaskManageTab {
@@ -14,6 +15,7 @@ export enum ETaskManageTab {
   Running = 'running',
   Completed = 'completed',
   Failed = 'failed',
+  Logs = 'logs',
 }
 
 const Tasks: React.FC = () => {
@@ -22,15 +24,16 @@ const Tasks: React.FC = () => {
 
   const items = [
     {
-      key: ETaskManageTab.Pending,
-      label: t('tasks.tabs.pending'),
-      children: <PendingTaskTable />,
-    },
-    {
       key: ETaskManageTab.Running,
       label: t('tasks.tabs.running'),
       children: <RunningTaskTable />,
     },
+    {
+      key: ETaskManageTab.Pending,
+      label: t('tasks.tabs.pending'),
+      children: <PendingTaskTable />,
+    },
+
     {
       key: ETaskManageTab.Completed,
       label: t('tasks.tabs.completed'),
@@ -40,6 +43,11 @@ const Tasks: React.FC = () => {
       key: ETaskManageTab.Failed,
       label: t('tasks.tabs.failed'),
       children: <FailedTaskTable />,
+    },
+    {
+      key: ETaskManageTab.Logs,
+      label: t('tasks.tabs.logs'),
+      children: <TaskLogTable />,
     },
   ];
 

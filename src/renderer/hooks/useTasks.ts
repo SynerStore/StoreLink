@@ -8,6 +8,7 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
   const [total, setTotal] = useState(0);
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [sorter, setSorter] = useState<{ field: string; order: 'ascend' | 'descend' } | null>(null);
 
   const fetchTasks = useCallback(
     async (page = current, size = pageSize) => {
@@ -18,6 +19,7 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
           type: typeFilters,
           current: page,
           pageSize: size,
+          sorter,
         });
 
         if (res && typeof res === 'object' && 'list' in res) {
@@ -36,7 +38,7 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
         setLoading(false);
       }
     },
-    [JSON.stringify(statusFilters), JSON.stringify(typeFilters)],
+    [JSON.stringify(statusFilters), JSON.stringify(typeFilters), sorter],
   );
 
   useEffect(() => {
@@ -114,10 +116,16 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
     fetchTasks(current, pageSize);
   };
 
-  const handleTableChange = (pagination: any) => {
+  const handleTableChange = (pagination: any, filters: any, newSorter: any) => {
     const { current: newCurrent, pageSize: newPageSize } = pagination;
     setCurrent(newCurrent);
     setPageSize(newPageSize);
+
+    if (newSorter && newSorter.order) {
+      setSorter({ field: newSorter.field as string, order: newSorter.order });
+    } else {
+      setSorter(null);
+    }
     // fetchTasks will be triggered by useEffect
   };
 

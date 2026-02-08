@@ -185,11 +185,24 @@
     "endTime": "完成时间",
     "errorMessage": "错误信息",
     "manageTitle": "任务管理",
+    "detail": {
+      "title": "任务详情",
+      "taskId": "任务ID",
+      "duration": "耗时",
+      "startTime": "开始时间",
+      "endTime": "结束时间",
+      "createTime": "创建时间",
+      "connectionId": "连接ID",
+      "error": "错误信息",
+      "stackTrace": "堆栈跟踪",
+      "rawParams": "原始参数"
+    },
     "tabs": {
       "pending": "未开始",
       "running": "进行中",
       "completed": "已完成",
-      "failed": "已失败"
+      "failed": "已失败",
+      "logs": "日志记录"
     }
   },
   "connection": {
