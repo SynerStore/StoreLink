@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ViewerWindow } from './window';
 import { logger } from '../utils';
 import { EChannels } from '../../types';
-import { getStoreInstance } from '../stores';
+import { TaskScheduler } from '../tasks/scheduler';
 
 export default class ViewerWindowManager {
   logger = logger.scope('ViewerWindowManager');
@@ -30,7 +30,7 @@ export default class ViewerWindowManager {
     ipcMain.handle(EChannels.downloadViewerSource, async (_event: any, data: any) => {
       const { id, localPath } = data || {};
       const viewer = this.windowsPools.get(id);
-      const store = getStoreInstance(viewer?.data?.connectionId || '');
+
       const params: any = {
         key: viewer?.data?.key || '',
         localPath,
@@ -38,8 +38,13 @@ export default class ViewerWindowManager {
       if (viewer?.data?.bucketName) {
         params.bucketName = viewer?.data?.bucketName;
       }
-      const result = await store.get(params);
-      return result;
+
+      // Execute in worker to avoid blocking main process
+      return TaskScheduler.getInstance().executeWorkerTask({
+        connectionId: viewer?.data?.connectionId || '',
+        method: 'get',
+        params,
+      });
     });
   }
 
@@ -52,13 +57,19 @@ export default class ViewerWindowManager {
 
   async getViewerSource(id: string) {
     const viewer = this.windowsPools.get(id);
-    const store = getStoreInstance(viewer?.data?.connectionId || '');
-    const viewerSource = await store.getSourceUrl({
-      key: viewer?.data?.key || '',
-      bucketName: viewer?.data?.bucketName || '',
+
+    // Execute in worker to avoid blocking main process
+    const viewerSource = await TaskScheduler.getInstance().executeWorkerTask({
       connectionId: viewer?.data?.connectionId || '',
-      lastModified: viewer?.data?.lastModified || 0,
+      method: 'getSourceUrl',
+      params: {
+        key: viewer?.data?.key || '',
+        bucketName: viewer?.data?.bucketName || '',
+        connectionId: viewer?.data?.connectionId || '',
+        lastModified: viewer?.data?.lastModified || 0,
+      }
     });
+
     // 获取显示的资源地址
     return {
       src: viewerSource?.data?.src || '',

@@ -5,6 +5,7 @@ import TaskEntity from './entity';
 import { getStoreConfig } from '../stores/storeManage';
 import { ETaskStatus } from '@/types';
 import db from '@/main/db/sqlite';
+import { logger } from '../utils/logger';
 // Use require to avoid circular dependency issues at module level if TaskManager imports Scheduler
 // But we will import type for TS
 import type TaskManager from './manage';
@@ -12,6 +13,7 @@ import type TaskManager from './manage';
 export class TaskScheduler {
   private static instance: TaskScheduler;
   private piscina: Piscina;
+  private logger = logger.scope('TaskScheduler');
 
   private constructor() {
     // Determine worker path.
@@ -68,6 +70,41 @@ export class TaskScheduler {
       return result;
     } catch (err) {
       port2.close();
+      throw err;
+    }
+  }
+
+  /**
+   * Execute a task directly in worker without DB persistence
+   */
+  async executeWorkerTask(options: {
+    connectionId: string;
+    method: string;
+    params: any;
+  }) {
+    const { connectionId, method, params } = options;
+    const configData = getStoreConfig(connectionId);
+    if (!configData) {
+      throw new Error(`Connection config not found for ${connectionId}`);
+    }
+
+    const start = Date.now();
+    const workerTask = {
+      taskId: `exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: 'execution',
+      connectionId,
+      method,
+      params,
+      config: configData.config,
+      storeType: configData.type,
+    };
+
+    try {
+      const result = await this.piscina.run(workerTask);
+      this.logger.info(`Execute worker task ${method} for ${connectionId} took ${Date.now() - start}ms`);
+      return result;
+    } catch (err: any) {
+      this.logger.error(`Execute worker task ${method} failed:`, err);
       throw err;
     }
   }
