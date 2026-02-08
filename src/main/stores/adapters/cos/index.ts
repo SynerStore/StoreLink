@@ -74,16 +74,19 @@ class CosStore implements IStorageHandler {
     try {
       if (this.bucketName && this.region) {
         return new Promise<any>((resolve) => {
-            this.client.headBucket({
-                Bucket: this.bucketName,
-                Region: this.region,
-            }, (err: any, data: any) => {
-                if (err) {
-                    resolve(errorResponse(err.message));
-                } else {
-                    resolve(sucessResponse(true));
-                }
-            });
+          this.client.headBucket(
+            {
+              Bucket: this.bucketName,
+              Region: this.region,
+            },
+            (err: any, _data: any) => {
+              if (err) {
+                resolve(errorResponse(err.message));
+              } else {
+                resolve(sucessResponse(true));
+              }
+            },
+          );
         });
       } else {
         const buckets = await getService(this.client);
@@ -211,24 +214,24 @@ class CosStore implements IStorageHandler {
       const isNameOnly = !newKey.replace(/\/$/, '').includes('/');
 
       if (isNameOnly) {
-         targetPath = path.join(dirname, newKey);
+        targetPath = path.join(dirname, newKey);
       }
 
       if (isObjectFolder(oldKey)) {
-         await moveFolder(this.client, {
-            oldKey: oldKey,
-            newKey: targetPath,
-            bucketName: this.bucketName,
-            region: this.region
-         });
+        await moveFolder(this.client, {
+          oldKey: oldKey,
+          newKey: targetPath,
+          bucketName: this.bucketName,
+          region: this.region,
+        });
       } else {
-         await renameObject(this.client, {
-             oldKey: oldKey,
-             newKey: targetPath,
-             prefix: '',
-             bucketName: this.bucketName,
-             region: this.region
-         });
+        await renameObject(this.client, {
+          oldKey: oldKey,
+          newKey: targetPath,
+          prefix: '',
+          bucketName: this.bucketName,
+          region: this.region,
+        });
       }
       return sucessResponse(true);
     } catch (err: any) {

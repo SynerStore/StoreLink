@@ -60,7 +60,6 @@ class WebDAVStore implements IStorageHandler {
       const result = await list(this.client, params);
       return sucessResponse(result);
     } catch (err: any) {
-      console.log(err);
       return errorResponse(err.message);
     }
   }
@@ -72,7 +71,6 @@ class WebDAVStore implements IStorageHandler {
       const folders = result.filter((item: any) => item.isDirectory);
       return sucessResponse(folders);
     } catch (err: any) {
-      console.log(err);
       return errorResponse(err.message);
     }
   }

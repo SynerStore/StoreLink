@@ -53,6 +53,8 @@
     "reloadApp": "重新加载应用",
     "errorDetails": "错误详情：",
     "fileIcon": "文件图标",
+    "testSuccess": "连接测试成功",
+    "testFailed": "连接测试失败",
     "appName": "StoreLink"
   },
   "home": {

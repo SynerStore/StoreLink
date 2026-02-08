@@ -53,6 +53,8 @@
     "reloadApp": "Reload Application",
     "errorDetails": "Error Details:",
     "fileIcon": "File Icon",
+    "testSuccess": "Connection test successful",
+    "testFailed": "Connection test failed",
     "appName": "StoreLink"
   },
   "home": {
