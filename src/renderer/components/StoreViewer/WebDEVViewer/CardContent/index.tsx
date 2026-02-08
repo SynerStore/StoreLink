@@ -1,4 +1,4 @@
-import { Spin, Empty } from 'antd';
+import { Empty } from 'antd';
 import { useLayoutEffect, useState } from 'react';
 
 import { TStoreObject, EWindowSize } from '@/types';
@@ -42,30 +42,29 @@ const CardContent = (props: CardContentProps) => {
 
   return (
     <div className="cards-content">
-      <Spin spinning={loading} style={{ width: '100%', minHeight: 200, display: 'block' }}>
-        {data.length > 0 ? (
-          <FileCardList
-            connectionId={connectionId}
-            data={data}
-            onPrefixChange={onPrefixChange}
-            onFileView={onFileView}
-            onRename={onRename}
-            onDelete={onDelete}
-            onDownload={onDownload}
-            onSelectionChange={onSelectionChange}
-            selectedKeys={selectedKeys}
-            onMoveTo={onMoveTo}
-            onCopyTo={onCopyTo}
-            minItemWidth={80}
-            maxItemWidth={100}
-            columnGap={12}
-            rowGap={12}
-            height={cardHeight}
-          />
-        ) : (
-          <Empty />
-        )}
-      </Spin>
+      {data.length > 0 || loading ? (
+        <FileCardList
+          connectionId={connectionId}
+          data={data}
+          onPrefixChange={onPrefixChange}
+          onFileView={onFileView}
+          onRename={onRename}
+          onDelete={onDelete}
+          onDownload={onDownload}
+          onSelectionChange={onSelectionChange}
+          selectedKeys={selectedKeys}
+          onMoveTo={onMoveTo}
+          onCopyTo={onCopyTo}
+          minItemWidth={80}
+          maxItemWidth={100}
+          columnGap={12}
+          rowGap={12}
+          height={cardHeight}
+          loading={loading}
+        />
+      ) : (
+        <Empty />
+      )}
     </div>
   );
 };

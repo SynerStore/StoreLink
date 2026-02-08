@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Spin } from 'antd';
+import { Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownViewer from './MarkdownViewer';
@@ -58,19 +58,30 @@ const FileViewer = (props: FileViewerProps) => {
     }
   }, [type]);
 
-  return (
-    <Spin className="file-viewer-spin" spinning={loading} tip={t('fileViewer.loadingTip')}>
-      {ViewerComponent ? (
-        React.createElement(ViewerComponent as any, {
-          id: props.id,
-          src: sourceUrl,
-          content: content,
-          mime: props?.mime,
-        })
-      ) : (
-        <div> {t('fileViewer.unsupportedFile')}</div>
-      )}
-    </Spin>
+  if (loading) {
+    if (type === 'image') {
+      return (
+        <div className="file-viewer-skeleton center">
+          <Skeleton.Image active className="image-skeleton-item" />
+        </div>
+      );
+    }
+    return (
+      <div className="file-viewer-skeleton padding">
+        <Skeleton active paragraph={{ rows: 10 }} />
+      </div>
+    );
+  }
+
+  return ViewerComponent ? (
+    React.createElement(ViewerComponent as any, {
+      id: props.id,
+      src: sourceUrl,
+      content: content,
+      mime: props?.mime,
+    })
+  ) : (
+    <div className="file-viewer-unsupported"> {t('fileViewer.unsupportedFile')}</div>
   );
 };
 

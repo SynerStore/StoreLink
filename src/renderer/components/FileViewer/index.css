@@ -1,28 +1,30 @@
-.file-viewer-spin {
-  display: flex;
-  flex: 1 1 auto;
-  min-width: 0;
-  min-height: 0;
+.file-viewer-skeleton {
   width: 100vw;
   height: 100vh;
+  box-sizing: border-box;
 }
 
-.file-viewer-spin .ant-spin-nested-loading {
+.file-viewer-skeleton.center {
   display: flex;
-  flex: 1 1 auto;
-  min-width: 0;
-  min-height: 0;
-  width: 100vw;
-  height: 100vh;
-}
-
-.file-viewer-spin .ant-spin-container {
-  display: flex;
-  flex: 1 1 auto;
-  min-width: 0;
-  min-height: 0;
-  width: 100vw;
-  height: 100vh;
   justify-content: center;
   align-items: center;
+}
+
+.file-viewer-skeleton.padding {
+  padding: 40px;
+}
+
+.file-viewer-skeleton .image-skeleton-item {
+  width: 200px !important;
+  height: 200px !important;
+}
+
+.file-viewer-unsupported {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  color: var(--ant-color-text-secondary);
 }

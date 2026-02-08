@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
-import { Tooltip } from 'antd';
+import { Tooltip, Skeleton } from 'antd';
 import { debounce } from 'lodash-es';
 import { useTranslation } from 'react-i18next';
 
@@ -185,10 +185,13 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
     }
 
     const dragKeys = currentSelectedKeys;
-    e.dataTransfer.setData('application/json', JSON.stringify({
-      keys: dragKeys,
-      connectionId
-    }));
+    e.dataTransfer.setData(
+      'application/json',
+      JSON.stringify({
+        keys: dragKeys,
+        connectionId,
+      }),
+    );
     e.dataTransfer.effectAllowed = 'move';
   };
 
@@ -232,20 +235,20 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
       let srcConnId: string | undefined;
 
       if (Array.isArray(dragData)) {
-         if (dragData.length > 0) {
-             srcConnId = dragData[0].connectionId;
-             keys = dragData.map((d: any) => d.key);
-         }
+        if (dragData.length > 0) {
+          srcConnId = dragData[0].connectionId;
+          keys = dragData.map((d: any) => d.key);
+        }
       } else {
-         srcConnId = dragData.connectionId;
-         keys = dragData.keys;
+        srcConnId = dragData.connectionId;
+        keys = dragData.keys;
       }
 
       if (srcConnId !== connectionId) return; // 仅支持同连接
 
       if (keys.includes(item.key as React.Key)) return; // 不能拖入自身
 
-      const sourceFiles = data.filter(d => keys.includes(d.key as React.Key));
+      const sourceFiles = data.filter((d) => keys.includes(d.key as React.Key));
 
       if (sourceFiles.length > 0) {
         setMoveSourceFiles(sourceFiles);
@@ -260,7 +263,10 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
   // 确认移动
   const handleConfirmMove = async () => {
     if (moveSourceFiles.length > 0 && moveTargetFolder && onDropMove) {
-      await onDropMove(moveSourceFiles.map(f => f.key as React.Key), moveTargetFolder);
+      await onDropMove(
+        moveSourceFiles.map((f) => f.key as React.Key),
+        moveTargetFolder,
+      );
     }
     setMoveModalVisible(false);
     setMoveSourceFiles([]);
@@ -322,7 +328,7 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
       const rect = rectFromPoints(lassoStart, cur);
       setLassoRect(rect);
       const items = Array.from(wrapperRef.current?.querySelectorAll(`.${styles.item}`) || []);
-      
+
       items.forEach((el) => {
         const inner = el as HTMLDivElement;
         const keyAttr = inner.getAttribute('data-key') as string | null;
@@ -399,7 +405,9 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
           <div
             draggable="true"
             className={`${styles.item} ${itemClassName} ${isSelected ? styles.selected : ''}`}
-            style={isDragOver ? { border: '2px dashed var(--primary-color)', background: 'rgba(24, 144, 255, 0.1)' } : {}}
+            style={
+              isDragOver ? { border: '2px dashed var(--primary-color)', background: 'rgba(24, 144, 255, 0.1)' } : {}
+            }
             data-info={JSON.stringify({
               connectionId,
               key: item.key,
@@ -438,6 +446,29 @@ const FileCardList: React.FC<FileCardListProps> = (props) => {
       </FileContextMenu>
     );
   };
+
+  if (props.loading) {
+    return (
+      <div className={`${styles.container} ${className}`} style={{ height: '100%', overflow: 'hidden' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(auto-fill, minmax(${minItemWidth}px, 1fr))`,
+            columnGap,
+            rowGap,
+            padding: 10,
+          }}
+        >
+          {Array.from({ length: 20 }).map((_, index) => (
+            <div key={index} className={`${styles.item} ${itemClassName}`} style={{ cursor: 'default' }}>
+              <Skeleton.Node active style={{ width: 72, height: 64, marginBottom: 8 }} />
+              <Skeleton.Input active size="small" style={{ width: '80%', height: 16, minWidth: 0 }} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
