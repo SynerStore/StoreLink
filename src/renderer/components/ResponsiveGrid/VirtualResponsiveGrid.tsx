@@ -43,6 +43,8 @@ const VirtualResponsiveGrid = forwardRef<VirtualResponsiveGridRef, VirtualRespon
 
   const [itemWidth, setItemWidth] = useState<number>(responsiveGridCardWidth ?? maxItemWidth);
   const [itemsPerRow, setItemsPerRow] = useState<number>(0);
+  const itemsPerRowRef = useRef(itemsPerRow);
+  itemsPerRowRef.current = itemsPerRow;
   const [containerHeight, setContainerHeight] = useState<number>(height);
 
   useImperativeHandle(ref, () => ({
@@ -59,6 +61,11 @@ const VirtualResponsiveGrid = forwardRef<VirtualResponsiveGridRef, VirtualRespon
     const containerWidth = containerRef.current.clientWidth - padding * 2;
     const currentHeight = containerRef.current.clientHeight;
     setContainerHeight(currentHeight);
+
+    // If container width is invalid or 0, do not calculate layout to avoid 1 column flash
+    if (containerWidth <= 0) {
+      return;
+    }
 
     const maxItems = Math.floor((containerWidth + columnGap) / (minItemWidth + columnGap));
     const minItems = Math.ceil((containerWidth + columnGap) / (maxItemWidth + columnGap));
@@ -91,11 +98,19 @@ const VirtualResponsiveGrid = forwardRef<VirtualResponsiveGridRef, VirtualRespon
     if (!containerRef.current) return;
     if (!responsiveGridCardWidthRef.current) calculateLayout();
     window.addEventListener('resize', debouncedResize);
-    const resizeObserver = new ResizeObserver(debouncedResize);
+    const resizeObserver = new ResizeObserver(() => {
+      if (itemsPerRowRef.current === 0) {
+        debouncedResize.cancel();
+        calculateLayout();
+      } else {
+        debouncedResize();
+      }
+    });
     resizeObserver.observe(containerRef.current);
     return () => {
       window.removeEventListener('resize', debouncedResize);
       if (containerRef.current) resizeObserver.unobserve(containerRef.current);
+      resizeObserver.disconnect();
     };
   }, [calculateLayout, debouncedResize]);
 
