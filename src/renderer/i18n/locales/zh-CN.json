@@ -83,7 +83,16 @@
     "failed": "失败",
     "canceled": "已取消",
     "taskFinished": "任务完成",
-    "taskFinishedDesc": "任务 {{name}} 已完成"
+    "taskFinishedDesc": "任务 {{name}} 已完成",
+    "type": {
+      "upload": "上传",
+      "download": "下载",
+      "delete": "删除",
+      "rename": "重命名",
+      "copy": "复制",
+      "create_dir": "创建文件夹",
+      "transfer": "传输"
+    }
   },
   "logs": {
       "title": "日志",

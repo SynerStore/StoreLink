@@ -83,7 +83,16 @@
     "failed": "Failed",
     "canceled": "Canceled",
     "taskFinished": "Task Completed",
-    "taskFinishedDesc": "Task {{name}} has been completed"
+    "taskFinishedDesc": "Task {{name}} has been completed",
+    "type": {
+      "upload": "Upload",
+      "download": "Download",
+      "delete": "Delete",
+      "rename": "Rename",
+      "copy": "Copy",
+      "create_dir": "Create Dir",
+      "transfer": "Transfer"
+    }
   },
   "logs": {
       "title": "Logs",

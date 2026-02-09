@@ -7,18 +7,22 @@ import { calculateSize } from '@/renderer/utils';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import TaskDetailModal from './components/TaskDetailModal';
+import TaskTypeTag from './components/TaskTypeTag';
 
 const TaskLogTable = () => {
   const { t } = useTranslation();
-  const { tasks, pagination, handleTableChange, loading } = useTasks();
+  const { tasks, pagination, handleTableChange, loading } = useTasks(
+    Object.values(ETaskStatus),
+    [],
+  );
   const [detailTask, setDetailTask] = useState<any>(null);
 
   const columns = [
     {
       title: t('common.type'),
       dataIndex: 'type',
-      width: 100,
-      render: (type: ETaskType) => type,
+      width: 120,
+      render: (type: ETaskType) => <TaskTypeTag type={type} />,
       sorter: true,
     },
     {

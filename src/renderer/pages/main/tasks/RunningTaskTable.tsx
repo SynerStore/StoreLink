@@ -5,10 +5,12 @@ import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
 import { useTranslation } from 'react-i18next';
 
+import TaskTypeTag from './components/TaskTypeTag';
+
 const RunningTaskTable = () => {
   const { t } = useTranslation();
   const { tasks, handlePause, handleResume, handleDelete, pagination, handleTableChange, loading } = useTasks(
-    [ETaskStatus.RUNNING, ETaskStatus.PAUSED],
+    [ETaskStatus.RUNNING, ETaskStatus.PAUSED, ETaskStatus.PENDING],
     [],
   );
 
@@ -16,7 +18,7 @@ const RunningTaskTable = () => {
     {
       title: t('common.type'),
       dataIndex: 'type',
-      render: (type: ETaskType) => type,
+      render: (type: ETaskType) => <TaskTypeTag type={type} />,
     },
     {
       title: t('common.file'),
