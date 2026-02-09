@@ -1,9 +1,10 @@
-import { Button, Space, Table, Tag } from 'antd';
+import { Button, Space, Table } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus, ETaskType } from '@/types';
 import { calculateSize } from '@/renderer/utils';
 import { useTranslation } from 'react-i18next';
+import TaskTypeTag from './components/TaskTypeTag';
 
 const PendingTaskTable = () => {
   const { t } = useTranslation();
@@ -16,7 +17,7 @@ const PendingTaskTable = () => {
     {
       title: t('common.type'),
       dataIndex: 'type',
-      render: (type: ETaskType) => type,
+      render: (type: ETaskType) => <TaskTypeTag type={type} />,
     },
     {
       title: t('common.file'),

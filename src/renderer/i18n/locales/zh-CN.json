@@ -194,6 +194,15 @@
     "endTime": "完成时间",
     "errorMessage": "错误信息",
     "manageTitle": "任务管理",
+    "type": {
+      "upload": "上传",
+      "download": "下载",
+      "delete": "删除",
+      "rename": "重命名",
+      "copy": "复制",
+      "create_dir": "创建文件夹",
+      "transfer": "传输"
+    },
     "detail": {
       "title": "任务详情",
       "taskId": "任务ID",

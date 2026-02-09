@@ -194,6 +194,15 @@
     "endTime": "Completed Time",
     "errorMessage": "Error Message",
     "manageTitle": "Task Management",
+    "type": {
+      "upload": "Upload",
+      "download": "Download",
+      "delete": "Delete",
+      "rename": "Rename",
+      "copy": "Copy",
+      "create_dir": "Create Dir",
+      "transfer": "Transfer"
+    },
     "tabs": {
       "pending": "Pending",
       "running": "Running",
