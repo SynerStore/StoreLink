@@ -38,7 +38,7 @@ class SftpStore implements IStorageHandler {
   }
 
   async init(config: any) {
-    const { host, port, username, password } = config;
+    const { host, port, username, password, privateKey, passphrase } = config;
     // 存在 privateKey 或者 passphrase 就添加到 connect
     try {
       await this.client.connect({
@@ -46,12 +46,15 @@ class SftpStore implements IStorageHandler {
         port,
         username,
         password,
+        privateKey,
+        passphrase,
         keepaliveInterval: 15000,
       } as any);
       this.connected = true;
       // 清除内存中的明文密码
       try {
         this.config.password = undefined;
+        this.config.passphrase = undefined;
       } catch (_e) {}
     } catch (_err) {
       this.connected = false;
@@ -79,10 +82,30 @@ class SftpStore implements IStorageHandler {
     await this.init(this.config);
   }
 
-  async test() {
+  private async execute<T>(operation: () => Promise<T>): Promise<T> {
     try {
       await this.ensureClientIsOpen();
-      await this.client.list('/');
+      return await operation();
+    } catch (err: any) {
+      // Handle connection errors and retry once
+      if (
+        err.message.includes('No SFTP connection available') ||
+        err.message.includes('Client not connected') ||
+        err.code === 'ECONNRESET' ||
+        err.code === 'ENOTFOUND'
+      ) {
+        console.warn('SFTP connection lost, retrying...', err.message);
+        this.connected = false;
+        await this.ensureClientIsOpen();
+        return await operation();
+      }
+      throw err;
+    }
+  }
+
+  async test() {
+    try {
+      await this.execute(() => this.client.list('/'));
       return sucessResponse(true);
     } catch (error: any) {
       return errorResponse(error.message);
@@ -91,8 +114,7 @@ class SftpStore implements IStorageHandler {
 
   async list(params: ListParams) {
     try {
-      await this.ensureClientIsOpen();
-      const result = await list(this.client, params);
+      const result = await this.execute(() => list(this.client, params));
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);
@@ -101,10 +123,11 @@ class SftpStore implements IStorageHandler {
 
   async listDir(params: ListParams) {
     try {
-      await this.ensureClientIsOpen();
-      const result = await list(this.client, params);
-      const folders = result.filter((item: any) => item.isDirectory);
-      return sucessResponse(folders);
+      const result = await this.execute(async () => {
+        const res = await list(this.client, params);
+        return res.filter((item: any) => item.isDirectory);
+      });
+      return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);
     }
@@ -112,13 +135,13 @@ class SftpStore implements IStorageHandler {
 
   async get(params: GetFolderParams & GetFileParams) {
     try {
-      await this.ensureClientIsOpen();
-      let result;
-      if (isObjectFolder(params.key)) {
-        result = await getFolder(this.client, params);
-      } else {
-        result = await getFile(this.client, params);
-      }
+      const result = await this.execute(() => {
+        if (isObjectFolder(params.key)) {
+          return getFolder(this.client, params);
+        } else {
+          return getFile(this.client, params);
+        }
+      });
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);
@@ -127,8 +150,7 @@ class SftpStore implements IStorageHandler {
 
   async put(params: PutFileParams) {
     try {
-      await this.ensureClientIsOpen();
-      const result = await putFile(this.client, params);
+      const result = await this.execute(() => putFile(this.client, params));
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);
@@ -137,8 +159,7 @@ class SftpStore implements IStorageHandler {
 
   async putFolder(params: PutFolderParams) {
     try {
-      await this.ensureClientIsOpen();
-      const result = await putFolder(this.client, params);
+      const result = await this.execute(() => putFolder(this.client, params));
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);
@@ -147,13 +168,13 @@ class SftpStore implements IStorageHandler {
 
   async delete(params: DeleteFileParams | DeleteFolderParams) {
     try {
-      await this.ensureClientIsOpen();
-      let result;
-      if (params.isDirectory) {
-        result = await deleteFolder(this.client, params);
-      } else {
-        result = await deleteFile(this.client, params);
-      }
+      const result = await this.execute(() => {
+        if (params.isDirectory) {
+          return deleteFolder(this.client, params);
+        } else {
+          return deleteFile(this.client, params);
+        }
+      });
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);
@@ -162,8 +183,7 @@ class SftpStore implements IStorageHandler {
 
   async rename(params: RenameParams) {
     try {
-      await this.ensureClientIsOpen();
-      const result = await rename(this.client, params);
+      const result = await this.execute(() => rename(this.client, params));
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);
@@ -172,8 +192,7 @@ class SftpStore implements IStorageHandler {
 
   async getSourceUrl(params: GetSourceUrlParams) {
     try {
-      await this.ensureClientIsOpen();
-      const result = await getSourceUrl(this.client, params);
+      const result = await this.execute(() => getSourceUrl(this.client, params));
       return sucessResponse(result);
     } catch (err: any) {
       return errorResponse(err.message);
