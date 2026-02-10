@@ -59,16 +59,36 @@
   },
   "home": {
     "title": "首页",
+    "subtitle": "统一掌控多存储的连接与任务流转",
+    "meta": {
+      "connections": "连接 {{count}}",
+      "running": "进行中 {{count}}",
+      "active": "活跃 {{count}}",
+      "completed": "今日完成 {{count}}"
+    },
+    "quick": {
+      "tasks": "任务管理",
+      "logs": "日志中心",
+      "refresh": "刷新概览"
+    },
     "stats": {
       "connections": "连接数",
       "running": "进行中任务",
       "activeStores": "活跃存储",
-      "todayCompleted": "今日完成"
+      "todayCompleted": "今日完成",
+      "inFlight": "执行中",
+      "submitted": "累计提交",
+      "failed": "失败",
+      "successRate": "成功率",
+      "successRateTip": "按任务提交次数计算"
     },
     "favorites": {
       "title": "收藏的连接",
       "remove": "取消收藏",
       "empty": "暂无收藏的连接"
+    },
+    "worker": {
+      "statusCount": "任务状态分布"
     },
     "tasks": {
     "title": "任务列表",

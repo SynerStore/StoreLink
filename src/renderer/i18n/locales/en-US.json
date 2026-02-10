@@ -59,16 +59,36 @@
   },
   "home": {
     "title": "Home",
+    "subtitle": "Unified control center for multi-storage operations",
+    "meta": {
+      "connections": "{{count}} Connections",
+      "running": "{{count}} Running",
+      "active": "{{count}} Active",
+      "completed": "{{count}} Completed Today"
+    },
+    "quick": {
+      "tasks": "Task Center",
+      "logs": "Logs",
+      "refresh": "Refresh Overview"
+    },
     "stats": {
       "connections": "Connections",
       "running": "Running Tasks",
       "activeStores": "Active Stores",
-      "todayCompleted": "Completed Today"
+      "todayCompleted": "Completed Today",
+      "inFlight": "In Flight",
+      "submitted": "Submitted",
+      "failed": "Failed",
+      "successRate": "Success Rate",
+      "successRateTip": "Calculated from submitted tasks"
     },
     "favorites": {
       "title": "Favorites",
       "remove": "Remove",
       "empty": "No favorites"
+    },
+    "worker": {
+      "statusCount": "Task Status"
     },
     "tasks": {
     "title": "Tasks",
