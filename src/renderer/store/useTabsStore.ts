@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 import { events } from '@/renderer/utils';
+import { storeRemove } from '@/renderer/utils/store';
 
 export enum ETabDisplay {
   LIST = 'list',
@@ -75,6 +76,7 @@ export const useTabsStore = create<DataType>()(
         const curTabs = get().tabs;
         let newTabs = curTabs.filter((c: any) => c.id !== id);
         let newActiveTab = 'home';
+        await storeRemove(id);
         await events.setViewerData({ tabs: newTabs, activeTab: newActiveTab });
         return set((state: any) => {
           return {

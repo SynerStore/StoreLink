@@ -50,7 +50,7 @@ const OssForm = forwardRef((props: Props, ref) => {
       },
     });
     const bucketsData = result?.data;
-    setBuckets(bucketsData);
+    setBuckets(bucketsData || []);
     setLoading(false);
 
     if (result?.success) {
