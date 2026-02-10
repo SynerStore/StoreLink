@@ -49,7 +49,7 @@ const OssForm = forwardRef((props: Props, ref) => {
         secretAccessKey: res.secretAccessKey ?? initial?.config?.secretAccessKey,
       },
     });
-    const bucketsData = result.data;
+    const bucketsData = result?.data;
     setBuckets(bucketsData);
     setLoading(false);
 
