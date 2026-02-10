@@ -8,6 +8,7 @@ import { BaseWindow } from './base';
 import { MainWindow } from './main';
 import { logger, isInMac } from '../utils';
 import Core from '../core';
+import { destroyAllStores } from '../stores';
 
 export default class Windows {
   logger = logger.scope('Windows');
@@ -29,13 +30,18 @@ export default class Windows {
     ipcMain.handle(EChannels.windowClose, (event) => {
       this.logger.info(EChannels.windowClose);
       const { sender } = event;
+      const mainWindow = this.getBrowserWindow(EPages.Main);
+      const isMainWindow = sender.id === mainWindow?.id;
+
+      if (isMainWindow) {
+        destroyAllStores();
+      }
 
       if (isInMac()) {
         const browserWindow = BrowserWindow.fromWebContents(sender);
         browserWindow?.hide();
       } else {
-        const mainWindow = this.getBrowserWindow(EPages.Main);
-        if (sender.id === mainWindow?.id) {
+        if (isMainWindow) {
           this.core.quitApp();
         } else {
           const browserWindow = BrowserWindow.fromWebContents(sender);

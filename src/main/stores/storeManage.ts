@@ -171,3 +171,15 @@ export const storeRemove = async (id: string) => {
   }
   storePool.delete(id);
 };
+
+export const destroyAllStores = () => {
+  for (const [id, entry] of storePool.entries()) {
+    if (entry.timeout) {
+      clearTimeout(entry.timeout);
+    }
+    try {
+      entry.client?.destroy?.();
+    } catch (_e) {}
+    storePool.delete(id);
+  }
+};
