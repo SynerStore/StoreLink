@@ -45,19 +45,16 @@ class OssStore implements IStorageHandler {
   }
 
   init(config: any) {
-    const { accessKeyId, secretAccessKey, bucketName, region, endpoint } = config;
-    this.client = new OSS({
+    const { accessKeyId, secretAccessKey, bucketName, region, endpoint } = config || {};
+    const connectConfig: any = {
       accessKeyId: accessKeyId, // 推荐使用环境变量获取；用户的 SecretId，建议使用子账号密钥，授权遵循最小权限指引，降低使用风险。子账号密钥获取可参考https://cloud.tencent.com/document/product/598/37140
       accessKeySecret: secretAccessKey,
-      bucket: bucketName,
-      region: region,
-      endpoint: endpoint,
       secure: true,
-    });
-    try {
-      this.config.secretAccessKey = undefined;
-      this.config.accessKeySecret = undefined;
-    } catch (_e) {}
+    };
+    if (bucketName) {
+      connectConfig.bucket = bucketName;
+    }
+    this.client = new OSS(connectConfig);
   }
 
   // 销毁

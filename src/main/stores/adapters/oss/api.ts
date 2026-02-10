@@ -11,7 +11,7 @@ import { TStoreObject } from '@/types';
 
 export const formatObjects = (objects: OSS.ObjectMeta[]): TStoreObject[] => {
   return objects
-    .filter((object: OSS.ObjectMeta) => !object.name.endsWith('/')) // 过滤掉空文件夹
+    .filter((object: OSS.ObjectMeta) => object && object.name && !object.name.endsWith('/')) // 过滤掉空文件夹
     .map((obj: any) => {
       const { name, url, lastModified, etag, size, storageClass } = obj;
       const baseName = path.basename(name);

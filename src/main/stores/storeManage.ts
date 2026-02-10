@@ -158,7 +158,7 @@ export const storeConnect = async (params: any) => {
     const storeClient = await createStoreClient(params);
     return storeClient.test();
   } catch (e: any) {
-    errorLogger.error('Store connect failed:', e?.message || e);
+    errorLogger.error('Store connect failed:', e);
     return { code: 1, data: null, message: 'decrypt_failed', success: false };
   }
 };
