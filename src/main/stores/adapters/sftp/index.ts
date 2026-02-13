@@ -39,7 +39,22 @@ class SftpStore implements IStorageHandler {
 
   async init(config: any) {
     const { host, port, username, password, privateKey, passphrase } = config;
-    // 存在 privateKey 或者 passphrase 就添加到 connect
+
+    // 清理旧的监听器，防止重复绑定
+    this.client.removeListener('end', () => {});
+    this.client.removeListener('close', () => {});
+    this.client.removeListener('error', () => {});
+
+    // 尝试断开旧连接（如果存在）
+    try {
+      await this.client.end();
+    } catch (e) {
+      // 忽略断开连接时的错误
+    }
+
+    // 创建新的 Client 实例，确保状态干净
+    this.client = new SftpClient();
+
     try {
       await this.client.connect({
         host,
@@ -49,28 +64,41 @@ class SftpStore implements IStorageHandler {
         privateKey,
         passphrase,
         keepaliveInterval: 15000,
+        readyTimeout: 20000, // 增加超时时间
       } as any);
+      
       this.connected = true;
+      
       // 清除内存中的明文密码
       try {
         this.config.password = undefined;
         this.config.passphrase = undefined;
       } catch (_e) {}
-    } catch (_err) {
-      this.connected = false;
-    }
 
-    this.client.on('end', () => {
+      // 重新绑定监听器
+      this.client.on('end', () => {
+        this.connected = false;
+        console.log('Connection ended unexpectedly');
+      });
+      this.client.on('close', () => {
+        this.connected = false;
+        console.log('Connection closed');
+      });
+      this.client.on('error', (err: any) => {
+        // 只有在非 ECONNRESET 错误时才打印详细错误
+        if (err.code !== 'ECONNRESET') {
+          console.error('SFTP 客户端错误:', err.message);
+        } else {
+          console.warn('SFTP 连接被重置 (ECONNRESET)，将在下次操作时自动重连');
+        }
+        this.connected = false;
+      });
+
+    } catch (err: any) {
       this.connected = false;
-      console.log('Connection ended unexpectedly');
-    });
-    this.client.on('close', () => {
-      this.connected = false;
-      console.log('Connection closed');
-    });
-    this.client.on('error', (err: any) => {
-      console.error('SFTP 客户端错误:', err.message, err.stack);
-    });
+      console.error('SFTP 连接失败:', err.message);
+      throw err; // 必须抛出错误，让上层知道连接失败
+    }
   }
 
   destroy() {
@@ -79,7 +107,12 @@ class SftpStore implements IStorageHandler {
 
   private async ensureClientIsOpen() {
     if (this.connected) return;
-    await this.init(this.config);
+    try {
+      await this.init(this.config);
+    } catch (e) {
+      // init 中已经打印了错误，这里重新抛出以便 execute 捕获
+      throw e;
+    }
   }
 
   private async execute<T>(operation: () => Promise<T>): Promise<T> {

@@ -31,10 +31,12 @@ export const formatObjects = (objects: OSS.ObjectMeta[]): TStoreObject[] => {
 
 export const formatPrefixs = (prefixs: string[]): TStoreObject[] => {
   return prefixs.map((prefix) => {
-    const name = path.basename(prefix as string);
+    // 确保 prefix 是字符串，防止意外的 undefined 或 null 导致 basename 报错
+    const safePrefix = prefix || '';
+    const baseName = path.basename(safePrefix as string);
     return {
-      key: prefix,
-      name: name,
+      key: safePrefix,
+      name: baseName,
       lastModified: undefined,
       size: 0,
       etag: '',

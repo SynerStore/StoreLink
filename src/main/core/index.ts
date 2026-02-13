@@ -16,6 +16,16 @@ export default class Core {
   async startApp() {
     try {
       this.logger.info('app start');
+      
+      // Log proxy settings for debugging
+      if (process.env.HTTP_PROXY || process.env.HTTPS_PROXY || process.env.http_proxy || process.env.https_proxy) {
+        this.logger.info('Proxy environment variables detected:', {
+          HTTP_PROXY: process.env.HTTP_PROXY || process.env.http_proxy,
+          HTTPS_PROXY: process.env.HTTPS_PROXY || process.env.https_proxy,
+          ALL_PROXY: process.env.ALL_PROXY || process.env.all_proxy
+        });
+      }
+
       await this.beforeAppReady();
       protocol.registerSchemesAsPrivileged([{ scheme: 'localfile', privileges: { bypassCSP: true } }]);
       await app.whenReady();
