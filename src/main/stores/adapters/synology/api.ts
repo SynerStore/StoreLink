@@ -226,11 +226,12 @@ export async function getSourceUrl(client: SynologyClient, _config: any, params:
   const { key, connectionId, lastModified } = params;
   const etag = getMd5ByString(`${connectionId}-${lastModified}-${key}`);
   const tmpFileName = path.join(getTempPath(), `${etag}${path.extname(key)}`);
-  const filePath = `file://${tmpFileName}`;
+
+  const mimeValue = mime.lookup(tmpFileName) || '';
   if (!fs.existsSync(tmpFileName)) {
     await getFile(client, { key, localFilePath: tmpFileName });
   }
-  const mimeValue = mime.lookup(filePath) || '';
+  const filePath = `file://${tmpFileName}`;
   return {
     src: filePath,
     mime: mimeValue,

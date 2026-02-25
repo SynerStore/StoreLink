@@ -7,6 +7,7 @@ export const getFiletype = (mine: string) => {
     case 'image/webp':
     case 'image/bmp':
     case 'image/tiff':
+    case 'image/heic':
     case 'image/svg+xml':
     case 'image/vnd.adobe.photoshop':
       return 'image';

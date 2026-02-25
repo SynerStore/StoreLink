@@ -1,5 +1,5 @@
-import { useRef, useState, useMemo } from 'react';
-import { Tooltip, message } from 'antd';
+import { useRef, useState, useMemo, useEffect } from 'react';
+import { Tooltip, message, Spin } from 'antd';
 import {
   RotateLeftOutlined,
   RotateRightOutlined,
@@ -9,6 +9,7 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import heic2any from 'heic2any';
 
 import { events, downloadViewerSource } from '@/renderer/utils';
 import { PreviewScales, defaultScales } from '@/renderer/utils';
@@ -21,16 +22,72 @@ export type ImageViewerProps = {
   mime?: string;
 };
 const ImageViewer = (props: ImageViewerProps) => {
-  const { id, src } = props;
+  const { id, src, mime, content } = props;
   const refImage = useRef<any>();
   const [rotate, setRotate] = useState(0);
   const [scale, setScale] = useState(1);
+  const [imgSrc, setImgSrc] = useState<string>(src);
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const ROTATE_STEP = 90;
 
   const previewScales = useMemo(() => {
     return new PreviewScales(defaultScales);
   }, []);
+
+  useEffect(() => {
+    if (!src && !content) return;
+    let objectUrl = '';
+    const loadHeic = async () => {
+      const isHeic = mime === 'image/heic' || src.toLowerCase().endsWith('.heic');
+
+      if (isHeic) {
+        try {
+          setLoading(true);
+          let blob: Blob;
+
+          if (content && content.startsWith('data:')) {
+            // 使用 base64 content
+            const res = await fetch(content);
+            blob = await res.blob();
+          } else {
+            // 使用 fetch 读取 blob (对于 file:// 协议)
+            // 注意：如果之前修改为 XHR，这里保留 XHR 或 fetch 取决于具体环境支持
+            // 由于主进程现在可能返回 content (base64)，优先使用 content
+            const res = await fetch(src);
+            blob = await res.blob();
+          }
+
+          const conversionResult = await heic2any({
+            blob,
+            toType: 'image/jpeg',
+            quality: 0.8,
+          });
+
+          const resultBlob = Array.isArray(conversionResult) ? conversionResult[0] : conversionResult;
+          objectUrl = URL.createObjectURL(resultBlob);
+          setImgSrc(objectUrl);
+        } catch (error) {
+          console.error('HEIC conversion failed:', error);
+          message.error('HEIC preview failed, showing original');
+          setImgSrc(src);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setImgSrc(src);
+        setLoading(false);
+      }
+    };
+
+    loadHeic();
+
+    return () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [src, mime, content]);
 
   const onRotateRight = () => {
     setRotate((rotate + ROTATE_STEP) % 360);
@@ -110,13 +167,15 @@ const ImageViewer = (props: ImageViewerProps) => {
   ];
   return (
     <div className="image-viewer">
+      {loading && <Spin size="large" style={{ position: 'absolute', zIndex: 10 }} />}
       <img
         className="image-viewer-img"
         ref={refImage}
         style={{
           transform: `rotate(${rotate}deg) scale(${scale}, ${scale})`,
+          opacity: loading ? 0 : 1,
         }}
-        src={src}
+        src={imgSrc}
       />
       <div className="image-viewer-toolbar">
         <div className="image-viewer-toolbar-item">

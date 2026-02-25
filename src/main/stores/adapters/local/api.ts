@@ -2,6 +2,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import mime from 'mime-types';
 import fs from 'fs-extra';
+import { shell } from 'electron';
 
 import { filesSort, isHiddenFile } from '@/main/utils/fs';
 import { TStoreObject } from '@/types';
@@ -77,8 +78,6 @@ export type DeleteFileParams = {
 export async function deleteFile(params: DeleteFileParams) {
   const { file } = params;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { shell } = require('electron');
     return shell.trashItem(file);
   } catch (error) {
     // Fallback for worker thread where electron is not available
@@ -152,13 +151,28 @@ export async function getSourceUrl(params: GetSourceUrlParams) {
   const src = pathToFileURL(key).href;
   const mimeValue = mime.lookup(key) || '';
   let content = '';
+  // 对于文本文件，读取内容
   if (/text\/.{0,}/.test(mimeValue) || mimeValue === 'application/json' || mimeValue.includes('xml')) {
     try {
       content = await fs.readFile(key, { encoding: 'utf-8' });
     } catch (e) {
       console.error(e);
     }
+  } 
+  // 对于 HEIC 图片，读取为 base64
+  else if (mimeValue === 'image/heic' || key.toLowerCase().endsWith('.heic')) {
+    try {
+      const buffer = await fs.readFile(key);
+      // 返回 base64 数据 URL
+      content = `data:${mimeValue || 'image/heic'};base64,${buffer.toString('base64')}`;
+      // 注意：这里我们将 base64 放在 content 字段中，前端需要识别处理
+      // 或者我们可以直接把 content 赋给 src？
+      // 为了保持兼容性，我们最好不要修改 src 的 file:// 协议，而是让 content 携带数据
+    } catch (e) {
+      console.error(e);
+    }
   }
+
   return {
     src,
     mime: mimeValue,
@@ -182,8 +196,6 @@ export async function copyFile(params: CopyFileParams) {
   // Check if it's move or copy? This function is named copyFile.
   await fs.copy(sourceKey, destPath);
 }
-
-
 
 export async function moveFile(params: CopyFileParams) {
   const { sourceKey, targetPath } = params;

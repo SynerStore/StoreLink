@@ -89,6 +89,7 @@
     "electron-store": "^10.0.1",
     "file-type": "^20.4.0",
     "fs-extra": "^11.3.0",
+    "heic2any": "^0.0.4",
     "highlight.js": "^11.11.1",
     "hotkeys-js": "^4.0.0",
     "i18next": "^25.3.2",
