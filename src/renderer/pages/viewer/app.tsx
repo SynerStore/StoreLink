@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import  { useMemo, useEffect } from 'react';
 import qs from 'query-string';
 import { ConfigProvider, theme, Modal } from 'antd';
 import zhCN from 'antd/locale/zh_CN';

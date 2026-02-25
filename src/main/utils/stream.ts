@@ -1,5 +1,3 @@
-import { pipeline } from 'stream';
-import { promisify } from 'util';
 import _ from 'lodash';
 
 // 文件流式下载监听
@@ -57,7 +55,16 @@ export const streamOnProgress = (readerStream: any, writerStream: any, size: num
  * 流式传输 Promise 封装
  */
 export function streamToPromise(readStream: any, writerStream: any) {
-  // 使用 Node.js 内置的 pipeline（推荐方案）
-  const pipelinePromise = promisify(pipeline);
-  return pipelinePromise(readStream, writerStream);
+  return new Promise((resolve, reject) => {
+    readStream.pipe(writerStream);
+    readStream.on('error', (err: any) => {
+      reject(err);
+    });
+    writerStream.on('error', (err: any) => {
+      reject(err);
+    });
+    writerStream.on('finish', () => {
+      resolve(true);
+    });
+  });
 }

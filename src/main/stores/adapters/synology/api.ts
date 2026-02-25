@@ -1,6 +1,7 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import mime from 'mime-types';
+import { Readable } from 'node:stream';
 import { filesSort, isObjectFolder, readDirectoryRecursive } from '@/main/utils/fs';
 import { getTempPath } from '@/main/utils/path';
 import { streamToPromise } from '@/main/utils/stream';
@@ -88,16 +89,13 @@ export type GetFileParams = {
 };
 export async function getFile(client: SynologyClient, params: GetFileParams) {
   const { key, localPath, localFilePath } = params;
-  if (!client?.FileStation?.download) throw new Error('not_supported');
+  if (!client?.FileStation?.getDownloadFile) throw new Error('not_supported');
   const targetFilePath = localFilePath ? localFilePath : path.join(localPath as string, path.basename(key));
-  const result = await client.FileStation.download({ path: key });
-  if (result?.data instanceof Buffer) {
-    await fs.writeFile(targetFilePath, result.data);
-    return;
-  }
-  if (result?.data?.pipe) {
-    const writerStream = fs.createWriteStream(targetFilePath);
-    await streamToPromise(result.data, writerStream);
+  const result = await client.FileStation.getDownloadFile({ path: key, responseType: 'stream' });
+
+  if (result instanceof Readable) {
+    const writeStream = fs.createWriteStream(targetFilePath);
+    await streamToPromise(result, writeStream);
     return;
   }
   throw new Error('download_failed');

@@ -1,6 +1,7 @@
 import path from 'node:path';
 import os from 'node:os';
 import qs from 'query-string';
+import fs from 'node:fs';
 
 import { isEmpty } from './helpers';
 import { isDev } from './env';
@@ -81,7 +82,12 @@ export const getHomePath = () => {
 };
 
 export const getTempPath = () => {
-  return app ? app.getPath('temp') : os.tmpdir();
+  const temppath =  app ? app.getPath('temp') : os.tmpdir();
+   const appTempPath = path.join(temppath, 'store-link');
+   if (!fs.existsSync(appTempPath)) {
+    fs.mkdirSync(appTempPath);
+   }
+   return appTempPath;
 };
 
 export const getDownloadsPath = () => {
