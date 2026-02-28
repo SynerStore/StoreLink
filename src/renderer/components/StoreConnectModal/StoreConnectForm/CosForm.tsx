@@ -1,7 +1,6 @@
 import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Select, App } from 'antd';
 import { useTranslation } from 'react-i18next';
-import antdUtils from '@/renderer/utils/antd-utils';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
@@ -18,6 +17,8 @@ const CosForm = forwardRef((props: Props, ref) => {
   const [buckets, setBuckets] = useState([]);
   const { addConnection } = useConfigStore();
   const { loading, setLoading } = useLoading();
+  const { t } = useTranslation();
+  const { message } = App.useApp();
   const { mode = 'create', initial, onSubmit } = props;
   const { t } = useTranslation();
 
@@ -57,9 +58,9 @@ const CosForm = forwardRef((props: Props, ref) => {
           bucketName: bucketsData.map((item: any) => item.name),
         });
       }
-      antdUtils.message.success(t('common.testSuccess'));
+      message.success(t('common.testSuccess'));
     } catch (e: any) {
-      antdUtils.message.error(e.message || t('common.testFailed'));
+      message.error(e.message || t('common.testFailed'));
     } finally {
       setLoading(false);
     }

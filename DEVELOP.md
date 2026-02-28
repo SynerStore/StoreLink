@@ -1,10 +1,10 @@
 # 开发指南
 
-本文档旨在帮助开发者了解 SynerStoreClient (StoreLink) 的核心架构、代码逻辑以及工程构建流程。
+本文档旨在帮助开发者了解 StoreLink (StoreLink) 的核心架构、代码逻辑以及工程构建流程。
 
 ## 1. 项目简介
 
-SynerStoreClient (StoreLink) 是一个基于 Electron + React 的跨平台多存储管理工具。它支持管理本地文件系统以及多种云存储服务（如阿里云 OSS、腾讯云 COS、AWS S3、SFTP、WebDAV、群晖 Synology 等）。
+StoreLink (StoreLink) 是一个基于 Electron + React 的跨平台多存储管理工具。它支持管理本地文件系统以及多种云存储服务（如阿里云 OSS、腾讯云 COS、AWS S3、SFTP、WebDAV、群晖 Synology 等）。
 
 ## 2. 核心架构
 
@@ -40,17 +40,17 @@ SynerStoreClient (StoreLink) 是一个基于 Electron + React 的跨平台多存
 
 主进程负责应用生命周期、原生窗口管理、以及所有的文件存储操作。
 
-*   **入口**: [src/main/index.ts](file:///Users/songjun/WorkSpace/github/SynerStoreClient/src/main/index.ts) 初始化 `Core` 类。
-*   **Core 类**: [src/main/core/index.ts](file:///Users/songjun/WorkSpace/github/SynerStoreClient/src/main/core/index.ts)
+*   **入口**: [src/main/index.ts](file:///Users/songjun/WorkSpace/github/StoreLink/src/main/index.ts) 初始化 `Core` 类。
+*   **Core 类**: [src/main/core/index.ts](file:///Users/songjun/WorkSpace/github/StoreLink/src/main/core/index.ts)
     *   管理应用启动流程 (`startApp`, `beforeAppReady`, `afterAppReady`)。
     *   注册 IPC 事件 (`resistry`)。
     *   初始化窗口管理器 (`Windows`) 和 Viewer 管理器 (`ViewerWindowManager`)。
-*   **存储管理**: [src/main/stores/storeManage.ts](file:///Users/songjun/WorkSpace/github/SynerStoreClient/src/main/stores/storeManage.ts)
+*   **存储管理**: [src/main/stores/storeManage.ts](file:///Users/songjun/WorkSpace/github/StoreLink/src/main/stores/storeManage.ts)
     *   维护 `storePool` (连接池)。
     *   根据连接配置 (`StoreTypes`) 创建对应的存储客户端实例。
     *   处理配置解密 (Password/SecretKey)。
 *   **适配器模式**: `src/main/stores/adapters/`
-    *   定义统一接口 `IStorageHandler` ([src/main/stores/adapters/store.ts](file:///Users/songjun/WorkSpace/github/SynerStoreClient/src/main/stores/adapters/store.ts))。
+    *   定义统一接口 `IStorageHandler` ([src/main/stores/adapters/store.ts](file:///Users/songjun/WorkSpace/github/StoreLink/src/main/stores/adapters/store.ts))。
     *   实现不同存储的适配器：`S3Store`, `OssStore`, `LocalStore`, `SftpStore` 等。
     *   统一实现了 `list`, `put`, `get`, `delete`, `rename` 等标准文件操作。
 
@@ -62,7 +62,7 @@ SynerStoreClient (StoreLink) 是一个基于 Electron + React 的跨平台多存
     *   `render_main`: 主窗口。
     *   `render_launch`: 启动窗口。
     *   `render_viewer`: 文件浏览窗口。
-*   **StoreViewer**: [src/renderer/components/StoreViewer/index.tsx](file:///Users/songjun/WorkSpace/github/SynerStoreClient/src/renderer/components/StoreViewer/index.tsx)
+*   **StoreViewer**: [src/renderer/components/StoreViewer/index.tsx](file:///Users/songjun/WorkSpace/github/StoreLink/src/renderer/components/StoreViewer/index.tsx)
     *   核心组件，根据传入的 `connection.type` 动态渲染对应的 Viewer 组件 (如 `S3Viewer`, `LocalViewer`)。
     *   处理文件拖拽上传逻辑。
 *   **状态管理**: 使用 Zustand (`useConfigStore`) 管理全局配置和连接信息。
@@ -74,10 +74,10 @@ SynerStoreClient (StoreLink) 是一个基于 Electron + React 的跨平台多存
 ### 3.1 构建配置
 
 *   **Rspack**:
-    *   [scripts/rspack.main.config.ts](file:///Users/songjun/WorkSpace/github/SynerStoreClient/scripts/rspack.main.config.ts): 编译主进程代码，输出到 `build/[name].js`。支持 TypeScript 和 SWC Loader。
-    *   [scripts/rspack.render.config.ts](file:///Users/songjun/WorkSpace/github/SynerStoreClient/scripts/rspack.render.config.ts): 编译渲染进程代码，输出到 `build/`。支持 React Refresh (HMR) 和 CSS Modules。
+    *   [scripts/rspack.main.config.ts](file:///Users/songjun/WorkSpace/github/StoreLink/scripts/rspack.main.config.ts): 编译主进程代码，输出到 `build/[name].js`。支持 TypeScript 和 SWC Loader。
+    *   [scripts/rspack.render.config.ts](file:///Users/songjun/WorkSpace/github/StoreLink/scripts/rspack.render.config.ts): 编译渲染进程代码，输出到 `build/`。支持 React Refresh (HMR) 和 CSS Modules。
 *   **Electron Builder**:
-    *   [scripts/make.js](file:///Users/songjun/WorkSpace/github/SynerStoreClient/scripts/make.js): 自定义打包脚本。
+    *   [scripts/make.js](file:///Users/songjun/WorkSpace/github/StoreLink/scripts/make.js): 自定义打包脚本。
     *   在打包前 (`beforeMake`) 会清理并重建 `build/` 目录，生成仅包含生产依赖的临时 `package.json`，以减小包体积。
     *   支持多平台打包 (Mac, Windows, Linux)。
 

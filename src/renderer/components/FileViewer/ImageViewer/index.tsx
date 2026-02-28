@@ -1,5 +1,5 @@
 import { useRef, useState, useMemo, useEffect } from 'react';
-import { Tooltip, message, Spin } from 'antd';
+import { Tooltip, App, Spin } from 'antd';
 import {
   RotateLeftOutlined,
   RotateRightOutlined,
@@ -29,6 +29,7 @@ const ImageViewer = (props: ImageViewerProps) => {
   const [imgSrc, setImgSrc] = useState<string>(src);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  const { message } = App.useApp();
   const ROTATE_STEP = 90;
 
   const previewScales = useMemo(() => {

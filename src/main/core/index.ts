@@ -7,6 +7,7 @@ import eventsRegistry from '../events/registry';
 import { taskRequestRegistry } from '../tasks/manage';
 import { logger, isDev, installDevtool } from '../utils';
 import { ensureEncryptedPasswordsOnStartup } from '../db/json/connections';
+import updateService from '../services/update';
 
 export default class Core {
   logger = logger.scope('Core');
@@ -50,11 +51,26 @@ export default class Core {
     this.windows = new Windows(this);
     this.viewer = new ViewerWindowManager();
     this.installExtension();
+    this.initUpdateService();
 
     app.on('activate', () => {
       // this.windows?.hiddenLaunchWindow();
       this.windows?.showMainWindow();
     });
+  }
+
+  /**
+   * 初始化更新服务
+   */
+  private initUpdateService() {
+    updateService.init();
+    
+    // 启动后静默检查更新
+    if (!isDev) {
+      setTimeout(() => {
+        updateService.checkForUpdates(true);
+      }, 3000);
+    }
   }
 
   private async resistry() {

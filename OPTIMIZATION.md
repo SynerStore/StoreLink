@@ -1,6 +1,6 @@
 # 项目优化建议与分析
 
-本文档基于对 SynerStoreClient (StoreLink) 源码的深入分析，从代码质量、性能、用户体验和工程化四个维度提出优化建议。
+本文档基于对 StoreLink (StoreLink) 源码的深入分析，从代码质量、性能、用户体验和工程化四个维度提出优化建议。
 
 ## 1. 架构与代码质量 (Architecture & Code Quality)
 

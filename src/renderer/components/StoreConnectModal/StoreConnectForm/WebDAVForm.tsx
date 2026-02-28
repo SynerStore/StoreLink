@@ -1,6 +1,5 @@
 import { useImperativeHandle, forwardRef, useEffect } from 'react';
-import { Form, Input, Button } from 'antd';
-import antdUtils from '@/renderer/utils/antd-utils';
+import { Form, Input, Button, App } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { useLoading } from '@/renderer/hooks';
@@ -18,6 +17,7 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
   const { addConnection } = useConfigStore();
   const { mode = 'create', initial, onSubmit } = props;
   const { t } = useTranslation();
+  const { message } = App.useApp();
 
   useImperativeHandle(ref, () => {
     return {
@@ -46,9 +46,9 @@ const WebDAVForm = forwardRef((props: Props, ref) => {
       },
     });
     if (result?.success) {
-      antdUtils.message.success(t('common.testSuccess'));
+      message.success(t('common.testSuccess'));
     } else {
-      antdUtils.message.error(result?.msg || t('common.testFailed'));
+      message.error(result?.msg || t('common.testFailed'));
     }
     setLoading(false);
   };

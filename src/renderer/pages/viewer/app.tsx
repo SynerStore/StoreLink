@@ -1,6 +1,6 @@
 import  { useMemo, useEffect } from 'react';
 import qs from 'query-string';
-import { ConfigProvider, theme, Modal } from 'antd';
+import { ConfigProvider, theme, Modal, App as AntdApp } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
 import 'antd/dist/reset.css';
@@ -62,12 +62,14 @@ const App = () => {
 
   return (
     <ConfigProvider locale={locale} theme={antdTheme}>
-      <div className="container">
-        <Header icon={<FileIcon mime={query.mime as string} />} title={query.name as string} />
-        <main className="main">
-          <FileViewer id={query.id as string} mime={query.mime as string} />
-        </main>
-      </div>
+      <AntdApp>
+        <div className="container">
+          <Header icon={<FileIcon mime={query.mime as string} />} title={query.name as string} />
+          <main className="main">
+            <FileViewer id={query.id as string} mime={query.mime as string} />
+          </main>
+        </div>
+      </AntdApp>
     </ConfigProvider>
   );
 };

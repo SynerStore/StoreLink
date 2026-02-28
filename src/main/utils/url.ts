@@ -37,7 +37,7 @@ export async function isCanAccessUrl(urlStr: string): Promise<boolean> {
           method,
           timeout: TIMEOUT_MS,
           headers: {
-            'User-Agent': 'SynerStoreClient/1.0.0', // Good practice
+            'User-Agent': 'StoreLink/1.0.0', // Good practice
           },
         },
         (res) => {

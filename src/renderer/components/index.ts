@@ -33,3 +33,4 @@ export { default as StoreViewerWrap } from './StoreViewerWrap';
 export { default as ErrorModal } from './ErrorModal';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as GlobalAntd } from './GlobalAntd';
+export { default as UpdateTip } from './UpdateTip';

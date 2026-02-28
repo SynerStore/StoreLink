@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { EChannels } from '@/types/channel';
 
 import { events } from '@/renderer/utils';
 
@@ -21,6 +22,7 @@ type DataType = {
     downloadPath: string;
     siderWidth: number;
     systemNotification: boolean;
+    version: string;
   };
   initializeData: () => Promise<void>;
   update: (params: { [key: string]: any }) => Promise<void>;
@@ -36,16 +38,26 @@ export const useSettingStore = create<DataType>()(
         downloadPath: '',
         siderWidth: 240,
         systemNotification: true,
+        version: '0.0.0',
       },
 
       initializeData: async () => {
         const data = await events.getSettingData();
+        // 获取应用版本
+        let version = '0.0.0';
+        try {
+          // @ts-ignore
+          version = await window.electronBridge?.dispatch(EChannels.getAppVersion);
+        } catch (e) {
+          // 开发环境可能没有版本
+        }
         if (!data) return;
         return set((state: any) => {
           return {
             settings: {
               ...state.settings,
               ...data,
+              version,
             },
           };
         });

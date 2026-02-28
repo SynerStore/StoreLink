@@ -1,16 +1,8 @@
 import { App } from 'antd';
-import { useEffect } from 'react';
-import antdUtils from '@/renderer/utils/antd-utils';
 
+// GlobalAntd 用于全局 antd 上下文配置
+// 保留用于未来可能的全局配置需求
 const GlobalAntd = () => {
-  const { message, notification, modal } = App.useApp();
-
-  useEffect(() => {
-    antdUtils.setMessage(message);
-    antdUtils.setNotification(notification);
-    antdUtils.setModal(modal);
-  }, [message, notification, modal]);
-
   return null;
 };
 

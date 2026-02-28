@@ -1,9 +1,11 @@
-import { Form, Select, Radio, Space, Button, message, Switch } from 'antd';
+import { Form, Select, Radio, Space, Button, App, Switch, Divider, Typography } from 'antd';
 import { useSettingStore, EnumLang, useConfigStore } from '@/renderer/store';
 import { events } from '@/renderer/utils';
-import { PageWrapper } from '@/renderer/components';
+import { PageWrapper, UpdateTip } from '@/renderer/components';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/renderer/i18n';
+
+const { Text } = Typography;
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -13,6 +15,7 @@ const Setting = () => {
   const settingStore = useSettingStore();
   const configStore = useConfigStore();
   const { t } = useTranslation();
+  const { message } = App.useApp();
 
   const handleSwitchTheme = (e: any) => {
     const value = e.target.value;
@@ -78,6 +81,16 @@ const Setting = () => {
             </Button>
             <Button onClick={handleImportConnections}>{t('common.import')}</Button>
           </Space>
+        </FormItem>
+        <Divider />
+        <FormItem label={t('settings.version')}>
+          <Space>
+            <Text>v{settingStore.settings.version || '0.0.0'}</Text>
+            <UpdateTip />
+          </Space>
+        </FormItem>
+        <FormItem label={t('settings.checkUpdate')}>
+          <UpdateTip isButton />
         </FormItem>
       </Form>
     </PageWrapper>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Modal, Select, Tree, Input, message, Form, Spin } from 'antd';
+import { Modal, Select, Tree, Input, App, Form, Spin } from 'antd';
 import { HddOutlined } from '@ant-design/icons';
 import { debounce } from 'lodash-es';
 import { useConfigStore } from '@/renderer/store';
@@ -28,13 +28,9 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
 }) => {
   const [form] = Form.useForm();
   const { connections } = useConfigStore();
-  const [targetConnectionId, setTargetConnectionId] = useState<string>(sourceConnectionId);
-  const [treeData, setTreeData] = useState<any[]>([]);
-  const [selectedPath, setSelectedPath] = useState<string>('');
-  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
+  const { message } = App.useApp();
   const { t } = useTranslation();
+  const [targetConnectionId, setTargetConnectionId] = useState<string>(sourceConnectionId);
 
   // 初始化目标连接为源连接，当模态框打开时
   useEffect(() => {

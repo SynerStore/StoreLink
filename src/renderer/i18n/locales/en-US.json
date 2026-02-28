@@ -187,7 +187,10 @@
     "general": "General",
     "appearance": "Appearance",
     "storage": "Storage",
-    "systemNotification": "System Notification"
+    "systemNotification": "System Notification",
+    "version": "Version",
+    "checkUpdate": "Check for Updates",
+    "currentVersion": "Current Version"
   },
   "logs": {
     "title": "Logs",

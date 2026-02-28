@@ -187,7 +187,10 @@
     "general": "通用",
     "appearance": "外观",
     "storage": "存储",
-    "systemNotification": "开启系统通知"
+    "systemNotification": "开启系统通知",
+    "version": "版本",
+    "checkUpdate": "检查更新",
+    "currentVersion": "当前版本"
   },
   "logs": {
     "title": "日志",

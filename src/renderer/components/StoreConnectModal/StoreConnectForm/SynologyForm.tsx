@@ -1,7 +1,6 @@
 import { useImperativeHandle, forwardRef, useEffect } from 'react';
-import { Form, Input, Button, Switch } from 'antd';
+import { Form, Input, Button, Switch, App } from 'antd';
 import { useLoading } from '@/renderer/hooks';
-import antdUtils from '@/renderer/utils/antd-utils';
 import { storeConnect } from '@/renderer/utils';
 import { StoreTypes, StoreBrands } from '@/types';
 import { useConfigStore } from '@/renderer/store';
@@ -17,6 +16,7 @@ const SynologyForm = forwardRef((props: Props, ref) => {
   const { addConnection } = useConfigStore();
   const { mode = 'create', initial, onSubmit } = props;
   const { t } = useTranslation();
+  const { message } = App.useApp();
 
   useImperativeHandle(ref, () => {
     return {
@@ -50,9 +50,9 @@ const SynologyForm = forwardRef((props: Props, ref) => {
     });
     console.log(result);
     if (result?.success) {
-      antdUtils.message.success(t('common.testSuccess'));
+      message.success(t('common.testSuccess'));
     } else {
-      antdUtils.message.error(result?.msg || t('common.testFailed'));
+      message.error(result?.msg || t('common.testFailed'));
     }
     setLoading(false);
   };

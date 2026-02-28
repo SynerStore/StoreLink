@@ -1,7 +1,6 @@
 import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Select, App } from 'antd';
 import { useTranslation } from 'react-i18next';
-import antdUtils from '@/renderer/utils/antd-utils';
 
 import { useLoading } from '@/renderer/hooks';
 import { storeConnect } from '@/renderer/utils';
@@ -20,6 +19,7 @@ const S3Form = forwardRef((props: Props, ref) => {
   const { loading, setLoading } = useLoading();
   const { mode = 'create', initial, onSubmit } = props;
   const { t } = useTranslation();
+  const { message } = App.useApp();
 
   useImperativeHandle(ref, () => {
     return {
@@ -59,9 +59,9 @@ const S3Form = forwardRef((props: Props, ref) => {
           bucketName: bucketsData.map((item: any) => item.name),
         });
       }
-      antdUtils.message.success(t('common.testSuccess'));
+      message.success(t('common.testSuccess'));
     } else {
-      antdUtils.message.error(result?.msg || t('common.testFailed'));
+      message.error(result?.msg || t('common.testFailed'));
     }
   };
 
