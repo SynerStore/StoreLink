@@ -31,6 +31,11 @@ const FileTransferModal: React.FC<FileTransferModalProps> = ({
   const { message } = App.useApp();
   const { t } = useTranslation();
   const [targetConnectionId, setTargetConnectionId] = useState<string>(sourceConnectionId);
+  const [treeData, setTreeData] = useState<any[]>([]);
+  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
+  const [selectedPath, setSelectedPath] = useState<string>('/');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
 
   // 初始化目标连接为源连接，当模态框打开时
   useEffect(() => {

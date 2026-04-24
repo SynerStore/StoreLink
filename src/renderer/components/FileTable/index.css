@@ -16,7 +16,6 @@
 }
 
 .file-table-wrapper .ant-table-row.file-table-row-focused {
-  outline: 1px solid var(--primary-color);
   outline-offset: -1px;
 }
 
