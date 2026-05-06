@@ -5,7 +5,7 @@ import CosStore from './adapters/cos';
 import WebDAVStore from './adapters/webdev';
 import SftpStore from './adapters/sftp';
 import SynologyStore from './adapters/synology';
-import { getConnectionsData } from '../db';
+import { getConnectionById } from '../db';
 import { StoreTypes, ETaskStatus } from '@/types';
 import TaskManager from '@/main/tasks/manage';
 import { decryptPassword, isEncrypted } from '@/main/utils/secret';
@@ -19,12 +19,7 @@ export const storePool = new Map<string, StoreEntry>();
 const IDLE_MS = 5 * 60 * 1000; // 五分钟自动清除
 
 const getConfigById = (id: string) => {
-  const dbData = getConnectionsData();
-  if (dbData.connections.length) {
-    const connection = dbData.connections.find((item: any) => item.id === id);
-    return connection;
-  }
-  return undefined;
+  return getConnectionById(id);
 };
 
 export const getStoreConfig = (id: string) => {

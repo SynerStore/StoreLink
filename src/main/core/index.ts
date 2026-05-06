@@ -6,7 +6,7 @@ import { storeRequestRegistry } from '../stores';
 import eventsRegistry from '../events/registry';
 import { taskRequestRegistry } from '../tasks/manage';
 import { logger, isDev, installDevtool } from '../utils';
-import { ensureEncryptedPasswordsOnStartup } from '../db/json/connections';
+import { ensureEncryptedPasswordsOnStartup } from '../db';
 import updateService from '../services/update';
 
 export default class Core {
