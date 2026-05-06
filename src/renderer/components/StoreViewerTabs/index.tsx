@@ -38,16 +38,19 @@ const StoreViewerTabs = () => {
   }, [tabs]);
 
   useEffect(() => {
-    const handler = (updatedTask: any) => {
-      if (
-        updatedTask?.status === ETaskStatus.COMPLETED &&
-        ['delete', 'deleteMulti', 'rename', 'putFolder', 'put', 'copy', 'transfer'].includes(updatedTask?.method) &&
-        updatedTask?.connectionId
-      ) {
-        // Only refresh if the task connection matches the active tab
-        if (activeTab === updatedTask.connectionId) {
-          updateTab({ id: updatedTask.connectionId, refreshTick: Date.now() });
-        }
+    const handler = (data: any) => {
+      const updates = Array.isArray(data) ? data : [data];
+
+      const shouldRefresh = updates.some((updatedTask) => {
+        return (
+          updatedTask?.status === ETaskStatus.COMPLETED &&
+          ['delete', 'deleteMulti', 'rename', 'putFolder', 'put', 'copy', 'transfer'].includes(updatedTask?.method) &&
+          updatedTask?.connectionId === activeTab
+        );
+      });
+
+      if (shouldRefresh) {
+        updateTab({ id: activeTab, refreshTick: Date.now() });
       }
     };
     window.electronBridge?.on(EChannels.taskUpdate, handler);

@@ -1,33 +1,42 @@
 import Piscina from 'piscina';
 import path from 'path';
 import { MessageChannel } from 'worker_threads';
+import { EventEmitter } from 'events';
 import TaskEntity from './entity';
 import { getStoreConfig } from '../stores/storeManage';
 import { ETaskStatus } from '@/types';
 import db from '@/main/db/sqlite';
 import { logger } from '../utils/logger';
-// Use require to avoid circular dependency issues at module level if TaskManager imports Scheduler
-// But we will import type for TS
+
 import type TaskManager from './manage';
 
-export class TaskScheduler {
+export class TaskScheduler extends EventEmitter {
   private static instance: TaskScheduler;
   private piscina: Piscina;
   private logger = logger.scope('TaskScheduler');
+  
+  private activeTasksByConnection: Map<string, number> = new Map();
+  private maxTasksPerConnection = 3;
+  private maxGlobalThreads = 5;
+  private isScheduling = false;
 
   private constructor() {
-    // Determine worker path.
+    super();
     // In production (bundled), __dirname is where main.js is.
     // storage.worker.js should be in the same directory.
     const workerPath = path.resolve(__dirname, 'storage.worker.js');
 
     this.piscina = new Piscina({
       filename: workerPath,
-      maxThreads: 5,
+      maxThreads: this.maxGlobalThreads,
       idleTimeout: 30000 // Worker idle timeout
     });
 
-    this.startPolling();
+    // Trigger scheduling when a new task is added or a worker becomes free
+    this.on('schedule', () => this.schedule());
+    
+    // Initial schedule check
+    setTimeout(() => this.emit('schedule'), 1000);
   }
 
   public static getInstance(): TaskScheduler {
@@ -37,7 +46,7 @@ export class TaskScheduler {
     return TaskScheduler.instance;
   }
 
-  async runTask(task: TaskEntity) {
+  async runTask(task: TaskEntity, signal?: AbortSignal) {
     const configData = getStoreConfig(task.connectionId);
     if (!configData) {
       throw new Error(`Connection config not found for ${task.connectionId}`);
@@ -63,14 +72,32 @@ export class TaskScheduler {
       port: port1
     };
 
+    // Increment active tasks for this connection
+    const currentActive = this.activeTasksByConnection.get(task.connectionId) || 0;
+    this.activeTasksByConnection.set(task.connectionId, currentActive + 1);
+
     try {
-      // Transfer port1 to worker
-      const result = await this.piscina.run(workerTask, { transferList: [port1] as any });
-      port2.close();
+      // Pass signal to piscina if supported or handle it here
+      const resultPromise = this.piscina.run(workerTask, { transferList: [port1] as any });
+      
+      if (signal) {
+        if (signal.aborted) {
+          port1.postMessage({ type: 'abort' });
+        } else {
+          signal.addEventListener('abort', () => {
+            port1.postMessage({ type: 'abort' });
+          });
+        }
+      }
+
+      const result = await resultPromise;
       return result;
-    } catch (err) {
+    } finally {
       port2.close();
-      throw err;
+      const afterActive = (this.activeTasksByConnection.get(task.connectionId) || 1) - 1;
+      this.activeTasksByConnection.set(task.connectionId, afterActive);
+      // Trigger scheduling to fill the gap
+      this.emit('schedule');
     }
   }
 
@@ -109,52 +136,54 @@ export class TaskScheduler {
     }
   }
 
-  private startPolling() {
-    // Poll every 2 seconds
-    setInterval(() => this.poll(), 2000);
-  }
-
-  private async poll() {
-    // If queue is full, skip
-    if (this.piscina.queueSize >= 5) return;
+  private async schedule() {
+    if (this.isScheduling) return;
+    this.isScheduling = true;
 
     try {
-      // Find pending tasks
-      // We limit to 5 to avoid fetching too many
-      const rows = db.prepare(`
-        SELECT * FROM tasks
-        WHERE status = ?
-        ORDER BY createTime ASC
-        LIMIT 5
-      `).all(ETaskStatus.PENDING) as any[];
+      while (this.piscina.queueSize < this.maxGlobalThreads) {
+        // Find pending tasks, prioritized
+        const rows = db.prepare(`
+          SELECT * FROM tasks
+          WHERE status = ?
+          ORDER BY priority DESC, createTime ASC
+          LIMIT 20
+        `).all(ETaskStatus.PENDING) as any[];
 
-      if (rows.length === 0) return;
+        if (rows.length === 0) break;
 
-      // We need TaskManager to get or create the task entity
-      // Dynamically require to avoid circular dependency loop during initialization
-      const { default: TaskManagerClass } = require('./manage');
-      const taskManager = TaskManagerClass.getInstance() as TaskManager;
+        const { default: TaskManagerClass } = require('./manage');
+        const taskManager = TaskManagerClass.getInstance() as TaskManager;
 
-      for (const row of rows) {
-        let task = taskManager.getTaskById(row.taskId);
+        let startedAny = false;
+        for (const row of rows) {
+          const activeCount = this.activeTasksByConnection.get(row.connectionId) || 0;
+          if (activeCount >= this.maxTasksPerConnection) {
+            continue;
+          }
 
-        if (!task) {
-            // If task not in memory, restore it
+          let task = taskManager.getTaskById(row.taskId);
+          if (!task) {
             task = taskManager.restoreTask(row);
+          }
+
+          if (task && task.status === ETaskStatus.PENDING) {
+            startedAny = true;
+            task.run().catch((err: any) => {
+              this.logger.error(`Failed to start task ${task.taskId}:`, err);
+            });
+            
+            // If we hit global limit, stop picking for this loop
+            if (this.piscina.queueSize >= this.maxGlobalThreads) break;
+          }
         }
 
-        if (task && task.status === ETaskStatus.PENDING) {
-          // Check if already running in scheduler?
-          // TaskEntity.run() sets status to RUNNING immediately.
-          // So if we are here, it is PENDING.
-          // Calling task.run() will trigger scheduler.runTask()
-          task.run().catch((err: any) => {
-             console.error(`Failed to start polled task ${task.taskId}:`, err);
-          });
-        }
+        if (!startedAny) break; // No more tasks can be started due to connection limits
       }
     } catch (err) {
-      console.error('Task polling error:', err);
+      this.logger.error('Scheduling error:', err);
+    } finally {
+      this.isScheduling = false;
     }
   }
 
@@ -163,7 +192,10 @@ export class TaskScheduler {
       queueSize: this.piscina.queueSize,
       utilization: this.piscina.utilization,
       completed: this.piscina.completed,
-      runTime: this.piscina.duration
+      runTime: this.piscina.duration,
+      activeConnections: Array.from(this.activeTasksByConnection.entries())
+        .filter(([_, count]) => count > 0)
+        .map(([id, count]) => ({ connectionId: id, activeTasks: count }))
     };
   }
 }

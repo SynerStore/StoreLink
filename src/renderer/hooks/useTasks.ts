@@ -44,43 +44,50 @@ export const useTasks = (statusFilters?: ETaskStatus[], typeFilters?: ETaskType[
   useEffect(() => {
     fetchTasks(current, pageSize);
 
-    const handler = (updatedTask: any) => {
+    const handler = (data: any) => {
+      const updates = Array.isArray(data) ? data : [data];
+
       setTasks((prev) => {
-        if (updatedTask._deleted) {
-          return prev.filter((t) => t.taskId !== updatedTask.taskId);
-        }
+        let newTasks = [...prev];
+        let changed = false;
 
-        const index = prev.findIndex((t) => t.taskId === updatedTask.taskId);
+        updates.forEach((updatedTask) => {
+          if (updatedTask._deleted) {
+            newTasks = newTasks.filter((t) => t.taskId !== updatedTask.taskId);
+            changed = true;
+            return;
+          }
 
-        // Check if the updated task still matches the filters
-        const matchesStatus =
-          !statusFilters || statusFilters.length === 0 || statusFilters.includes(updatedTask.status);
-        const matchesType = !typeFilters || typeFilters.length === 0 || typeFilters.includes(updatedTask.type);
+          const index = newTasks.findIndex((t) => t.taskId === updatedTask.taskId);
 
-        if (!matchesStatus || !matchesType) {
-          // If it no longer matches, remove it
+          // Check if the updated task still matches the filters
+          const matchesStatus =
+            !statusFilters || statusFilters.length === 0 || statusFilters.includes(updatedTask.status);
+          const matchesType = !typeFilters || typeFilters.length === 0 || typeFilters.includes(updatedTask.type);
+
+          if (!matchesStatus || !matchesType) {
+            // If it no longer matches, remove it
+            if (index !== -1) {
+              newTasks.splice(index, 1);
+              changed = true;
+            }
+            return;
+          }
+
           if (index !== -1) {
-            const newTasks = [...prev];
-            newTasks.splice(index, 1);
-            return newTasks;
+            // Update existing
+            newTasks[index] = { ...newTasks[index], ...updatedTask };
+            changed = true;
+          } else {
+            // Add new if it matches and we are on the first page
+            if (current === 1) {
+              newTasks = [updatedTask, ...newTasks];
+              changed = true;
+            }
           }
-          return prev;
-        }
+        });
 
-        if (index !== -1) {
-          // Update existing
-          const newTasks = [...prev];
-          newTasks[index] = { ...newTasks[index], ...updatedTask };
-          return newTasks;
-        } else {
-          // Add new if it matches and we are on the first page
-          if (current === 1) {
-            const newTasks = [updatedTask, ...prev];
-            // Optionally enforce pageSize limit locally or wait for refresh
-            return newTasks;
-          }
-          return prev;
-        }
+        return changed ? newTasks : prev;
       });
     };
 

@@ -5,6 +5,7 @@ import TaskScheduler from './scheduler';
 
 export type TaskEntityParams = {
   taskId?: string;
+  parentId?: string;
   type: ETaskType;
   connectionId: string;
   method: string;
@@ -12,6 +13,9 @@ export type TaskEntityParams = {
   size: number;
   status?: ETaskStatus;
   progress?: number;
+  priority?: number;
+  executionPolicy?: string;
+  checkpoint?: string;
   createTime?: string;
   startTime?: string;
   endTime?: string;
@@ -21,6 +25,7 @@ export type TaskEntityParams = {
 
 export default class TaskEntity {
   taskId: string;
+  parentId: string | undefined;
   type: ETaskType;
   connectionId: string;
   method: string;
@@ -32,16 +37,22 @@ export default class TaskEntity {
   endTime: string | undefined;
   createTime: string;
   size: number;
+  priority: number;
+  executionPolicy: string | undefined;
+  checkpoint: string | undefined;
   errorMessage: string | undefined;
   errorStack: string | undefined;
   retryCount: number = 0;
   maxRetries: number = 3;
+
+  private abortController: AbortController | null = null;
 
   onProgress?: (data: ProgressData) => void;
   onStatusChange?: (status: ETaskStatus, err?: string) => void;
 
   constructor(params: TaskEntityParams) {
     this.taskId = params.taskId || uuidv4();
+    this.parentId = params.parentId;
     this.type = params.type;
     this.status = params.status || ETaskStatus.PENDING;
     this.connectionId = params.connectionId;
@@ -50,6 +61,9 @@ export default class TaskEntity {
     this.progress = params.progress || 0;
     this.speed = 0;
     this.size = params.size;
+    this.priority = params.priority || 0;
+    this.executionPolicy = params.executionPolicy;
+    this.checkpoint = params.checkpoint;
     this.createTime = params.createTime || new Date().toISOString();
     this.startTime = params.startTime;
     this.endTime = params.endTime;
@@ -70,27 +84,30 @@ export default class TaskEntity {
     this.status = ETaskStatus.RUNNING;
     this.startTime = new Date().toISOString();
     this.onStatusChange?.(this.status);
+    this.abortController = new AbortController();
 
     try {
-      await TaskScheduler.getInstance().runTask(this);
+      await TaskScheduler.getInstance().runTask(this, this.abortController.signal);
 
       this.status = ETaskStatus.COMPLETED;
       this.endTime = new Date().toISOString();
       this.onStatusChange?.(this.status);
     } catch (err: any) {
-      console.error('Task failed:', err);
-
-      // Simple retry logic
-      if ((this.status as ETaskStatus) === ETaskStatus.CANCELED) {
+      if (err.name === 'AbortError' || this.status === ETaskStatus.CANCELED || this.status === ETaskStatus.PAUSED) {
         return;
       }
 
+      console.error('Task failed:', err);
+
       if (this.retryCount < this.maxRetries) {
         this.retryCount++;
-        console.log(`Retrying task ${this.taskId} (${this.retryCount}/${this.maxRetries})...`);
+        this.status = ETaskStatus.RETRYING;
+        const delay = Math.pow(2, this.retryCount) * 1000; // Exponential backoff
+        
+        console.log(`Retrying task ${this.taskId} in ${delay}ms (${this.retryCount}/${this.maxRetries})...`);
         this.onStatusChange?.(this.status, `Retrying... (${this.retryCount})`);
-        // Add a small delay before retry
-        setTimeout(() => this.run(), 1000 * this.retryCount);
+        
+        setTimeout(() => this.run(), delay);
         return;
       }
 
@@ -99,25 +116,28 @@ export default class TaskEntity {
       this.errorStack = err.stack;
       this.endTime = new Date().toISOString();
       this.onStatusChange?.(this.status, this.errorMessage);
+    } finally {
+      this.abortController = null;
     }
   }
 
   async pause() {
     if (this.status === ETaskStatus.RUNNING) {
       this.status = ETaskStatus.PAUSED;
+      this.abortController?.abort();
       this.onStatusChange?.(this.status);
-      // Note: Actual interruption depends on store implementation support
     }
   }
 
   async resume() {
-    if (this.status === ETaskStatus.PAUSED || this.status === ETaskStatus.FAILED) {
+    if (this.status === ETaskStatus.PAUSED || this.status === ETaskStatus.FAILED || this.status === ETaskStatus.PENDING) {
       await this.run();
     }
   }
 
   async cancel() {
     this.status = ETaskStatus.CANCELED;
+    this.abortController?.abort();
     this.endTime = new Date().toISOString();
     this.onStatusChange?.(this.status);
   }
@@ -125,6 +145,7 @@ export default class TaskEntity {
   toRow() {
     return {
       taskId: this.taskId,
+      parentId: this.parentId ?? null,
       type: this.type,
       connectionId: this.connectionId,
       method: this.method,
@@ -133,6 +154,9 @@ export default class TaskEntity {
       progress: this.progress,
       speed: this.speed,
       size: this.size ?? 0,
+      priority: this.priority,
+      executionPolicy: this.executionPolicy ?? null,
+      checkpoint: this.checkpoint ?? null,
       startTime: this.startTime ?? null,
       endTime: this.endTime ?? null,
       createTime: this.createTime,

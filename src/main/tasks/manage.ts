@@ -9,6 +9,8 @@ import TaskScheduler from './scheduler';
 class TaskManager {
   private static instance: TaskManager;
   private tasks: Map<string, TaskEntity> = new Map();
+  private pendingUpdates: Map<string, any> = new Map();
+  private flushTimer: NodeJS.Timeout | null = null;
 
   private constructor() {
     this.init();
@@ -44,10 +46,10 @@ class TaskManager {
         .prepare(
           `
         SELECT * FROM tasks
-        WHERE status IN (?, ?, ?)
+        WHERE status IN (?, ?, ?, ?)
       `,
         )
-        .all(ETaskStatus.PENDING, ETaskStatus.RUNNING, ETaskStatus.PAUSED) as any[];
+        .all(ETaskStatus.PENDING, ETaskStatus.RUNNING, ETaskStatus.PAUSED, ETaskStatus.RETRYING) as any[];
 
       rows.forEach((row) => {
         const params: TaskEntityParams = {
@@ -55,9 +57,8 @@ class TaskManager {
           params: JSON.parse(row.params),
         };
         const task = new TaskEntity(params);
-        // If it was running, mark it as paused or pending to restart?
-        // For now, let's set it to PAUSED if it was RUNNING to avoid auto-restart issues without user intent
-        if (task.status === ETaskStatus.RUNNING) {
+        // If it was running or retrying, mark it as paused to avoid auto-restart issues without user intent
+        if (task.status === ETaskStatus.RUNNING || task.status === ETaskStatus.RETRYING) {
           task.status = ETaskStatus.PAUSED;
           this.updateTaskInDb(task);
         }
@@ -78,11 +79,9 @@ class TaskManager {
       (status, err) => {
         // On status change
         this.updateTaskInDb(task);
-        this.notifyRenderer(task);
+        this.notifyRenderer(task, true); // Immediate notification for status changes
 
         if (status === ETaskStatus.COMPLETED || status === ETaskStatus.FAILED || status === ETaskStatus.CANCELED) {
-          // Maybe remove from memory map if we don't want to keep history in memory?
-          // But user might want to see history.
           let msg = '';
           if (status === ETaskStatus.COMPLETED) {
             msg = 'completed';
@@ -96,6 +95,9 @@ class TaskManager {
             message: `${task.method} ${msg}`,
             meta: { connectionId: task.connectionId, taskId: task.taskId, params: task.params },
           });
+          
+          // Trigger scheduler when a task finishes
+          TaskScheduler.getInstance().emit('schedule');
         }
       },
     );
@@ -107,11 +109,13 @@ class TaskManager {
       db.prepare(
         `
         INSERT OR REPLACE INTO tasks (
-          taskId, type, connectionId, method, params, status,
-          progress, speed, size, startTime, endTime, createTime, errorMessage, errorStack
+          taskId, parentId, type, connectionId, method, params, status,
+          progress, speed, size, priority, executionPolicy, checkpoint,
+          startTime, endTime, createTime, errorMessage, errorStack
         ) VALUES (
-          @taskId, @type, @connectionId, @method, @params, @status,
-          @progress, @speed, @size, @startTime, @endTime, @createTime, @errorMessage, @errorStack
+          @taskId, @parentId, @type, @connectionId, @method, @params, @status,
+          @progress, @speed, @size, @priority, @executionPolicy, @checkpoint,
+          @startTime, @endTime, @createTime, @errorMessage, @errorStack
         )
       `,
       ).run(row);
@@ -135,7 +139,7 @@ class TaskManager {
         console.error('Failed to get task counts:', err);
       }
 
-      const pendingTasks = counts[ETaskStatus.PENDING] || 0;
+      const pendingTasks = (counts[ETaskStatus.PENDING] || 0) + (counts[ETaskStatus.RETRYING] || 0);
       const runningTasks = (counts[ETaskStatus.RUNNING] || 0) + (counts[ETaskStatus.PAUSED] || 0);
       const completedTasks = counts[ETaskStatus.COMPLETED] || 0;
       const failedTasks = (counts[ETaskStatus.FAILED] || 0) + (counts[ETaskStatus.CANCELED] || 0);
@@ -155,11 +159,33 @@ class TaskManager {
     }, 1000);
   }
 
-  private notifyRenderer(task: TaskEntity) {
+  private notifyRenderer(task: TaskEntity, immediate = false) {
+    if (immediate) {
+      this.doNotifyRenderer(task.toRow());
+      return;
+    }
+
+    this.pendingUpdates.set(task.taskId, task.toRow());
+    if (!this.flushTimer) {
+      this.flushTimer = setTimeout(() => this.flushUpdates(), 100);
+    }
+  }
+
+  private flushUpdates() {
+    const updates = Array.from(this.pendingUpdates.values());
+    this.pendingUpdates.clear();
+    this.flushTimer = null;
+
+    if (updates.length > 0) {
+      this.doNotifyRenderer(updates);
+    }
+  }
+
+  private doNotifyRenderer(payload: any) {
     const mainWin = MainWindow.getInstance();
     const win = mainWin?.window;
     if (win) {
-      win.webContents.send(EChannels.taskUpdate, task.toRow());
+      win.webContents.send(EChannels.taskUpdate, payload);
     }
   }
 
@@ -168,10 +194,10 @@ class TaskManager {
     this.setupTask(task);
     this.tasks.set(task.taskId, task);
     this.updateTaskInDb(task);
-    this.notifyRenderer(task);
+    this.notifyRenderer(task, true);
 
-    // Auto start
-    task.run();
+    // Trigger schedule
+    TaskScheduler.getInstance().emit('schedule');
     return task.toRow();
   }
 
@@ -180,7 +206,7 @@ class TaskManager {
     if (task) {
       await task.pause();
       this.updateTaskInDb(task);
-      this.notifyRenderer(task);
+      this.notifyRenderer(task, true);
     }
   }
 
@@ -189,7 +215,9 @@ class TaskManager {
     if (task) {
       await task.resume();
       this.updateTaskInDb(task);
-      this.notifyRenderer(task);
+      this.notifyRenderer(task, true);
+      // Trigger schedule in case it didn't start automatically
+      TaskScheduler.getInstance().emit('schedule');
     }
   }
 
@@ -204,14 +232,13 @@ class TaskManager {
     try {
       db.prepare('DELETE FROM tasks WHERE taskId = ?').run(taskId);
       // Notify renderer about deletion
-      const mainWin = MainWindow.getInstance();
-      const win = mainWin?.window;
-      if (win) {
-        win.webContents.send(EChannels.taskUpdate, { taskId, _deleted: true });
-      }
+      this.doNotifyRenderer({ taskId, _deleted: true });
     } catch (err) {
       console.error('Failed to delete task from DB:', err);
     }
+    
+    // Trigger schedule
+    TaskScheduler.getInstance().emit('schedule');
   }
 
   public getTasks(params?: any) {
@@ -228,7 +255,6 @@ class TaskManager {
         whereClauses.push(`status IN (${placeholders})`);
         args.push(...status);
       } else if (status) {
-         // Single status support for backward compatibility or if passed as number
          whereClauses.push('status = ?');
          args.push(status);
       }
@@ -253,8 +279,7 @@ class TaskManager {
       if (sorter) {
         const { field, order } = sorter;
         const direction = order === 'ascend' ? 'ASC' : 'DESC';
-        // Whitelist fields to prevent SQL injection
-        if (['createTime', 'size', 'startTime', 'endTime', 'type', 'status'].includes(field)) {
+        if (['createTime', 'size', 'startTime', 'endTime', 'type', 'status', 'priority'].includes(field)) {
           orderBy = `${field} ${direction}`;
         }
       }

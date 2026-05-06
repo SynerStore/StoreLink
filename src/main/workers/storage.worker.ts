@@ -8,6 +8,7 @@ import WebDAVStore from '../stores/adapters/webdev';
 import SftpStore from '../stores/adapters/sftp';
 import SynologyStore from '../stores/adapters/synology';
 import { StoreTypes } from '@/types';
+import type { IStorageHandler } from '../stores/adapters/store';
 
 interface WorkerTask {
   taskId: string;
@@ -18,9 +19,13 @@ interface WorkerTask {
   config: any;
   storeType: string;
   port?: MessagePort;
+  
+  // For cross-store transfers
+  sourceConfig?: any;
+  sourceStoreType?: string;
 }
 
-const createStoreClient = (storeType: string, id: string, config: any) => {
+const createStoreClient = (storeType: string, id: string, config: any): IStorageHandler | null => {
   switch (storeType) {
     case StoreTypes.OSS:
       return new OssStore(id, config);
@@ -41,20 +46,48 @@ const createStoreClient = (storeType: string, id: string, config: any) => {
   }
 };
 
-const handleTransfer = async (task: WorkerTask, store: any, onProgress: (data: any) => void) => {
-  const { params } = task;
+const handleTransfer = async (task: WorkerTask, store: IStorageHandler, onProgress: (data: any) => void, abortSignal?: AbortSignal) => {
+  const { params, sourceConfig, sourceStoreType } = task;
   const { files, targetPath, isMove } = params;
-  const size = files.length;
+  
+  // If it's a cross-store transfer (has sourceConfig)
+  if (sourceConfig && sourceStoreType) {
+    const sourceStore = createStoreClient(sourceStoreType, 'source', sourceConfig);
+    if (!sourceStore) throw new Error(`Unsupported source store type: ${sourceStoreType}`);
+    
+    try {
+      // For now, assume single file transfer for cross-store stream
+      // Multiple files should be split into multiple tasks by TaskManager (Scheme B)
+      const { sourceKey, targetKey, size } = params;
+      
+      if (sourceStore.getReadStream && store.putWriteStream) {
+        const reader = await sourceStore.getReadStream({ key: sourceKey });
+        await store.putWriteStream({ key: targetKey, size }, reader, onProgress);
+        return { success: true };
+      } else if (sourceStore.get && store.put) {
+        // Fallback to traditional get/put if streaming not supported
+        const { data: buffer } = await sourceStore.get({ key: sourceKey });
+        await store.put({ key: targetKey, data: buffer }, onProgress);
+        return { success: true };
+      } else {
+        throw new Error('Store does not support required methods for cross-store transfer');
+      }
+    } finally {
+      if (sourceStore.destroy) sourceStore.destroy();
+    }
+  }
 
-  for (let i = 0; i < files.length; i++) {
+  // Same-store transfer (Copy/Move)
+  const size = files?.length || 0;
+  for (let i = 0; i < size; i++) {
+    if (abortSignal?.aborted) throw new Error('Aborted');
+    
     const file = files[i];
     const fileName = path.basename(file);
     const destPath = path.join(targetPath, fileName);
 
     if (isMove) {
-      // Note: Store adapters must support these params.
-      // If S3 expects oldKey/newKey, this might need adaptation or caller ensures params match.
-      // We keep existing logic from TaskEntity.
+      if (!store.rename) throw new Error('Store does not support rename operation');
       await store.rename({
         oldName: file,
         newName: destPath,
@@ -62,6 +95,7 @@ const handleTransfer = async (task: WorkerTask, store: any, onProgress: (data: a
         newKey: destPath,
       });
     } else {
+      if (!store.copy) throw new Error('Store does not support copy operation');
       await store.copy({
         file: file,
         newFile: destPath,
@@ -82,11 +116,20 @@ const handleTransfer = async (task: WorkerTask, store: any, onProgress: (data: a
 };
 
 export default async function (task: WorkerTask) {
-  const { taskId, connectionId, method, params, config, storeType, type } = task;
+  const { taskId, connectionId, method, params, config, storeType, type, port } = task;
 
-  const store: any = createStoreClient(storeType, connectionId, config);
+  const store = createStoreClient(storeType, connectionId, config);
   if (!store) {
     throw new Error(`Unsupported store type: ${storeType}`);
+  }
+
+  const abortController = new AbortController();
+  if (port) {
+    port.on('message', (msg) => {
+      if (msg.type === 'abort') {
+        abortController.abort();
+      }
+    });
   }
 
   try {
@@ -102,18 +145,15 @@ export default async function (task: WorkerTask) {
       const progressJump = Math.abs(progress - lastProgress) >= 1;
 
       if (isFinished || isStarted || timeElapsed || progressJump) {
-        if (task.port) {
-          task.port.postMessage({
-            taskId,
-            type: 'progress',
-            data,
-          });
+        const payload = {
+          taskId,
+          type: 'progress',
+          data,
+        };
+        if (port) {
+          port.postMessage(payload);
         } else {
-          parentPort?.postMessage({
-            taskId,
-            type: 'progress',
-            data,
-          });
+          parentPort?.postMessage(payload);
         }
         lastTime = now;
         lastProgress = progress;
@@ -121,28 +161,23 @@ export default async function (task: WorkerTask) {
     };
 
     if (type === 'transfer') {
-      const result = await handleTransfer(task, store, onProgress);
-      if (store.destroy && typeof store.destroy === 'function') {
-        store.destroy();
-      }
+      const result = await handleTransfer(task, store, onProgress, abortController.signal);
       return result;
     }
 
-    if (typeof store[method] !== 'function') {
+    const methodHandler = (store as any)[method];
+    if (typeof methodHandler !== 'function') {
       throw new Error(`Method ${method} not found in store`);
     }
 
-    const result = await store[method](params, onProgress);
-
-    if (store.destroy && typeof store.destroy === 'function') {
-      store.destroy();
-    }
-
+    // Pass abort signal to store methods if they support it
+    const result = await methodHandler(params, onProgress, abortController.signal);
     return result;
   } catch (err: any) {
+    throw err;
+  } finally {
     if (store.destroy && typeof store.destroy === 'function') {
       store.destroy();
     }
-    throw err;
   }
 }

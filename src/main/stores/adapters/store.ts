@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import { ResponseData } from '@/main/utils/response';
 
 export interface IStorageHandler {
@@ -16,4 +17,8 @@ export interface IStorageHandler {
   copy?(params: any): Promise<ResponseData<any>>;
   statistic?(params: any): Promise<ResponseData<any>>;
   getSourceUrl?(params: any): Promise<ResponseData<any>>;
+
+  // Streaming support
+  getReadStream?(params: { key: string }): Promise<Readable>;
+  putWriteStream?(params: { key: string, size: number }, stream: Readable, onProgress?: (data: any) => void): Promise<void>;
 }

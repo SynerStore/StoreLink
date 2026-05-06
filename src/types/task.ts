@@ -1,6 +1,8 @@
 export enum ETaskStatus {
   PENDING = 'pending',
+  SCANNING = 'scanning',
   RUNNING = 'running',
+  RETRYING = 'retrying',
   PAUSED = 'paused',
   COMPLETED = 'completed',
   FAILED = 'failed',
