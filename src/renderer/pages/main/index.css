@@ -13,11 +13,14 @@
   .main {
     height: calc(100vh - var(--header-height));
     display: flex;
+    overflow: hidden;
 
     .content {
       width: calc(100vw - var(--sider-width));
       display: flex;
+      flex: 1;
       background: var(--content-bg-dark, var(--content-bg-light));
+      overflow: hidden;
     }
   }
 }

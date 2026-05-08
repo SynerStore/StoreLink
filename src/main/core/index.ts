@@ -6,7 +6,7 @@ import { storeRequestRegistry } from '../stores';
 import eventsRegistry from '../events/registry';
 import { taskRequestRegistry } from '../tasks/manage';
 import { logger, isDev, installDevtool } from '../utils';
-import { ensureEncryptedPasswordsOnStartup } from '../db';
+import { ensureEncryptedPasswordsOnStartup, migrateFromJsonToSqlite } from '../db';
 import updateService from '../services/update';
 
 export default class Core {
@@ -43,6 +43,8 @@ export default class Core {
         app.quit();
       }
     });
+    // 迁移旧数据到 SQLite（在密码加密之前执行）
+    migrateFromJsonToSqlite();
     ensureEncryptedPasswordsOnStartup();
   }
 

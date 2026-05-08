@@ -47,6 +47,33 @@ const App = () => {
       algorithm: settingStore.settings.theme === EnumTheme.DARK ? theme.darkAlgorithm : theme.defaultAlgorithm,
       token: {
         colorPrimary: '#4856b3',
+        borderRadius: 8,
+        fontSize: 13,
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+      },
+      components: {
+        Button: {
+          borderRadius: 8,
+          controlHeight: 32,
+        },
+        Input: {
+          borderRadius: 8,
+          controlHeight: 36,
+        },
+        Select: {
+          borderRadius: 8,
+          controlHeight: 36,
+        },
+        Card: {
+          borderRadius: 12,
+        },
+        Modal: {
+          borderRadius: 12,
+        },
+        Menu: {
+          itemBorderRadius: 8,
+          subMenuItemBorderRadius: 8,
+        },
       },
     };
   }, [settingStore.settings.theme]);

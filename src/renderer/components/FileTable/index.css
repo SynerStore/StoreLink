@@ -1,28 +1,68 @@
 .file-table-wrapper {
   outline: none;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .ant-table {
+    flex: 1;
+    background: transparent;
+  }
 
   .ant-table-body {
     overflow-y: auto !important;
+  }
+
+  .ant-table-thead > tr > th {
+    background: var(--color-bg-2);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    padding: 12px 16px;
+  }
+
+  .ant-table-tbody > tr > td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 14px 16px;
+    transition: all 0.2s ease;
+    font-size: 13px;
+  }
+
+  .ant-table-tbody > tr:hover > td {
+    background: var(--icon-hover-bg-color);
   }
 }
 
 .file-table-wrapper .ant-table-row {
   cursor: default;
   user-select: none;
+  transition: all 0.2s ease;
 }
 
 .file-table-wrapper .ant-table-row.file-table-row-selected {
-  background-color: var(--primary-1);
+  background-color: var(--card-selected-bg);
+}
+
+.file-table-wrapper .ant-table-row.file-table-row-selected:hover > td {
+  background-color: var(--card-selected-bg-hover);
 }
 
 .file-table-wrapper .ant-table-row.file-table-row-focused {
-  outline-offset: -1px;
+  outline: 2px solid var(--primary-500);
+  outline-offset: -2px;
 }
 
 .file-table-wrapper .ant-table-row.file-table-row-drag-over {
-  background-color: var(--primary-1);
-  outline: 2px dashed var(--primary-color);
+  background-color: var(--card-selected-bg);
+  outline: 2px dashed var(--primary-500);
   outline-offset: -2px;
   position: relative;
   z-index: 10;
+}
+
+.file-table-wrapper .ant-table-row.file-table-row-drag-over > td {
+  background-color: transparent;
 }

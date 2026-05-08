@@ -1,0 +1,79 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 32px;
+  text-align: center;
+  min-height: 400px;
+}
+
+.empty-state-icon {
+  margin-bottom: 24px;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.empty-state-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-bg-2);
+  color: var(--text-tertiary);
+  transition: all 0.3s ease;
+}
+
+.empty-state-icon-wrapper.success {
+  color: var(--success-color);
+  background: rgba(0, 200, 83, 0.08);
+}
+
+.empty-state:hover .empty-state-icon-wrapper {
+  transform: scale(1.05);
+  background: var(--icon-hover-bg-color);
+}
+
+.empty-state:hover .empty-state-icon-wrapper.success {
+  background: rgba(0, 200, 83, 0.12);
+}
+
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+
+.empty-state-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+.empty-state-action {
+  margin-top: 8px;
+}
+
+.empty-state-action .ant-btn {
+  border-radius: 10px;
+  height: 40px;
+  padding: 0 24px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.empty-state-action .ant-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-control);
+}
+
+.empty-state-action .ant-btn:active {
+  transform: translateY(0);
+}

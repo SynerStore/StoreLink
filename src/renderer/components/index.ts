@@ -34,3 +34,7 @@ export { default as ErrorModal } from './ErrorModal';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as GlobalAntd } from './GlobalAntd';
 export { default as UpdateTip } from './UpdateTip';
+export { default as EmptyState } from './EmptyState';
+export type { EmptyStateType, EmptyStateProps } from './EmptyState';
+export { default as SkeletonLoader } from './Skeleton';
+export type { SkeletonType, SkeletonLoaderProps } from './Skeleton';

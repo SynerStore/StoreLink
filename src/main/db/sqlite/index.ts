@@ -298,4 +298,41 @@ export function ensureEncryptedPasswordsOnStartup(): void {
   }
 }
 
+/**
+ * 从旧的 connections.json 迁移数据到 SQLite
+ * 合并迁移：只添加 SQLite 中不存在的连接
+ */
+export function migrateFromJsonToSqlite(): void {
+  const connectionsPath = path.join(getUserDataPath(), 'connections.json');
+
+  // 检查 JSON 文件是否存在
+  if (!fs.existsSync(connectionsPath)) {
+    return;
+  }
+
+  try {
+    const jsonData = fs.readJSONSync(connectionsPath);
+    const jsonConnections = jsonData?.connections || [];
+
+    if (jsonConnections.length === 0) {
+      return;
+    }
+
+    // 获取 SQLite 中已存在的连接 ID
+    const existingIds = new Set(
+      (db.prepare('SELECT id FROM connections').all() as any[]).map(row => row.id)
+    );
+
+    // 过滤出需要迁移的连接（不存在于 SQLite 中的）
+    const toMigrate = jsonConnections.filter((conn: any) => !existingIds.has(conn.id));
+
+    if (toMigrate.length > 0) {
+      addConnection(toMigrate);
+      console.log(`[Migration] Migrated ${toMigrate.length} connections from JSON to SQLite`);
+    }
+  } catch (e: any) {
+    errorLogger.error('Migration from JSON to SQLite failed:', e?.message || e);
+  }
+}
+
 export default db;
