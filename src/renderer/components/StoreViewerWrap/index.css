@@ -10,6 +10,14 @@
     align-items: center;
     margin-bottom: 6px;
     gap: 4px;
+
+    .ant-input-affix-wrapper {
+      height: 32px;
+    }
+
+    .ant-input {
+      height: 32px;
+    }
   }
 
   .viewer-actions {

@@ -47,3 +47,20 @@ body {
 .cards-content .ant-spin-container {
   height: 100%;
 }
+
+/* 修复 Input.Search 输入框和按钮高度不一致的问题 */
+.ant-input-search {
+  .ant-input {
+    height: 32px;
+  }
+
+  .ant-input-group-addon {
+    .ant-input-search-button {
+      height: 32px;
+    }
+  }
+
+  .ant-btn {
+    height: 32px;
+  }
+}
