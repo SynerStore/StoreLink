@@ -6,6 +6,58 @@ import FileMoveConfirmModal from '../FileMoveConfirmModal';
 import { TStoreObject } from '@/types';
 import './index.css';
 
+// 可调整大小的表头组件
+interface ResizableTitleProps {
+  onResize?: (width: number) => void;
+  width?: number;
+  [key: string]: any;
+}
+
+const ResizableTitle: React.FC<ResizableTitleProps> = (props) => {
+  const { onResize, width, ...restProps } = props;
+  const handleRef = useRef<HTMLSpanElement>(null);
+
+  // 如果没有 onResize 或 width，直接渲染原始 th
+  if (!onResize || width === undefined) {
+    return <th {...restProps} />;
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const startX = e.clientX;
+    const startWidth = width;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      requestAnimationFrame(() => {
+        const newWidth = startWidth + moveEvent.clientX - startX;
+        const clampedWidth = Math.max(50, newWidth);
+        onResize(clampedWidth);
+      });
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  return (
+    <th {...restProps}>
+      {restProps.children}
+      <span
+        ref={handleRef}
+        className="react-resizable-handle"
+        onMouseDown={handleMouseDown}
+      />
+    </th>
+  );
+};
+
 export interface FileTableProps<T> extends Omit<TableProps<T>, 'rowSelection'> {
   rowSelection?: {
     selectedRowKeys?: React.Key[];
@@ -17,6 +69,8 @@ export interface FileTableProps<T> extends Omit<TableProps<T>, 'rowSelection'> {
   onRowDoubleClick?: (record: T) => void;
   connectionId?: string;
   onDropMove?: (sourceKeys: React.Key[], targetFolder: T) => Promise<void>;
+  resizable?: boolean;
+  onColumnResize?: (columnKey: string, width: number) => void;
 }
 
 export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
@@ -28,6 +82,8 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     connectionId,
     onDropMove,
     columns,
+    resizable = false,
+    onColumnResize,
     ...restProps
   } = props;
 
@@ -316,6 +372,41 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
     },
   };
 
+  // 处理可调整大小的列
+  const resizableColumns = useMemo(() => {
+    if (!resizable || !columns) return columns;
+
+    return columns.map((col: any) => {
+      const key = col.key || col.dataIndex;
+      const hasWidth = col.width !== undefined;
+
+      if (!hasWidth) return col;
+
+      return {
+        ...col,
+        onHeaderCell: (column: any) => ({
+          width: column.width,
+          onResize: (w: number) => {
+            if (onColumnResize && key) {
+              onColumnResize(key, w);
+            }
+          },
+        }),
+      };
+    });
+  }, [columns, resizable, onColumnResize]);
+
+  // 表头组件
+  const components = useMemo(() => {
+    if (!resizable) return undefined;
+
+    return {
+      header: {
+        cell: ResizableTitle,
+      },
+    };
+  }, [resizable]);
+
   // 骨架屏渲染
   if (restProps.loading) {
     return (
@@ -332,7 +423,8 @@ export const FileTable = <T extends object = any>(props: FileTableProps<T>) => {
         loading={false}
         virtual
         dataSource={dataSource}
-        columns={columns}
+        columns={resizableColumns}
+        components={components}
         rowSelection={antdRowSelection}
         pagination={false}
         onRow={(record: T, index?: number) => {

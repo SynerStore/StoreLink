@@ -1,4 +1,4 @@
-import { Fragment, useLayoutEffect, useState } from 'react';
+import { Fragment, useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import { FileTable } from '@/renderer/components';
 import dayjs from 'dayjs';
 
@@ -6,6 +6,7 @@ import { EWindowSize, TStoreObject } from '@/types';
 import { FileIcon, FileContextMenu } from '@/renderer/components';
 import { calculateSize } from '@/renderer/utils';
 import { useTranslation } from 'react-i18next';
+import { useColumnWidths } from '@/renderer/hooks';
 import styles from './index.module.css';
 
 export type TableContentProps = {
@@ -41,6 +42,9 @@ const TableContent = (props: TableContentProps) => {
   } = props;
   const { t } = useTranslation();
 
+  // 列宽调整
+  const { columnWidths, handleColumnResize } = useColumnWidths({ viewerType: 's3' });
+
   const handleFileClick = (record: TStoreObject) => {
     if (record.isDirectory) {
       onPrefixChange(record.key as string);
@@ -49,7 +53,7 @@ const TableContent = (props: TableContentProps) => {
     }
   };
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       title: t('common.name'),
       dataIndex: 'name',
@@ -93,7 +97,7 @@ const TableContent = (props: TableContentProps) => {
       title: t('common.size'),
       dataIndex: 'size',
       key: 'size',
-      width: 120,
+      width: columnWidths.size || 120,
       render: (val: number) => {
         return val ? calculateSize(val) : '--';
       },
@@ -102,7 +106,7 @@ const TableContent = (props: TableContentProps) => {
       title: t('storeViewer.storageClass'),
       dataIndex: 'storageClass',
       key: 'storageClass',
-      width: 180,
+      width: columnWidths.storageClass || 180,
       render: (val: undefined | any) => {
         return val || '--';
       },
@@ -111,12 +115,16 @@ const TableContent = (props: TableContentProps) => {
       title: t('common.modified'),
       dataIndex: 'lastModified',
       key: 'lastModified',
-      width: 200,
+      width: columnWidths.lastModified || 200,
       render: (val: string) => {
         return val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : '--';
       },
     },
-  ];
+  ], [t, connectionId, onDownload, onRename, onDelete, onMoveTo, onCopyTo, columnWidths]);
+
+  const handleColumnResizeCallback = useCallback((key: string, width: number) => {
+    handleColumnResize(key, width);
+  }, [handleColumnResize]);
 
   const handleSelectChange = (selectedRowKeys: React.Key[], selectedRows: TStoreObject[]) => {
     onSelectionChange?.(selectedRowKeys);
@@ -144,6 +152,8 @@ const TableContent = (props: TableContentProps) => {
         dataSource={data}
         pagination={false}
         columns={columns}
+        resizable
+        onColumnResize={handleColumnResizeCallback}
       />
     </div>
   );

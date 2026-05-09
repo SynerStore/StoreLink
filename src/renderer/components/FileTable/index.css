@@ -66,3 +66,19 @@
 .file-table-wrapper .ant-table-row.file-table-row-drag-over > td {
   background-color: transparent;
 }
+
+/* 可调整列宽的表头样式 */
+.file-table-wrapper .react-resizable-handle {
+  position: absolute;
+  right: -5px;
+  bottom: 0;
+  z-index: 1;
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.file-table-wrapper .react-resizable-handle:hover {
+  background: var(--primary-color);
+  opacity: 0.3;
+}

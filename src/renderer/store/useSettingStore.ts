@@ -15,6 +15,23 @@ export enum EnumLang {
   EN_US = 'en-US',
 }
 
+// 表格列宽配置类型
+export interface ColumnWidthConfig {
+  size?: number;
+  lastModified?: number;
+  storageClass?: number;
+}
+
+export interface TableColumnWidths {
+  s3?: ColumnWidthConfig;
+  oss?: ColumnWidthConfig;
+  cos?: ColumnWidthConfig;
+  local?: ColumnWidthConfig;
+  sftp?: ColumnWidthConfig;
+  webdav?: ColumnWidthConfig;
+  synology?: ColumnWidthConfig;
+}
+
 type DataType = {
   settings: {
     lang: EnumLang;
@@ -23,6 +40,7 @@ type DataType = {
     siderWidth: number;
     systemNotification: boolean;
     version: string;
+    tableColumnWidths?: TableColumnWidths;
   };
   initializeData: () => Promise<void>;
   update: (params: { [key: string]: any }) => Promise<void>;

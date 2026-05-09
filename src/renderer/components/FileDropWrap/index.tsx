@@ -40,7 +40,17 @@ const FileDropWrap = (props: FileDropWrapProps) => {
   const handleOnDragEnter = (event: any) => {
     event.stopPropagation();
     event.preventDefault();
-    setIsDragOver(true);
+
+    // 检查是否是从外部拖入的文件（本地文件系统）
+    // 如果有 files 且长度大于 0，说明是从外部拖入的文件
+    // 如果 dropEffect 是 copy 且有 application/json 数据，说明是内部拖拽
+    const hasExternalFiles = event.dataTransfer.types.includes('Files') && event.dataTransfer.items.length > 0;
+    const isInternalDrag = event.dataTransfer.dropEffect === 'copy' || event.dataTransfer.types.includes('application/json');
+
+    // 只有从外部拖入文件时才显示上传框
+    if (hasExternalFiles && !isInternalDrag) {
+      setIsDragOver(true);
+    }
   };
 
   const handleOnDragLeave = (event: any) => {

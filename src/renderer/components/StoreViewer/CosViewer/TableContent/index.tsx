@@ -1,10 +1,11 @@
-import { Fragment, useLayoutEffect, useState } from 'react';
+import { Fragment, useLayoutEffect, useState, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 
 import { FileTable, FileIcon, FileContextMenu } from '@/renderer/components';
 import { EWindowSize, TStoreObject } from '@/types';
 import { calculateSize } from '@/renderer/utils';
+import { useColumnWidths } from '@/renderer/hooks';
 
 import styles from './index.module.css';
 
@@ -43,6 +44,9 @@ const TableContent = (props: TableContentProps) => {
   } = props;
   const { t } = useTranslation();
 
+  // 列宽调整
+  const { columnWidths, handleColumnResize } = useColumnWidths({ viewerType: 'cos' });
+
   const handleFileClick = (record: TStoreObject) => {
     if (record.isDirectory) {
       onPrefixChange(record.key as string);
@@ -60,7 +64,7 @@ const TableContent = (props: TableContentProps) => {
     seTableScrollHight(document.body.clientHeight - 238);
   }, []);
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       title: t('common.name'),
       dataIndex: 'name',
@@ -105,7 +109,7 @@ const TableContent = (props: TableContentProps) => {
       title: t('common.size'),
       dataIndex: 'size',
       key: 'size',
-      width: 120,
+      width: columnWidths.size || 120,
       render: (val: number) => {
         return val ? calculateSize(val) : '--';
       },
@@ -114,7 +118,7 @@ const TableContent = (props: TableContentProps) => {
       title: t('storeViewer.storageClass'),
       dataIndex: 'storageClass',
       key: 'storageClass',
-      width: 180,
+      width: columnWidths.storageClass || 180,
       render: (val: undefined | string) => {
         return val || '--';
       },
@@ -123,12 +127,16 @@ const TableContent = (props: TableContentProps) => {
       title: t('common.modified'),
       dataIndex: 'lastModified',
       key: 'lastModified',
-      width: 200,
+      width: columnWidths.lastModified || 200,
       render: (val: string) => {
         return val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : '--';
       },
     },
-  ];
+  ], [t, connectionId, onDownload, onRename, onDelete, onFileView, onMoveTo, onCopyTo, columnWidths]);
+
+  const handleColumnResizeCallback = useCallback((key: string, width: number) => {
+    handleColumnResize(key, width);
+  }, [handleColumnResize]);
 
   return (
     <div className="table-content">
@@ -148,6 +156,8 @@ const TableContent = (props: TableContentProps) => {
         }}
         scroll={{ y: tableScrollHight }}
         onDropMove={onDropMove}
+        resizable
+        onColumnResize={handleColumnResizeCallback}
       />
     </div>
   );

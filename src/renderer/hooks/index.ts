@@ -6,3 +6,4 @@ export * from './useFileTransfer';
 export * from './useStoreViewer';
 export * from './useTasks';
 export * from './useTaskNotification';
+export * from './useColumnWidths';
