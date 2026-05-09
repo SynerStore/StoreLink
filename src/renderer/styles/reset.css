@@ -54,3 +54,7 @@ body {
 .ant-tabs-nav {
   margin-bottom: 6px !important;
 }
+
+.ant-menu-sub.ant-menu-inline{
+  background: none !important;
+}

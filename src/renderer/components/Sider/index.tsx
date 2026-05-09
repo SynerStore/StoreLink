@@ -21,8 +21,9 @@ const Sider = () => {
     <aside className="sider">
       <div className="sider-top">
         <IconFont
-          className={`action ${isHome ? 'active' : undefined}`}
+          className={`action ${isHome ? 'active' : ''}`}
           pointer
+          size={24}
           onClick={() => {
             navigate('/');
           }}
@@ -34,36 +35,39 @@ const Sider = () => {
 
         <Space vertical size={16}>
           <IconFont
-            className={`action ${isTasks ? 'active' : undefined}`}
+            className={`action ${isTasks ? 'active' : ''}`}
             pointer
+            size={24}
             onClick={() => navigate('/tasks')}
             type="transfer"
           />
 
-          {/* <SwapOutlined className={isTasks ? 'active' : undefined} onClick={() => navigate('/tasks')} /> */}
+          {/* <SwapOutlined className={isTasks ? 'active' : ''} onClick={() => navigate('/tasks')} /> */}
 
           {/* <Tooltip title="定时任务">
-            <CalendarOutlined className={isSettingPage ? 'active' : undefined} onClick={() => navigate('/setting')} />
+            <CalendarOutlined className={isSettingPage ? 'active' : ''} onClick={() => navigate('/setting')} />
           </Tooltip> */}
 
-          {/* <ProfileOutlined className={isLogs ? 'active' : undefined} onClick={() => navigate('/logs')} /> */}
+          {/* <ProfileOutlined className={isLogs ? 'active' : ''} onClick={() => navigate('/logs')} /> */}
 
           <IconFont
             type="log"
-            className={`action ${isLogs ? 'active' : undefined}`}
+            className={`action ${isLogs ? 'active' : ''}`}
             pointer
+            size={24}
             onClick={() => navigate('/logs')}
           />
 
           {/* <Tooltip title="工具">
             <ToolOutlined
-              className={isSettingPage ? 'active' : undefined}
+              className={isSettingPage ? 'active' : ''}
               onClick={() => navigate('/setting')}
             />
           </Tooltip> */}
           <IconFont
             type="setting"
-            className={`action ${isSettingPage ? 'active' : undefined}`}
+            size={24}
+            className={`action ${isSettingPage ? 'active' : ''}`}
             onClick={() => navigate('/setting')}
           />
         </Space>
