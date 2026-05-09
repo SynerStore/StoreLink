@@ -36,7 +36,7 @@ export const getPublicFilePath = ({ name }: { name: string }) => {
 export const getPageUrl = (page: EPages, query: Record<string, any> = {}) => {
   let url;
   if (isDev) {
-    url = `http://localhost:3000/${page}.html`;
+    url = `http://localhost:3099/${page}.html`;
   } else {
     url = getPublicFilePath({ name: `${page}.html` });
   }

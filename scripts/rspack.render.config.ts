@@ -31,7 +31,7 @@ const rspackConfig: Configuration = {
   },
   devtool: isDev ? 'source-map' : false,
   devServer: {
-    port: 3000,
+    port: 3099,
     open: false,
     historyApiFallback: false,
   },
