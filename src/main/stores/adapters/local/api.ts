@@ -98,9 +98,13 @@ export async function deleteMultiFiles(params: DeleteMultiFilesParams) {
 export type RenameParams = {
   oldName: string;
   newName: string;
+  oldKey?: string;  // Alias for oldName
+  newKey?: string;  // Full target path
 };
+
 export async function rename(params: RenameParams) {
-  const { oldName, newName } = params;
+  const oldName = params.oldName || params.oldKey;
+  const newName = params.newKey || params.newName;
   const targetPath = path.isAbsolute(newName) ? newName : path.join(path.dirname(oldName), newName);
   const result = await fs.rename(oldName, targetPath);
   return result;
@@ -183,17 +187,29 @@ export async function getSourceUrl(params: GetSourceUrlParams) {
 export type CopyFileParams = {
   sourceKey: string;
   targetPath: string;
+  targetKey?: string; // Optional: full target path
+  file?: string;      // Alias for sourceKey
+  newFile?: string;   // Alias for targetKey
 };
 
 export async function copyFile(params: CopyFileParams) {
-  const { sourceKey, targetPath } = params;
-  // For LocalStore, targetPath is usually the destination directory
-  // sourceKey is the full path of the source file
-  const fileName = path.basename(sourceKey);
-  const destPath = path.join(targetPath, fileName);
+  // Support both parameter naming conventions
+  const sourceKey = params.sourceKey || params.file;
+  let destPath: string;
 
-  // Ensure target directory exists (though targetPath should be valid)
-  // Check if it's move or copy? This function is named copyFile.
+  if (params.targetKey || params.newFile) {
+    // If full target path is provided, use it directly
+    destPath = params.targetKey || params.newFile!;
+  } else {
+    // If only targetPath (directory) is provided, construct full path
+    const fileName = path.basename(sourceKey);
+    destPath = path.join(params.targetPath, fileName);
+  }
+
+  // Ensure target directory exists
+  const targetDir = path.dirname(destPath);
+  await fs.ensureDir(targetDir);
+
   await fs.copy(sourceKey, destPath);
 }
 

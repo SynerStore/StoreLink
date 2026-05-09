@@ -13,6 +13,12 @@ export const storeRequest = async (data: Record<string, any>) => {
   }
   try {
     const res = await window.electronBridge.dispatch(EChannels.storeRequest, data);
+
+    // 检查是否是任务启动响应（异步任务）
+    if (res && res.code === 0 && res.msg === 'Task started') {
+      return res;
+    }
+
     if (!res || !res.success) {
       // 检查是否应该跳过全局错误处理
       // 例如，如果调用者明确要求手动处理错误
