@@ -210,11 +210,15 @@
     "completed": "已完成",
     "failed": "失败",
     "canceled": "已取消",
+    "paused": "已暂停",
     "pause": "暂停",
     "resume": "继续",
     "cancel": "取消",
     "retry": "重试",
+    "retryAll": "重试全部",
     "endTime": "完成时间",
+    "duration": "耗时",
+    "waiting": "等待中",
     "errorMessage": "错误信息",
     "manageTitle": "任务管理",
     "type": {
@@ -239,10 +243,8 @@
       "rawParams": "原始参数"
     },
     "tabs": {
-      "pending": "未开始",
       "running": "进行中",
       "completed": "已完成",
-      "failed": "已失败",
       "logs": "日志记录"
     }
   },

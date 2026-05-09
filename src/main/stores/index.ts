@@ -46,7 +46,7 @@ export const storeRequestRegistry = () => {
     });
     const result = await store[method](params);
     if (method === 'list') {
-      console.log('Main Process list result:', result);
+      // console.log('Main Process list result:', result);
     }
     return result;
   });

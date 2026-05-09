@@ -94,7 +94,7 @@ export async function list(client: COS, params: ListParams) {
           total: allObjects.length,
           nextContinuationToken: data.IsTruncated === 'true' ? data.NextMarker : undefined,
         };
-        console.log('COS Adapter list result:', result);
+        // console.log('COS Adapter list result:', result);
         resolve(result);
       },
     );

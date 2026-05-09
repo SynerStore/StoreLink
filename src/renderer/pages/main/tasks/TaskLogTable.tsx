@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Space, Table, Progress, Tag, Tooltip } from 'antd';
+import { Button, Space, Table, Progress, Tag, Tooltip, Badge } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { useTasks } from '@/renderer/hooks';
 import { ETaskStatus, ETaskType } from '@/types';
@@ -11,17 +11,14 @@ import TaskTypeTag from './components/TaskTypeTag';
 
 const TaskLogTable = () => {
   const { t } = useTranslation();
-  const { tasks, pagination, handleTableChange, loading } = useTasks(
-    Object.values(ETaskStatus),
-    [],
-  );
+  const { tasks, pagination, handleTableChange, loading } = useTasks(Object.values(ETaskStatus), []);
   const [detailTask, setDetailTask] = useState<any>(null);
 
   const columns = [
     {
       title: t('common.type'),
       dataIndex: 'type',
-      width: 120,
+      width: 140,
       render: (type: ETaskType) => <TaskTypeTag type={type} />,
       sorter: true,
     },
@@ -35,15 +32,15 @@ const TaskLogTable = () => {
         if (params?.files) return params.files.join(', ');
         if (params?.localPath) return params.localPath;
         if (params?.key) return params.key;
-        if (params?.oldKey) return `${params.oldKey} -> ${params.newKey}`;
-        if (params?.sourceKey && params?.targetKey) return `${params.sourceKey} -> ${params.targetKey}`;
+        if (params?.oldKey) return `${params.oldKey} → ${params.newKey}`;
+        if (params?.sourceKey && params?.targetKey) return `${params.sourceKey} → ${params.targetKey}`;
         return '-';
       },
     },
     {
       title: t('common.size'),
       dataIndex: 'size',
-      width: 120,
+      width: 100,
       render: (size: number) => calculateSize(size),
       sorter: true,
     },
@@ -58,7 +55,7 @@ const TaskLogTable = () => {
     {
       title: t('tasks.detail.duration'),
       key: 'duration',
-      width: 120,
+      width: 100,
       render: (_: any, record: any) => {
         if (record.startTime && record.endTime) {
           const ms = dayjs(record.endTime).diff(dayjs(record.startTime), 'millisecond');
@@ -67,8 +64,7 @@ const TaskLogTable = () => {
           return `${s}s`;
         }
         if (record.status === ETaskStatus.RUNNING && record.startTime) {
-           // Maybe show dynamic duration? Or just "Running"
-           return '-';
+          return '-';
         }
         return '-';
       },
@@ -78,23 +74,17 @@ const TaskLogTable = () => {
       dataIndex: 'progress',
       width: 150,
       render: (progress: number, record: any) => {
-        // Only show progress for transfer types or if running
         if (record.status === ETaskStatus.RUNNING || record.status === ETaskStatus.PAUSED) {
-            return <Progress percent={progress} size="small" />;
+          return <Progress percent={progress} size="small" />;
         }
         if (record.status === ETaskStatus.COMPLETED) return <Progress percent={100} size="small" />;
-        return <Progress percent={progress} size="small" status={record.status === ETaskStatus.FAILED ? 'exception' : 'normal'} />;
-      },
-    },
-    {
-      title: t('tasks.speed'),
-      dataIndex: 'speed',
-      width: 100,
-      render: (speed: number, record: any) => {
-        if (record.status === ETaskStatus.RUNNING) {
-            return `${calculateSize(speed)}/s`;
-        }
-        return '-';
+        return (
+          <Progress
+            percent={progress}
+            size="small"
+            status={record.status === ETaskStatus.FAILED ? 'exception' : 'normal'}
+          />
+        );
       },
     },
     {
@@ -102,26 +92,27 @@ const TaskLogTable = () => {
       dataIndex: 'status',
       width: 100,
       render: (status: ETaskStatus) => {
-        let color = 'default';
-        if (status === ETaskStatus.COMPLETED) color = 'success';
-        if (status === ETaskStatus.FAILED) color = 'error';
-        if (status === ETaskStatus.RUNNING) color = 'processing';
-        if (status === ETaskStatus.PAUSED) color = 'warning';
-        return <Tag color={color}>{t(`tasks.${status}`)}</Tag>;
+        const statusConfig: Record<ETaskStatus, { color: string; text: string }> = {
+          [ETaskStatus.RUNNING]: { color: 'processing', text: t('tasks.running') },
+          [ETaskStatus.PAUSED]: { color: 'warning', text: t('tasks.paused') },
+          [ETaskStatus.PENDING]: { color: 'default', text: t('tasks.pending') },
+          [ETaskStatus.FAILED]: { color: 'error', text: t('tasks.failed') },
+          [ETaskStatus.CANCELED]: { color: 'error', text: t('tasks.canceled') },
+          [ETaskStatus.COMPLETED]: { color: 'success', text: t('tasks.completed') },
+        };
+        const config = statusConfig[status];
+        return <Badge status={config.color as any} text={config.text} />;
       },
     },
     {
       title: t('common.action'),
       key: 'action',
       width: 80,
+      fixed: 'right' as const,
       render: (_: any, record: any) => (
-        <Space size="middle">
+        <Space size={4}>
           <Tooltip title={t('common.detail')}>
-            <Button
-              type="text"
-              icon={<EyeOutlined />}
-              onClick={() => setDetailTask(record)}
-            />
+            <Button type="text" size="small" icon={<EyeOutlined />} onClick={() => setDetailTask(record)} />
           </Tooltip>
         </Space>
       ),
@@ -129,7 +120,7 @@ const TaskLogTable = () => {
   ];
 
   return (
-    <>
+    <div className="task-table">
       <Table
         columns={columns}
         dataSource={tasks}
@@ -138,14 +129,10 @@ const TaskLogTable = () => {
         loading={loading}
         onChange={handleTableChange}
         scroll={{ y: 'calc(100vh - 240px)' }}
-        size="middle"
+        size="small"
       />
-      <TaskDetailModal
-        open={!!detailTask}
-        onCancel={() => setDetailTask(null)}
-        task={detailTask}
-      />
-    </>
+      <TaskDetailModal open={!!detailTask} onCancel={() => setDetailTask(null)} task={detailTask} />
+    </div>
   );
 };
 

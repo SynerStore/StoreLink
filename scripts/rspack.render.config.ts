@@ -16,6 +16,7 @@ const rspackConfig: Configuration = {
     render_main: path.resolve(ROOT, './src/renderer/pages/main/index.tsx'),
     render_launch: path.resolve(ROOT, './src/renderer/pages/launch/index.tsx'),
     render_viewer: path.resolve(ROOT, './src/renderer/pages/viewer/index.tsx'),
+    render_task_panel: path.resolve(ROOT, './src/renderer/pages/task-panel/index.tsx'),
   },
   output: {
     path: path.resolve(ROOT, 'build'),
@@ -92,6 +93,12 @@ const rspackConfig: Configuration = {
       chunks: ['render_viewer'],
       templateContent: HTML_TEMPLATE,
       filename: 'viewer.html',
+    }),
+    new rspack.HtmlRspackPlugin({
+      title: 'render_task_panel',
+      chunks: ['render_task_panel'],
+      templateContent: HTML_TEMPLATE,
+      filename: 'task-panel.html',
     }),
     new rspack.ProgressPlugin({}),
     new rspack.CopyRspackPlugin({

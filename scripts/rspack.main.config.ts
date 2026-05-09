@@ -54,7 +54,17 @@ const config: Configuration = {
     __dirname: false,
     __filename: false,
   },
-  plugins: [new rspack.ProgressPlugin({})].filter(Boolean),
+  plugins: [
+    new rspack.ProgressPlugin({}),
+    new rspack.CopyRspackPlugin({
+      patterns: [
+        {
+          from: path.resolve(ROOT, './scripts/assets'),
+          to: path.resolve(ROOT, './build/scripts/assets'),
+        },
+      ],
+    }),
+  ].filter(Boolean),
   optimization: {
     minimize: !isDev,
     mangleExports: !isDev,

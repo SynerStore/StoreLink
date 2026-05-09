@@ -8,16 +8,18 @@ import { taskRequestRegistry } from '../tasks/manage';
 import { logger, isDev, installDevtool } from '../utils';
 import { ensureEncryptedPasswordsOnStartup, migrateFromJsonToSqlite } from '../db';
 import updateService from '../services/update';
+import TrayManager from '../tray';
 
 export default class Core {
   logger = logger.scope('Core');
   windows: Windows | null = null;
   viewer: ViewerWindowManager | null = null;
+  tray: TrayManager | null = null;
 
   async startApp() {
     try {
       this.logger.info('app start');
-      
+
       // Log proxy settings for debugging
       if (process.env.HTTP_PROXY || process.env.HTTPS_PROXY || process.env.http_proxy || process.env.https_proxy) {
         this.logger.info('Proxy environment variables detected:', {
@@ -27,13 +29,24 @@ export default class Core {
         });
       }
 
+      this.logger.info('Calling beforeAppReady...');
       await this.beforeAppReady();
+      this.logger.info('beforeAppReady completed');
+
+      this.logger.info('Registering protocol...');
       protocol.registerSchemesAsPrivileged([{ scheme: 'localfile', privileges: { bypassCSP: true } }]);
+
+      this.logger.info('Waiting for app ready...');
       await app.whenReady();
+      this.logger.info('App is ready');
+
+      this.logger.info('Calling afterAppReady...');
       await this.afterAppReady();
+      this.logger.info('afterAppReady completed');
+
       this.logger.info('app start success');
     } catch (e) {
-      this.logger.error(e);
+      this.logger.error('Error in startApp:', e);
     }
   }
 
@@ -49,9 +62,23 @@ export default class Core {
   }
 
   private async afterAppReady() {
+    this.logger.info('afterAppReady called');
     await this.resistry();
+    this.logger.info('resistry completed');
     this.windows = new Windows(this);
+    this.logger.info('windows created');
     this.viewer = new ViewerWindowManager();
+    this.logger.info('viewer created');
+
+    try {
+      this.logger.info('Creating tray...');
+      this.tray = TrayManager.getInstance();
+      this.tray.createTray();
+      this.logger.info('Tray created successfully');
+    } catch (error) {
+      this.logger.error('Failed to create tray:', error);
+    }
+
     this.installExtension();
     this.initUpdateService();
 

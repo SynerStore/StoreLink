@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-import { Tabs } from 'antd';
+import { Tabs, Badge } from 'antd';
+import { PlayCircleOutlined, CheckCircleOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import PageWrapper from '@/renderer/components/PageWrapper';
-import PendingTaskTable from './PendingTaskTable';
 import RunningTaskTable from './RunningTaskTable';
 import CompletedTaskTable from './CompletedTaskTable';
-import FailedTaskTable from './FailedTaskTable';
 import TaskLogTable from './TaskLogTable';
 import './index.css';
 
 export enum ETaskManageTab {
-  Pending = 'pending',
   Running = 'running',
   Completed = 'completed',
-  Failed = 'failed',
   Logs = 'logs',
 }
 
@@ -25,40 +22,46 @@ const Tasks: React.FC = () => {
   const items = [
     {
       key: ETaskManageTab.Running,
-      label: t('tasks.tabs.running'),
+      label: (
+        <span className="task-tab-label">
+          <PlayCircleOutlined />
+          {t('tasks.tabs.running')}
+        </span>
+      ),
       children: <RunningTaskTable />,
     },
     {
-      key: ETaskManageTab.Pending,
-      label: t('tasks.tabs.pending'),
-      children: <PendingTaskTable />,
-    },
-
-    {
       key: ETaskManageTab.Completed,
-      label: t('tasks.tabs.completed'),
+      label: (
+        <span className="task-tab-label">
+          <CheckCircleOutlined />
+          {t('tasks.tabs.completed')}
+        </span>
+      ),
       children: <CompletedTaskTable />,
     },
     {
-      key: ETaskManageTab.Failed,
-      label: t('tasks.tabs.failed'),
-      children: <FailedTaskTable />,
-    },
-    {
       key: ETaskManageTab.Logs,
-      label: t('tasks.tabs.logs'),
+      label: (
+        <span className="task-tab-label">
+          <FileTextOutlined />
+          {t('tasks.tabs.logs')}
+        </span>
+      ),
       children: <TaskLogTable />,
     },
   ];
 
   return (
     <PageWrapper title={t('tasks.manageTitle')}>
-      <Tabs
-        activeKey={activeTab}
-        onChange={(key: string) => setActiveTab(key as ETaskManageTab)}
-        items={items}
-        style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-      />
+      <div className="task-tabs-wrapper">
+        <Tabs
+          activeKey={activeTab}
+          onChange={(key: string) => setActiveTab(key as ETaskManageTab)}
+          items={items}
+          size="large"
+        />
+      </div>
     </PageWrapper>
   );
 };

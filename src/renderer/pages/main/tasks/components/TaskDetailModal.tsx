@@ -20,9 +20,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ open, onCancel, task 
   if (!task) return null;
 
   const duration =
-    task.startTime && task.endTime
-      ? dayjs(task.endTime).diff(dayjs(task.startTime), 'millisecond')
-      : null;
+    task.startTime && task.endTime ? dayjs(task.endTime).diff(dayjs(task.startTime), 'millisecond') : null;
 
   const getStatusBadge = (status: ETaskStatus) => {
     switch (status) {
@@ -40,13 +38,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ open, onCancel, task 
   };
 
   return (
-    <Modal
-      title={t('tasks.detail.title')}
-      open={open}
-      onCancel={onCancel}
-      footer={null}
-      width={800}
-    >
+    <Modal title={t('tasks.detail.title')} open={open} onCancel={onCancel} footer={null} width={800}>
       <Descriptions bordered column={2}>
         <Descriptions.Item label={t('tasks.detail.taskId')} span={2}>
           <Text copyable>{task.taskId}</Text>
@@ -56,9 +48,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ open, onCancel, task 
         <Descriptions.Item label={t('common.size')}>
           {calculateSize(task.size)} ({task.size} B)
         </Descriptions.Item>
-        <Descriptions.Item label={t('tasks.detail.duration')}>
-          {duration ? `${duration} ms` : '-'}
-        </Descriptions.Item>
+        <Descriptions.Item label={t('tasks.detail.duration')}>{duration ? `${duration} ms` : '-'}</Descriptions.Item>
         <Descriptions.Item label={t('tasks.detail.startTime')}>
           {task.startTime ? dayjs(task.startTime).format('YYYY-MM-DD HH:mm:ss.SSS') : '-'}
         </Descriptions.Item>
@@ -102,9 +92,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ open, onCancel, task 
             overflow: 'auto',
           }}
         >
-          <pre style={{ margin: 0, fontSize: 12 }}>
-            {JSON.stringify(task.params, null, 2)}
-          </pre>
+          <pre style={{ margin: 0, fontSize: 12 }}>{JSON.stringify(task.params, null, 2)}</pre>
         </div>
       </div>
     </Modal>
