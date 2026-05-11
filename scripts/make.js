@@ -53,7 +53,7 @@ const beforeMake = async () => {
     version: pkg.version,
     description: pkg.description,
     author: pkg.author,
-    main: pkg.main,
+    main: 'main.js', // 修改为 main.js，因为打包时根目录就是 build
     dependencies: {
       ssh2: (pkg.dependencies && pkg.dependencies['ssh2']) || '^1.16.0',
       'ssh2-sftp-client': (pkg.dependencies && pkg.dependencies['ssh2-sftp-client']) || '^12.0.1',
