@@ -7,8 +7,9 @@ const pkg = require('../package.json');
 
 const root_dir = path.normalize(path.join(__dirname, '..'));
 const dist_dir = path.normalize(path.join(__dirname, '..', 'dist'));
-const macIcon = path.normalize(path.join(__dirname, './assets', 'icons/icon-512.png'));
-const winIcon = path.normalize(path.join(__dirname, './assets', 'icons/icon-512.png'));
+// 使用 1024px 源，保证 Retina 下图标清晰；icon-512@2x.png 与 icon-512.png 是同一幅画
+const macIcon = path.normalize(path.join(__dirname, './assets', 'icons/icon-512@2x.png'));
+const winIcon = path.normalize(path.join(__dirname, './assets', 'icons/icon-512@2x.png'));
 
 const APP_NAME = 'StoreLink';
 
@@ -57,6 +58,7 @@ const beforeMake = async () => {
     dependencies: {
       ssh2: (pkg.dependencies && pkg.dependencies['ssh2']) || '^1.16.0',
       'ssh2-sftp-client': (pkg.dependencies && pkg.dependencies['ssh2-sftp-client']) || '^12.0.1',
+      piscina: (pkg.dependencies && pkg.dependencies['piscina']) || '^5.1.4',
     },
   };
 
