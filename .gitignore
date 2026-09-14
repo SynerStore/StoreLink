@@ -6,3 +6,7 @@ build
 temp
 .userdata
 coverage
+.env
+.env.*
+!.env.example
+!.env.test.example

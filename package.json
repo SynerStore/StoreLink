@@ -42,6 +42,7 @@
     "prettier": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,less,md}\"",
     "check-format": "prettier --check \"**/*.{ts,tsx}\"",
     "test": "vitest",
+    "test:storage": "cross-env RUN_STORAGE_INTEGRATION_TESTS=true vitest run tests/main/stores/adapters/storage-connect.test.ts",
     "coverage": "vitest run --coverage"
   },
   "devDependencies": {

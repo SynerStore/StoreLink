@@ -9,7 +9,7 @@ import { getConnectionById } from '../db';
 import { StoreTypes, ETaskStatus } from '@/types';
 import TaskManager from '@/main/tasks/manage';
 import { decryptPassword, isEncrypted } from '@/main/utils/secret';
-import { errorLogger } from '@/main/utils/logger';
+import { errorLogger, logger } from '@/main/utils/logger';
 
 type StoreEntry = {
   client: any;
@@ -17,6 +17,21 @@ type StoreEntry = {
 };
 export const storePool = new Map<string, StoreEntry>();
 const IDLE_MS = 5 * 60 * 1000; // 五分钟自动清除
+const storeConnectLogger = logger.scope('StoreConnect');
+
+const getStoreConnectLogContext = (params: any) => {
+  const config = params?.config || {};
+
+  return {
+    id: params?.id,
+    type: params?.type,
+    bucketName: config.bucketName,
+    region: config.region,
+    endpoint: config.endpoint,
+    hasAccessKeyId: Boolean(config.accessKeyId),
+    hasSecretAccessKey: Boolean(config.secretAccessKey),
+  };
+};
 
 const getConfigById = (id: string) => {
   return getConnectionById(id);
@@ -149,10 +164,31 @@ export const getStoreInstance = (id: string) => {
 };
 
 export const storeConnect = async (params: any) => {
+  const startedAt = Date.now();
+  const context = getStoreConnectLogContext(params);
+
+  storeConnectLogger.info('Storage connection test started', context);
+
   try {
     const storeClient = await createStoreClient(params);
-    return storeClient.test();
+    const result = await storeClient.test();
+
+    storeConnectLogger.info('Storage connection test finished', {
+      ...context,
+      durationMs: Date.now() - startedAt,
+      success: result?.success,
+      code: result?.code,
+      message: result?.message,
+    });
+
+    return result;
   } catch (e: any) {
+    storeConnectLogger.error('Storage connection test failed', {
+      ...context,
+      durationMs: Date.now() - startedAt,
+      message: e?.message || e,
+      stack: e?.stack,
+    });
     errorLogger.error('Store connect failed:', e);
     return { code: 1, data: null, message: 'decrypt_failed', success: false };
   }
