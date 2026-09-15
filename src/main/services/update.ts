@@ -157,10 +157,8 @@ class UpdateService {
       if (response.data) {
         const latestVersion = response.data.tag_name?.replace(/^v/, '') || response.data.name;
         
-        // 查找 dmg 或 exe 安装包
-        const asset = response.data.assets?.find((a: any) => 
-          a.name?.endsWith('.dmg') || a.name?.endsWith('.exe') || a.name?.endsWith('.zip')
-        );
+        // 查找与当前平台和 CPU 架构匹配的安装包
+        const asset = this.findInstallerAsset(response.data.assets || []);
 
         return {
           version: latestVersion,
@@ -182,6 +180,27 @@ class UpdateService {
       
       return null;
     }
+  }
+
+  /**
+   * 从 Release assets 中选择与当前平台、CPU 架构匹配的安装包
+   * 避免在 Apple Silicon 机器上下载到 x64 包（Rosetta 下运行整体卡慢）
+   */
+  private findInstallerAsset(assets: any[]): any | undefined {
+    const extRe = process.platform === 'darwin' ? /\.(dmg|zip)$/i : /\.(exe)$/i;
+    const candidates = assets.filter((a: any) => extRe.test(a?.name || ''));
+    if (candidates.length === 0) return undefined;
+
+    const archKeywords = ['arm64', 'x64', 'ia32', 'x86_64', 'amd64', 'aarch64', 'armv7l'];
+    const score = (a: any): number => {
+      const name = (a?.name || '').toLowerCase();
+      if (name.includes('universal')) return 3;
+      const hasArch = archKeywords.some((k) => name.includes(k));
+      if (!hasArch) return 2;
+      return name.includes(process.arch) ? 3 : 0;
+    };
+
+    return [...candidates].sort((a, b) => score(b) - score(a))[0];
   }
 
   /**

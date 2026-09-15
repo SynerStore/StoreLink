@@ -17,6 +17,9 @@ const TARGET_PLATFORMS_configs = {
   mac: {
     mac: ['dmg:x64', 'dmg:arm64'],
   },
+  'mac-universal': {
+    mac: ['dmg:universal'],
+  },
   win: {
     win: ['nsis:ia32', 'nsis:x64', 'nsis:arm64', 'portable:x64'],
   },
@@ -83,6 +86,8 @@ const doMake = async () => {
     cfg_common.compression = 'store';
   } else if (MAKE_FOR === 'mac') {
     targets = TARGET_PLATFORMS_configs.mac;
+  } else if (MAKE_FOR === 'mac-universal') {
+    targets = TARGET_PLATFORMS_configs['mac-universal'];
   } else if (MAKE_FOR === 'win') {
     targets = TARGET_PLATFORMS_configs.win;
   } else if (MAKE_FOR === 'linux') {
@@ -102,6 +107,8 @@ const doMake = async () => {
       mac: {
         icon: macIcon,
         category: 'public.app-category.utilities',
+        // 产物名显式带架构，避免 Apple Silicon 机器误装 x64 包（Rosetta 下整体卡慢）
+        artifactName: '${productName}_mac_${arch}_${version}.${ext}',
         target: {
           target: 'default',
           arch: ['arm64', 'x64'],
@@ -112,9 +119,15 @@ const doMake = async () => {
       win: {
         icon: winIcon,
       },
+      nsis: {
+        artifactName: '${productName}_win_setup_${arch}_${version}.${ext}',
+      },
+      portable: {
+        artifactName: '${productName}_win_portable_${arch}_${version}.${ext}',
+      },
       linux: {
         icon: macIcon,
-        artifactName: '${productName}_linux_${arch}_${version}(${buildVersion}).${ext}',
+        artifactName: '${productName}_linux_${arch}_${version}.${ext}',
         category: 'Utility',
         synopsis: 'An App for management your multiple storeage',
       },

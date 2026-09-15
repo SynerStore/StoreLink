@@ -32,6 +32,7 @@
     "rebuild": "electron-rebuild -f",
     "make": "npm run build && node scripts/make.js",
     "make:mac": "cross-env MAKE_FOR=mac npm run make",
+    "make:mac:universal": "cross-env MAKE_FOR=mac-universal npm run make",
     "make:win": "cross-env MAKE_FOR=win npm run make",
     "make:linux": "cross-env MAKE_FOR=linux npm run make",
     "release": "node scripts/release.js",
