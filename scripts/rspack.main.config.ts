@@ -68,7 +68,18 @@ const config: Configuration = {
   optimization: {
     minimize: !isDev,
     mangleExports: !isDev,
-    concatenateModules: !isDev, // 禁止模块合并
+    concatenateModules: !isDev,
+    minimizer: [
+      new rspack.SwcJsMinimizerRspackPlugin({
+        minimizerOptions: {
+          compress: {
+            // Work around SWC inlining delHeader(headers, name) incorrectly in ali-oss,
+            // which leaves a reference to the undefined `name` variable.
+            inline: 0,
+          },
+        },
+      }),
+    ],
   },
   ignoreWarnings: [
     /Critical dependency/, // ali-oss 导致的问题 https://github.com/ali-sdk/ali-oss/issues/1287
